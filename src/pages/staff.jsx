@@ -49,7 +49,7 @@ export function StaffHome() {
       <div className="grid">
         <Feature to="rules" icon="scale" title="규정 근거 Q&A" desc="학칙·규정·지침에서 조항을 찾아 근거로 답합니다." />
         <Feature to="docs" icon="doc" tone="green" title="공문·기안 작성" desc="초안 작성과 발송 전 날짜·맞춤법·개인정보 점검" />
-        <Feature to="meeting" icon="mic" tone="amber" title="회의 도우미" desc="회의록 정리와 할 일 자동 추출" />
+        <Feature to="meeting" icon="check" tone="amber" title="회의 도우미" desc="회의록 정리와 할 일 자동 추출" />
       </div>
       <div className="grid">
         <Feature to="evaluation" icon="check" title="평가·인증 자료함" desc="지표별 증빙을 모으고 빠진 증빙을 알려 줍니다." />
@@ -240,10 +240,9 @@ export function Meeting() {
   }
   return (
     <>
-      <PageHead title="회의 도우미" desc="회의 녹음을 올리거나 회의 메모를 붙여 넣으면 요약과 할 일을 정리합니다. 녹음 변환은 실제 연결 후 사용할 수 있습니다." />
+      <PageHead title="회의 도우미" desc="회의 메모를 붙여 넣으면 요약과 할 일을 정리합니다." />
       <div className="grid-2">
         <Card title="회의 내용">
-          <label className="btn" style={{ display: 'inline-flex', alignItems: 'center', width: 'fit-content' }} title="실제 연결 후 사용">녹음 파일 올리기 (연결 예정)<input type="file" accept="audio/*" className="sr-only" disabled /></label>
           <div className="field"><label htmlFor="m-text">회의 메모 붙여 넣기</label><textarea id="m-text" className="textarea" style={{ minHeight: 240 }} value={text} onChange={e => setText(e.target.value)} placeholder={'예: 홍보 영상은 기획팀이 11월 30일까지 준비하기로 함.\n예산안은 다음 회의 전까지 재무팀 검토 요청.'} /></div>
           <button className="btn primary" onClick={run} disabled={busy || !text.trim()}>정리하기</button>
         </Card>

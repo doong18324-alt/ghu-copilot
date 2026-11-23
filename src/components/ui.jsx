@@ -5,7 +5,6 @@ const ICONS = {
   chat: <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />,
   scale: <><path d="M12 3v18" /><path d="M5 7h14" /><path d="M5 7l-3 7a4 4 0 0 0 6 0z" /><path d="M19 7l-3 7a4 4 0 0 0 6 0z" /></>,
   doc: <><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" /><path d="M14 3v6h6" /><path d="M8 13h8" /><path d="M8 17h5" /></>,
-  mic: <><rect x="9" y="3" width="6" height="11" rx="3" /><path d="M5 11a7 7 0 0 0 14 0" /><path d="M12 18v3" /></>,
   search: <><circle cx="11" cy="11" r="7" /><path d="M21 21l-4.3-4.3" /></>,
   code: <><path d="M8 7l-5 5 5 5" /><path d="M16 7l5 5-5 5" /></>,
   cap: <><path d="M2 7l10-4 10 4-10 4z" /><path d="M6 9v5c0 2 3 3 6 3s6-1 6-3V9" /></>,

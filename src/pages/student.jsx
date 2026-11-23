@@ -34,7 +34,7 @@ export function StudentHome() {
         </Card>
       </div>
       <div className="grid">
-        <Feature to="notes" icon="mic" tone="amber" title="강의 녹음·학습 노트" desc="수업 녹음을 요약, 용어, 복습 퀴즈로 정리" />
+        <Feature to="notes" icon="doc" tone="amber" title="학습 노트" desc="필기를 요약, 용어, 복습 퀴즈로 정리" />
         <Feature to="clinical" icon="doc" tone="green" title="실습 일지 도우미" desc="환자 식별정보를 자동으로 가리고 일지 정리" />
         <Feature to="campus" icon="scale" title="학교생활 Q&A" desc="학칙·학사안내 근거로 휴학, 장학, 수강 질문 답변" />
         <Feature to="programs" icon="calendar" tone="green" title="프로그램 신청" desc="서포터즈, 자격증 과정, 비교과를 보고 바로 신청" />
@@ -227,5 +227,5 @@ export function CampusQA() {
 }
 
 export function Notes() {
-  return <TaskPage task="notes" title="강의 녹음·학습 노트" desc="수업 녹음이나 필기를 요약, 핵심 용어, 복습 퀴즈로 정리합니다. 녹음 변환은 실제 연결 후 사용할 수 있으며, 녹음은 담당 교수의 허용 여부를 먼저 확인하세요." placeholder="필기 내용을 붙여 넣거나 정리하고 싶은 내용을 적어 주세요" />
+  return <TaskPage task="notes" title="학습 노트" desc="수업 필기를 붙여 넣으면 요약, 핵심 용어, 복습 퀴즈로 정리합니다." placeholder="필기 내용을 붙여 넣거나 정리하고 싶은 내용을 적어 주세요" />
 }

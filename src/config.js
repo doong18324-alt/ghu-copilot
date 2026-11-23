@@ -35,7 +35,7 @@ export const ROLES = {
     label: '학생',
     greeting: '오늘도 한 걸음씩 가 봐요',
     groups: [
-      { label: '학습', items: [['', '홈'], ['chat', 'AI 채팅'], ['courses', '내 교과목방'], ['notes', '강의 녹음·학습 노트'], ['exam', '국가고시 대비'], ['clinical', '실습 일지 도우미']] },
+      { label: '학습', items: [['', '홈'], ['chat', 'AI 채팅'], ['courses', '내 교과목방'], ['notes', '학습 노트'], ['exam', '국가고시 대비'], ['clinical', '실습 일지 도우미']] },
       { label: '학교생활', items: [['campus', '학교생활 Q&A'], ['room', '스터디룸 예약'], ['programs', '프로그램 신청'], ['achievements', '실적 공유'], ['files', '파일함']] },
     ],
   },
