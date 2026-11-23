@@ -11,10 +11,26 @@ const ROLE_TONE = { staff: 'blue', faculty: 'green', student: 'amber' }
 
 export const PROGRAM_TYPES = ['서포터즈', '자격증 과정', '비교과', '소단위과정', '가상학과', '기타']
 
+export const BENEFIT_TYPES = ['장학금', '비교과 마일리지', '수료증', '활동비', '학점 인정', '응시료 지원', '봉사시간', '취업 연계']
+
+// 참여 혜택을 눈에 띄게 보여 주는 상자. 학생 목록, 내 신청 현황, 직원 관리 화면에서 같이 씁니다.
+function Benefits({ program, compact = false }) {
+  const tags = program.benefits || []
+  const note = (program.benefitNote || '').trim()
+  if (tags.length === 0 && !note) return compact ? null : <div className="benefit-box empty">참여 혜택이 아직 적혀 있지 않습니다.</div>
+  return (
+    <div className={compact ? 'benefit-box compact' : 'benefit-box'}>
+      <span className="benefit-label">참여 혜택</span>
+      <span className="benefit-tags">{tags.map(t => <span key={t} className="benefit-tag">{t}</span>)}</span>
+      {note && !compact && <span className="benefit-note">{note}</span>}
+    </div>
+  )
+}
+
 const SEED_PROGRAMS = [
-  { id: 'seed-1', type: '서포터즈', title: 'AI 서포터즈 모집 (예시)', dept: '[주관 부서]', quota: 20, due: '', period: '[운영 기간]', desc: '교내 AI 활용 사례를 찾아 알리는 학생 서포터즈입니다. 직원 화면에서 실제 공고로 바꿔 주세요.', open: true, applicants: [] },
-  { id: 'seed-2', type: '자격증 과정', title: '[자격증 과정명] (예시)', dept: '[주관 부서]', quota: 30, due: '', period: '[운영 기간]', desc: '[과정 내용, 응시료 지원 여부, 수료 기준]', open: true, applicants: [] },
-  { id: 'seed-3', type: '소단위과정', title: '[소단위과정명] (예시)', dept: '[주관 부서]', quota: 0, due: '', period: '[운영 기간]', desc: '[이수 학점, 이수 조건]', open: true, applicants: [] },
+  { id: 'seed-1', type: '서포터즈', title: 'AI 서포터즈 모집 (예시)', dept: '[주관 부서]', quota: 20, due: '', period: '[운영 기간]', benefits: ['활동비', '수료증', '비교과 마일리지'], benefitNote: '[활동비 금액, 마일리지 점수]', desc: '교내 AI 활용 사례를 찾아 알리는 학생 서포터즈입니다. 직원 화면에서 실제 공고로 바꿔 주세요.', open: true, applicants: [] },
+  { id: 'seed-2', type: '자격증 과정', title: '[자격증 과정명] (예시)', dept: '[주관 부서]', quota: 30, due: '', period: '[운영 기간]', benefits: ['응시료 지원', '수료증'], benefitNote: '[지원 금액과 조건]', desc: '[과정 내용, 수료 기준]', open: true, applicants: [] },
+  { id: 'seed-3', type: '소단위과정', title: '[소단위과정명] (예시)', dept: '[주관 부서]', quota: 0, due: '', period: '[운영 기간]', benefits: ['학점 인정'], benefitNote: '[인정 학점]', desc: '[이수 조건]', open: true, applicants: [] },
 ]
 
 function usePrograms() { return useStored('programs:posts', SEED_PROGRAMS) }
@@ -36,16 +52,20 @@ function TypeFilter({ value, onChange, options }) {
 
 export function ProgramAdmin() {
   const [posts, setPosts] = usePrograms()
-  const blank = { type: PROGRAM_TYPES[0], title: '', dept: '', quota: '', due: '', period: '', desc: '' }
+  const blank = { type: PROGRAM_TYPES[0], title: '', dept: '', quota: '', due: '', period: '', benefits: [], benefitNote: '', desc: '' }
+  const [warn, setWarn] = useState('')
   const [form, setForm] = useState(blank)
   const set = k => e => setForm({ ...form, [k]: e.target.value })
   function add(e) {
     e.preventDefault()
     if (!form.title.trim()) return
-    setPosts([{ ...form, id: uid(), title: form.title.trim(), quota: Number(form.quota) || 0, open: true, applicants: [], created: today() }, ...posts])
+    if (form.benefits.length === 0 && !form.benefitNote.trim()) return setWarn('참여 혜택을 하나 이상 고르거나 적어 주세요. 혜택이 없는 프로그램이면 "혜택 설명"에 "별도 혜택 없음"이라고 적습니다.')
+    setWarn('')
+    setPosts([{ ...form, id: uid(), title: form.title.trim(), benefitNote: form.benefitNote.trim(), quota: Number(form.quota) || 0, open: true, applicants: [], created: today() }, ...posts])
     setForm(blank)
   }
   const update = (id, fn) => setPosts(posts.map(p => (p.id === id ? fn(p) : p)))
+  const toggleBenefit = t => setForm({ ...form, benefits: form.benefits.includes(t) ? form.benefits.filter(x => x !== t) : [...form.benefits, t] })
   const openCount = posts.filter(p => programState(p)[0] === '모집 중').length
   const applied = posts.reduce((n, p) => n + p.applicants.length, 0)
   const selected = posts.reduce((n, p) => n + p.applicants.filter(a => a.status === '선정').length, 0)
@@ -77,8 +97,17 @@ export function ProgramAdmin() {
             <div className="field" style={{ flex: '1 1 180px' }}><label htmlFor="p-period">운영 기간</label>
               <input id="p-period" className="input" placeholder="예: 3월~6월, 주 1회" value={form.period} onChange={set('period')} /></div>
           </div>
+          <fieldset className="benefit-form">
+            <legend>참여 혜택 <span className="muted small">학생 화면 맨 위에 강조되어 보입니다</span></legend>
+            <div className="row" style={{ gap: 8 }}>
+              {BENEFIT_TYPES.map(t => <button key={t} type="button" className={form.benefits.includes(t) ? 'chip on' : 'chip'} aria-pressed={form.benefits.includes(t)} onClick={() => toggleBenefit(t)}>{t}</button>)}
+            </div>
+            <div className="field"><label htmlFor="p-benefit">혜택 설명</label>
+              <input id="p-benefit" className="input" placeholder="예: 활동비 월 10만 원, 마일리지 30점, 우수 활동자 총장상" value={form.benefitNote} onChange={set('benefitNote')} /></div>
+          </fieldset>
           <div className="field"><label htmlFor="p-desc">내용</label>
-            <textarea id="p-desc" className="textarea" style={{ minHeight: 90 }} placeholder="대상, 활동 내용, 혜택, 선정 기준을 적어 주세요" value={form.desc} onChange={set('desc')} /></div>
+            <textarea id="p-desc" className="textarea" style={{ minHeight: 90 }} placeholder="대상, 활동 내용, 선정 기준을 적어 주세요" value={form.desc} onChange={set('desc')} /></div>
+          {warn && <div className="check warn" role="alert">{warn}</div>}
           <div><button className="btn primary">올리기</button></div>
         </form>
       </Card>
@@ -87,6 +116,7 @@ export function ProgramAdmin() {
         return (
           <Card key={p.id} title={p.title} action={<span className="row" style={{ gap: 6 }}><span className="badge blue">{p.type}</span><span className={`badge ${tone}`}>{state}</span></span>}>
             <p className="muted small">{p.dept || '[주관 부서]'} · 마감 {p.due || '[날짜]'} · 운영 {p.period || '[기간]'} · 신청 {p.applicants.length}명{p.quota > 0 ? ` / 정원 ${p.quota}명` : ''}</p>
+            <Benefits program={p} />
             {p.desc && <p style={{ margin: 0 }}>{p.desc}</p>}
             {p.applicants.length === 0 ? <Empty>아직 신청자가 없습니다.</Empty> : (
               <ul className="list">
@@ -116,8 +146,10 @@ export function Programs() {
   const [posts, setPosts] = usePrograms()
   const [name, setName] = useStored('profile:student-name', '')
   const [type, setType] = useState('전체')
+  const [benefit, setBenefit] = useState('')
   const mine = p => p.applicants.find(a => a.id === 'me')
-  const shown = posts.filter(p => type === '전체' || p.type === type)
+  const shown = posts.filter(p => (type === '전체' || p.type === type) && (!benefit || (p.benefits || []).includes(benefit)))
+  const usedBenefits = BENEFIT_TYPES.filter(t => posts.some(p => (p.benefits || []).includes(t)))
   const myList = posts.filter(mine)
   function toggle(p) {
     setPosts(posts.map(x => {
@@ -142,20 +174,27 @@ export function Programs() {
         {myList.length === 0 ? <Empty>신청한 프로그램이 없습니다.</Empty> : (
           <ul className="list">{myList.map(p => {
             const a = mine(p)
-            return <li key={p.id}><span><span className="badge blue" style={{ marginRight: 8 }}>{p.type}</span>{p.title}<br /><span className="muted small">{a.at} 신청</span></span><span className={`badge ${a.status === '선정' ? 'green' : 'amber'}`}>{a.status === '선정' ? '선정' : '심사 대기'}</span></li>
+            return <li key={p.id}><span><span className="badge blue" style={{ marginRight: 8 }}>{p.type}</span>{p.title}<br /><span className="muted small">{a.at} 신청</span><Benefits program={p} compact /></span><span className={`badge ${a.status === '선정' ? 'green' : 'amber'}`}>{a.status === '선정' ? '선정' : '심사 대기'}</span></li>
           })}</ul>
         )}
       </Card>
       <Card title="프로그램 목록">
         <TypeFilter value={type} onChange={setType} options={['전체', ...PROGRAM_TYPES]} />
-        {shown.length === 0 ? <Empty>해당 구분의 프로그램이 없습니다.</Empty> : (
+        {usedBenefits.length > 0 && (
+          <div className="row" style={{ gap: 8 }}>
+            <span className="small" style={{ fontWeight: 700 }}>혜택으로 찾기</span>
+            {usedBenefits.map(t => <button key={t} type="button" className={benefit === t ? 'chip on' : 'chip'} aria-pressed={benefit === t} onClick={() => setBenefit(benefit === t ? '' : t)}>{t}</button>)}
+          </div>
+        )}
+        {shown.length === 0 ? <Empty>조건에 맞는 프로그램이 없습니다.</Empty> : (
           <ul className="list">{shown.map(p => {
             const [state, tone] = programState(p)
             const applied = !!mine(p)
             return (
               <li key={p.id} style={{ alignItems: 'flex-start' }}>
                 <span>
-                  <span className="badge blue" style={{ marginRight: 6 }}>{p.type}</span><span className={`badge ${tone}`} style={{ marginRight: 8 }}>{state}</span><b>{p.title}</b><br />
+                  <span className="badge blue" style={{ marginRight: 6 }}>{p.type}</span><span className={`badge ${tone}`} style={{ marginRight: 8 }}>{state}</span><b>{p.title}</b>
+                  <Benefits program={p} />
                   <span className="muted small">{p.dept || '[주관 부서]'} · 마감 {p.due || '[날짜]'} · 운영 {p.period || '[기간]'} · 신청 {p.applicants.length}명{p.quota > 0 ? ` / 정원 ${p.quota}명` : ''}</span>
                   {p.desc && <><br /><span className="small">{p.desc}</span></>}
                 </span>
