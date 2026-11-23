@@ -3,7 +3,7 @@ import { Link, NavLink, Outlet, useParams, Navigate } from 'react-router-dom'
 import { SITE } from '../config.js'
 import { Card, Empty } from '../components/ui.jsx'
 import { ABOUT_PAGES, GREETING_PRESIDENT as GP, GREETING_DIRECTOR as GD, VISION, STRATEGY, ORGANIZATION, CURRICULUM, SAFETY, LOCATION } from '../data/about.js'
-import { useAchievements, usePrograms, programState, Benefits, PROGRAM_TYPES, ROLE_LABEL, ROLE_TONE, TypeFilter, maskName } from './shared.jsx'
+import { useAchievements, Cover, usePrograms, programState, Benefits, PROGRAM_TYPES, ROLE_LABEL, ROLE_TONE, TypeFilter, maskName } from './shared.jsx'
 
 /* 로그인 없이 누구나 보는 영역: 본부 소개, 성과 소식, 프로그램 모집 */
 
@@ -192,7 +192,6 @@ export function About() {
 export function Showcase() {
   const [items] = useAchievements()
   const [view, setView] = useState('전체')
-  const [open, setOpen] = useState(null)
   const shown = items.filter(x => view === '전체' || ROLE_LABEL[x.role] === view)
   const [lead, ...rest] = shown
   const meta = x => [maskName(x.author), x.dept, x.date].filter(Boolean).join(' · ')
@@ -204,28 +203,29 @@ export function Showcase() {
         <h1 className="page-title">학생·교수·직원의 AI 활용 성과</h1>
         <p className="muted">AI를 활용한 프로젝트, 직접 개발한 앱과 에이전트, 수업 혁신과 업무 개선 사례를 역할별로 모았습니다. 이름은 가운데 글자를 가려 표시합니다.</p>
       </div>
-      <TypeFilter value={view} onChange={v => { setView(v); setOpen(null) }} options={['전체', '학생', '교수', '직원']} />
+      <TypeFilter value={view} onChange={setView} options={['전체', '학생', '교수', '직원']} />
       {shown.length === 0 ? <Empty>아직 올라온 소식이 없습니다.</Empty> : (
         <>
-          <article className="news-lead card">
-            <Badges x={lead} />
-            <h2>{lead.title}</h2>
-            <p className="muted small">{meta(lead)}</p>
-            {lead.desc && <p className="prose-p">{lead.desc}</p>}
-            {lead.link && <a className="btn soft news-link" href={lead.link} target="_blank" rel="noopener noreferrer">결과물 보기</a>}
-          </article>
+          <Link to={`/news/${lead.id}`} className="news-lead card">
+            <Cover item={lead} />
+            <div className="stack" style={{ gap: 10, minWidth: 0 }}>
+              <Badges x={lead} />
+              <h2>{lead.title}</h2>
+              {(lead.summary || lead.desc) && <p className="clamp three">{lead.summary || lead.desc}</p>}
+              <p className="muted small">{meta(lead)}</p>
+            </div>
+          </Link>
           <div className="news-grid">
             {rest.map(x => (
-              <article key={x.id} className="card news-card">
-                <Badges x={x} />
-                <h3>{x.title}</h3>
-                <p className="muted small">{meta(x)}</p>
-                {x.desc && <p className={open === x.id ? 'small' : 'small clamp'}>{x.desc}</p>}
-                <div className="row" style={{ gap: 8, marginTop: 'auto' }}>
-                  {x.desc && x.desc.length > 70 && <button className="btn" style={{ minHeight: 36, padding: '0 14px' }} aria-expanded={open === x.id} onClick={() => setOpen(open === x.id ? null : x.id)}>{open === x.id ? '접기' : '자세히'}</button>}
-                  {x.link && <a className="btn soft news-link" style={{ minHeight: 36 }} href={x.link} target="_blank" rel="noopener noreferrer">결과물 보기</a>}
+              <Link key={x.id} to={`/news/${x.id}`} className="card news-card">
+                <Cover item={x} />
+                <div className="news-card-body">
+                  <Badges x={x} />
+                  <h3>{x.title}</h3>
+                  {(x.summary || x.desc) && <p className="small clamp">{x.summary || x.desc}</p>}
+                  <p className="muted small" style={{ marginTop: 'auto' }}>{meta(x)}</p>
                 </div>
-              </article>
+              </Link>
             ))}
           </div>
         </>
@@ -234,6 +234,58 @@ export function Showcase() {
         <p className="muted" style={{ margin: 0 }}>내 성과를 올리려면 역할을 선택해 들어간 뒤 &lsquo;AI 활용 실적&rsquo;에서 등록합니다.</p>
         <div><Link to="/" className="btn primary" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }}>역할 선택으로 가기</Link></div>
       </Card>
+    </div>
+  )
+}
+
+// 기사 한 편: 구분 → 제목 → 요약 → 글쓴이·날짜 → 대표 사진·설명 → 본문 → 결과물 → 다른 소식
+export function Article() {
+  const { id } = useParams()
+  const [items] = useAchievements()
+  const x = items.find(i => String(i.id) === id)
+  if (!x) return (
+    <div className="container">
+      <Empty>소식을 찾을 수 없습니다. 지워졌거나 주소가 바뀌었을 수 있습니다.</Empty>
+      <div><Link to="/news" className="btn soft news-link">성과 소식 목록으로</Link></div>
+    </div>
+  )
+  const paras = (x.desc || '').split(/\n+/).map(t => t.trim()).filter(Boolean)
+  const more = items.filter(i => i.id !== x.id).slice(0, 3)
+  return (
+    <div className="container article">
+      <Link to="/news" className="muted small">← 성과 소식</Link>
+      <header className="stack" style={{ gap: 12 }}>
+        <span className="row" style={{ gap: 6 }}><span className={`badge ${ROLE_TONE[x.role]}`}>{ROLE_LABEL[x.role]}</span><span className="badge">{x.type}</span></span>
+        <h1>{x.title}</h1>
+        {x.summary && <p className="article-summary">{x.summary}</p>}
+        <p className="muted small article-byline">{[maskName(x.author), x.dept].filter(Boolean).join(' · ')}{x.date ? ` | ${x.date}` : ''}</p>
+      </header>
+      {x.photo && (
+        <figure className="article-figure">
+          <img src={x.photo} alt={x.caption || x.title} />
+          {x.caption && <figcaption>{x.caption}</figcaption>}
+        </figure>
+      )}
+      <div className="article-body">
+        {paras.length ? paras.map((t, i) => <p key={i}>{t}</p>) : <p className="muted">본문이 없습니다.</p>}
+      </div>
+      {x.link && <div><a className="btn primary news-link" href={x.link} target="_blank" rel="noopener noreferrer">결과물 보기</a></div>}
+      {more.length > 0 && (
+        <section className="stack" style={{ gap: 16 }}>
+          <h2 className="article-more">다른 소식</h2>
+          <div className="news-grid">
+            {more.map(m => (
+              <Link key={m.id} to={`/news/${m.id}`} className="card news-card">
+                <Cover item={m} />
+                <div className="news-card-body">
+                  <h3>{m.title}</h3>
+                  <p className="muted small" style={{ marginTop: 'auto' }}>{[ROLE_LABEL[m.role], m.date].filter(Boolean).join(' · ')}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   )
 }

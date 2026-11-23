@@ -243,6 +243,32 @@ const SEED_ACH = [
   { id: 'seed-b4', role: 'faculty', type: 'AI 앱·에이전트 개발', title: '(예시) [전공 실습용 앱 이름]', author: '[교수 이름]', dept: '[학과]', date: '', desc: '[어떤 수업에서 어떻게 쓰는지]', cheers: 0 },
 ]
 
+// 기사 대표 사진: 16:9로 가운데를 잘라 줄입니다(브라우저 저장 용량을 아끼기 위해).
+export function readCover(file) {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    const url = URL.createObjectURL(file)
+    img.onload = () => {
+      const W = 1200, H = 675
+      const scale = Math.max(W / img.width, H / img.height)
+      const w = W / scale, h = H / scale
+      const c = document.createElement('canvas'); c.width = W; c.height = H
+      c.getContext('2d').drawImage(img, (img.width - w) / 2, (img.height - h) / 2, w, h, 0, 0, W, H)
+      URL.revokeObjectURL(url)
+      resolve(c.toDataURL('image/jpeg', 0.8))
+    }
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('사진을 읽지 못했습니다. JPG 또는 PNG 파일인지 확인해 주세요.')) }
+    img.src = url
+  })
+}
+
+// 사진이 없는 글은 역할 색 바탕에 구분명을 보여 줍니다.
+export function Cover({ item, className = '' }) {
+  return item.photo
+    ? <img className={`news-cover ${className}`} src={item.photo} alt={item.caption || item.title} />
+    : <div className={`news-cover empty ${className}`} style={{ background: `var(--${ROLE_TONE[item.role]}-soft)` }} aria-hidden="true"><span>{item.type}</span></div>
+}
+
 export function useAchievements() {
   const [items, setItems] = useStored('achievements', SEED_ACH)
   // 예전 버전의 예시 글(자격증 등)은 저장되어 있어도 빼고 보여 줍니다.
@@ -260,15 +286,25 @@ function AchievementBoard({ role }) {
   const [cheered, setCheered] = useStored(`achievements:cheered:${role}`, [])
   const [author, setAuthor] = useStored(`profile:${role}-author`, '')
   const [dept, setDept] = useStored(`profile:${role}-dept`, '')
-  const blank = { type: types[0], title: '', date: today(), desc: '', link: '' }
+  const blank = { type: types[0], title: '', summary: '', date: today(), desc: '', photo: '', caption: '', link: '' }
   const [form, setForm] = useState(blank)
   const [view, setView] = useState('전체')
+  const [note, setNote] = useState('')
   const set = k => e => setForm({ ...form, [k]: e.target.value })
+  async function onPhoto(e) {
+    const file = e.target.files[0]
+    e.target.value = ''
+    if (!file) return
+    try { const photo = await readCover(file); setForm(f => ({ ...f, photo })); setNote('') } catch (err) { setNote(err.message) }
+  }
   function add(e) {
     e.preventDefault()
     if (!form.title.trim()) return
-    setItems([{ ...form, link: safeLink(form.link), id: uid(), title: form.title.trim(), role, owner: role, author: author.trim() || `[${ROLE_LABEL[role]} 이름]`, dept: dept.trim(), cheers: 0 }, ...items])
-    setForm(blank)
+    // 사진이 많아져 브라우저 저장 공간이 차면 올리지 않고 알려 줍니다.
+    const next = [{ ...form, link: safeLink(form.link), id: uid(), title: form.title.trim(), summary: form.summary.trim(), caption: form.caption.trim(), role, owner: role, author: author.trim() || `[${ROLE_LABEL[role]} 이름]`, dept: dept.trim(), cheers: 0 }, ...items]
+    try { localStorage.setItem('ghu-copilot:achievements', JSON.stringify(next)) } catch { setNote('브라우저 저장 공간이 부족해 올리지 못했습니다. 사진을 빼거나 예전에 올린 글을 지운 뒤 다시 시도해 주세요.'); return }
+    setItems(next)
+    setForm(blank); setNote('')
   }
   function cheer(id) {
     const on = cheered.includes(id)
@@ -279,7 +315,7 @@ function AchievementBoard({ role }) {
   const shown = items.filter(x => view === '전체' || (view === '내가 올린 실적' ? x.owner === role : ROLE_LABEL[x.role] === view))
   return (
     <>
-      <PageHead title="AI 활용 실적" desc="AI를 활용한 프로젝트, 직접 개발한 앱·에이전트, 수업·업무 개선 사례를 올리고 서로 확인합니다. 올린 내용은 세 역할 화면과 공개 '성과 소식'에 함께 보입니다." />
+      <PageHead title="AI 활용 실적" desc="AI를 활용한 프로젝트, 직접 개발한 앱·에이전트, 수업·업무 개선 사례를 올리고 서로 확인합니다. 사진을 함께 올리면 공개 '성과 소식'에 기사 형태로 실립니다." />
       <div><Link to="/news" className="btn soft" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }}>성과 소식 화면 보기</Link></div>
       <Card>
         <div className="stat-row">
@@ -304,34 +340,49 @@ function AchievementBoard({ role }) {
             <div className="field" style={{ flex: '1 1 200px' }}><label htmlFor="a-dept">{role === 'staff' ? '부서' : '학과'}</label>
               <input id="a-dept" className="input" value={dept} onChange={e => setDept(e.target.value)} /></div>
           </div>
-          <div className="field"><label htmlFor="a-desc">내용</label>
-            <textarea id="a-desc" className="textarea" style={{ minHeight: 90 }} placeholder="어떤 AI 도구로 무엇을 만들었거나 바꿨는지, 어떤 결과가 있었는지 적어 주세요" value={form.desc} onChange={set('desc')} /></div>
+          <div className="field"><label htmlFor="a-summary">한 줄 요약</label>
+            <input id="a-summary" className="input" maxLength={80} placeholder="기사 제목 아래에 들어가는 한 문장 (예: 휴대전화 카메라만으로 관절 각도를 재는 앱을 만들었습니다)" value={form.summary} onChange={set('summary')} /></div>
+          <div className="field"><label htmlFor="a-photo">대표 사진</label>
+            <div className="cover-pick">
+              {form.photo ? <img src={form.photo} alt="올린 대표 사진 미리보기" /> : <div className="cover-empty">사진을 올리면 기사 맨 위에 들어갑니다</div>}
+              <div className="stack" style={{ gap: 8 }}>
+                <input id="a-photo" type="file" accept="image/*" className="input" onChange={onPhoto} />
+                {form.photo && <div><button type="button" className="btn" style={{ minHeight: 36, padding: '0 14px' }} onClick={() => setForm({ ...form, photo: '', caption: '' })}>사진 빼기</button></div>}
+                <span className="muted small">활동 장면, 결과물 화면, 발표 모습 등. 가로 16:9로 자동 맞춤됩니다.</span>
+              </div>
+            </div></div>
+          {form.photo && <div className="field"><label htmlFor="a-caption">사진 설명 (선택)</label>
+            <input id="a-caption" className="input" maxLength={60} placeholder="예: 캡스톤 발표회에서 앱을 시연하는 모습" value={form.caption} onChange={set('caption')} /></div>}
+          <div className="field"><label htmlFor="a-desc">본문</label>
+            <textarea id="a-desc" className="textarea" style={{ minHeight: 150 }} placeholder={'줄을 바꾸면 문단이 나뉩니다.\n1) 어떤 문제에서 시작했는지\n2) 어떤 AI 도구로 무엇을 만들었거나 바꿨는지\n3) 결과와 다음 계획'} value={form.desc} onChange={set('desc')} /></div>
           <div className="field"><label htmlFor="a-link">결과물 주소 (선택)</label>
             <input id="a-link" className="input" type="url" placeholder="https://로 시작하는 앱, 영상, 발표자료 주소" value={form.link} onChange={set('link')} /></div>
-          <div className="check warn">성적, 건강 정보, 다른 사람의 개인정보는 적지 마세요. 올린 내용은 모든 구성원이 볼 수 있습니다.</div>
+          {note && <div className="check warn" role="alert">{note}</div>}
+          <div className="check warn">성적, 건강 정보, 다른 사람의 개인정보는 적지 마세요. 다른 사람 얼굴이 나온 사진은 동의를 받은 것만 올려 주세요. 올린 내용은 모든 구성원이 볼 수 있습니다.</div>
           <div><button className="btn primary">올리기</button></div>
         </form>
       </Card>
       <Card title="공유된 AI 활용 실적">
         <TypeFilter value={view} onChange={setView} options={['전체', '직원', '교수', '학생', '내가 올린 실적']} />
         {shown.length === 0 ? <Empty>해당하는 실적이 없습니다.</Empty> : (
-          <ul className="list">{shown.map(x => {
+          <div className="ach-list">{shown.map(x => {
             const on = cheered.includes(x.id)
             return (
-              <li key={x.id} style={{ alignItems: 'flex-start' }}>
-                <span>
-                  <span className={`badge ${ROLE_TONE[x.role]}`} style={{ marginRight: 6 }}>{ROLE_LABEL[x.role]}</span><span className="badge" style={{ marginRight: 8 }}>{x.type}</span><b>{x.title}</b><br />
+              <article key={x.id} className="ach-item">
+                <Link to={`/news/${x.id}`} className="ach-thumb" aria-label={`${x.title} 기사로 보기`}><Cover item={x} /></Link>
+                <div className="stack" style={{ gap: 6, minWidth: 0 }}>
+                  <span className="row" style={{ gap: 6 }}><span className={`badge ${ROLE_TONE[x.role]}`}>{ROLE_LABEL[x.role]}</span><span className="badge">{x.type}</span></span>
+                  <h3><Link to={`/news/${x.id}`}>{x.title}</Link></h3>
+                  {(x.summary || x.desc) && <p className="small clamp">{x.summary || x.desc}</p>}
                   <span className="muted small">{x.author}{x.dept ? ` · ${x.dept}` : ''} · {x.date || '[날짜]'}</span>
-                  {x.desc && <><br /><span className="small">{x.desc}</span></>}
-                  {x.link && <><br /><a className="small" href={x.link} target="_blank" rel="noopener noreferrer">결과물 보기</a></>}
-                </span>
-                <span className="row" style={{ gap: 8, flex: 'none' }}>
-                  <button className={on ? 'btn soft' : 'btn'} style={{ minHeight: 36, padding: '0 14px' }} aria-pressed={on} onClick={() => cheer(x.id)}>확인했어요 {x.cheers || 0}</button>
-                  {x.owner === role && <button className="btn" style={{ minHeight: 36, padding: '0 14px' }} onClick={() => setItems(items.filter(y => y.id !== x.id))}>삭제</button>}
-                </span>
-              </li>
+                  <span className="row" style={{ gap: 8 }}>
+                    <button className={on ? 'btn soft' : 'btn'} style={{ minHeight: 36, padding: '0 14px' }} aria-pressed={on} onClick={() => cheer(x.id)}>확인했어요 {x.cheers || 0}</button>
+                    {x.owner === role && <button className="btn" style={{ minHeight: 36, padding: '0 14px' }} onClick={() => setItems(items.filter(y => y.id !== x.id))}>삭제</button>}
+                  </span>
+                </div>
+              </article>
             )
-          })}</ul>
+          })}</div>
         )}
       </Card>
     </>

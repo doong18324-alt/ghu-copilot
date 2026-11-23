@@ -339,13 +339,46 @@ mark { background: #FFE98A; padding: 0 3px; border-radius: 4px; }
 .org-chart li + li::before { content: ''; position: absolute; left: 50%; top: -22px; width: 2px; height: 22px; background: var(--line-strong); }
 .about-body .table-wrap { background: #fff; border-radius: var(--radius); padding: 8px 14px; box-shadow: var(--shadow); }
 
-.news-lead { gap: 12px; padding: 32px; }
-.news-lead h2 { font-size: 28px; letter-spacing: -.03em; line-height: 1.25; }
+.news-cover { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; border-radius: 14px; }
+.news-cover.empty { display: flex; align-items: flex-end; padding: 16px 18px; }
+.news-cover.empty span { font-weight: 800; font-size: 15px; letter-spacing: -.02em; color: var(--ink); opacity: .55; }
+.news-lead { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 32px; align-items: center; padding: 24px; text-decoration: none; color: inherit; }
+.news-lead h2 { font-size: 30px; font-weight: 900; letter-spacing: -.03em; line-height: 1.25; margin: 0; }
+.news-lead p { margin: 0; line-height: 1.7; }
 .news-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-.news-card { gap: 10px; }
-.news-card h3 { font-size: 18px; line-height: 1.35; }
+.news-card { gap: 0; padding: 0; overflow: hidden; text-decoration: none; color: inherit; }
+.news-card .news-cover { border-radius: 0; }
+.news-card-body { display: flex; flex-direction: column; gap: 10px; padding: 18px 20px 20px; flex: 1; }
+.news-card h3 { font-size: 18px; font-weight: 800; line-height: 1.35; margin: 0; }
 .news-card p { margin: 0; }
+.news-lead, .news-card { transition: transform .2s ease, box-shadow .2s ease; }
+.news-lead:hover, .news-card:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(0, 0, 0, .08); }
 .news-link { display: inline-flex; align-items: center; text-decoration: none; align-self: flex-start; }
+.article { max-width: 760px; gap: 28px; }
+.article h1 { font-size: 38px; font-weight: 900; letter-spacing: -.035em; line-height: 1.22; margin: 0; }
+.article-summary { font-size: 20px; line-height: 1.55; color: var(--muted, #6E6E73); margin: 0; font-weight: 600; }
+.article-byline { margin: 0; padding-top: 14px; border-top: 1px solid rgba(0, 0, 0, .08); }
+.article-figure { margin: 0; }
+.article-figure img { width: 100%; border-radius: 18px; display: block; }
+.article-figure figcaption { margin-top: 10px; font-size: 13px; color: var(--muted, #6E6E73); text-align: center; }
+.article-body p { font-size: 17px; line-height: 1.9; margin: 0 0 1.2em; }
+.article-more { font-size: 20px; font-weight: 800; margin: 0; padding-top: 24px; border-top: 1px solid rgba(0, 0, 0, .08); }
+.ach-list { display: flex; flex-direction: column; }
+.ach-item { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 20px; padding: 18px 0; border-top: 1px solid rgba(0, 0, 0, .07); }
+.ach-item:first-child { border-top: 0; }
+.ach-item h3 { font-size: 18px; font-weight: 800; margin: 0; line-height: 1.35; }
+.ach-item h3 a { color: inherit; text-decoration: none; }
+.ach-item p { margin: 0; }
+.cover-pick { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 16px; align-items: center; }
+.cover-pick img, .cover-empty { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 12px; }
+.cover-empty { display: flex; align-items: center; justify-content: center; text-align: center; padding: 12px; font-size: 13px; color: var(--muted, #6E6E73); background: #F5F5F7; border: 1px dashed rgba(0, 0, 0, .18); }
+.clamp.three { -webkit-line-clamp: 3; }
+@media (max-width: 720px) {
+  .news-lead { grid-template-columns: 1fr; gap: 18px; }
+  .news-lead h2 { font-size: 24px; }
+  .article h1 { font-size: 28px; }
+  .ach-item, .cover-pick { grid-template-columns: 1fr; }
+}
 .clamp { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
 /* ── 이력서 만들기 ── */
@@ -406,3 +439,4 @@ mark { background: #FFE98A; padding: 0 3px; border-radius: 4px; }
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; scroll-behavior: auto !important; }
 }
+.ach-thumb { text-decoration: none; display: block; }
