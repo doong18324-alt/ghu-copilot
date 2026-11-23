@@ -29,7 +29,7 @@
   --shadow-hover: 0 2px 4px rgba(0, 0, 0, .05), 0 16px 40px rgba(0, 0, 0, .09);
   --ring: 0 0 0 4px rgba(0, 113, 227, .22);
   --ease: cubic-bezier(.25, .1, .25, 1);
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Apple SD Gothic Neo', 'Pretendard Variable', Pretendard, 'Noto Sans KR', 'Malgun Gothic', system-ui, sans-serif;
+  font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', system-ui, sans-serif;
   color: var(--ink);
   background: var(--bg);
   -webkit-font-smoothing: antialiased;
@@ -39,10 +39,10 @@
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
-body { margin: 0; font-size: 15px; line-height: 1.5; letter-spacing: -.01em; word-break: keep-all; }
+body { margin: 0; font-size: 15px; font-weight: 400; line-height: 1.6; letter-spacing: -.01em; word-break: keep-all; }
 a { color: var(--blue); text-underline-offset: 3px; }
 a:hover { color: var(--blue-dark); }
-h1, h2, h3 { margin: 0; letter-spacing: -.022em; font-weight: 700; }
+h1, h2, h3 { margin: 0; letter-spacing: -.025em; font-weight: 800; line-height: 1.25; }
 button, input, select, textarea { font-family: inherit; font-size: 15px; color: var(--ink); letter-spacing: inherit; }
 input[type='checkbox'], input[type='radio'] { accent-color: var(--navy); }
 ::selection { background: rgba(0, 113, 227, .2); }
@@ -67,7 +67,7 @@ input[type='checkbox'], input[type='radio'] { accent-color: var(--navy); }
   width: 46px; height: 46px; flex: none; display: block;
   background: url('./assets/ghu-emblem.png') center / contain no-repeat;
 }
-.brand-name { font-weight: 700; font-size: 17px; letter-spacing: -.022em; display: block; line-height: 1.25; }
+.brand-name { font-weight: 800; font-size: 17px; letter-spacing: -.022em; display: block; line-height: 1.25; }
 .brand-sub { font-size: 12px; color: var(--muted); line-height: 1.35; display: block; margin-top: 2px; }
 
 .role-switch { display: flex; gap: 2px; background: var(--fill); border-radius: 10px; padding: 2px; }
@@ -79,13 +79,13 @@ input[type='checkbox'], input[type='radio'] { accent-color: var(--navy); }
 .role-switch a.active { background: #fff; font-weight: 600; box-shadow: 0 3px 8px rgba(0, 0, 0, .12), 0 1px 1px rgba(0, 0, 0, .04); }
 
 .nav-group { display: flex; flex-direction: column; gap: 1px; }
-.nav-label { font-size: 12px; font-weight: 600; color: var(--faint); padding: 0 12px 6px; }
+.nav-label { font-size: 12px; font-weight: 700; color: var(--faint); padding: 0 12px 6px; }
 .nav-group a {
   padding: 9px 12px; border-radius: 10px; color: var(--ink); font-size: 15px; text-decoration: none;
   transition: background .15s var(--ease);
 }
 .nav-group a:hover { background: var(--fill); color: var(--ink); }
-.nav-group a.active { background: var(--navy); color: #fff; font-weight: 600; }
+.nav-group a.active { background: var(--navy); color: #fff; font-weight: 700; }
 
 .usage { margin-top: auto; background: var(--fill); border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 8px; font-size: 13px; color: var(--ink); }
 .usage small { color: var(--muted); font-size: 12px; font-weight: 600; }
@@ -103,7 +103,7 @@ input[type='checkbox'], input[type='radio'] { accent-color: var(--navy); }
 }
 .topbar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 14px; }
 .topbar .eyebrow { font-size: 13px; font-weight: 600; color: var(--faint); }
-.topbar .title { font-size: 22px; font-weight: 700; letter-spacing: -.022em; }
+.topbar .title { font-size: 22px; font-weight: 800; letter-spacing: -.022em; }
 .topbar input[type='search'] { border-radius: 980px; background: var(--fill); border-color: transparent; min-height: 40px; padding: 0 16px; }
 .topbar input[type='search']:focus { background: #fff; }
 .topbar .btn { border-radius: 50%; min-height: 40px; width: 40px !important; background: var(--fill); border-color: transparent; display: inline-flex; align-items: center; justify-content: center; }
@@ -113,16 +113,16 @@ input[type='checkbox'], input[type='radio'] { accent-color: var(--navy); }
   background: var(--panel); border: none; border-radius: var(--radius); padding: 24px;
   display: flex; flex-direction: column; gap: 16px; min-width: 0; box-shadow: var(--shadow);
 }
-.card h2 { font-size: 19px; }
+.card h2 { font-size: 20px; }
 .card h3 { font-size: 16px; }
 .card-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
 .muted { color: var(--muted); font-size: 15px; margin: 0; }
 .small { font-size: 13px; }
 .empty { margin: 0; padding: 18px; border: none; background: var(--soft); border-radius: 14px; font-size: 14px; color: var(--muted); text-align: center; }
-.page-title { font-size: 32px; line-height: 1.15; letter-spacing: -.028em; }
+.page-title { font-size: 32px; font-weight: 900; line-height: 1.15; letter-spacing: -.03em; }
 
 .hero { padding: 44px 44px 36px; border-radius: 28px; gap: 18px; }
-.hero h1 { font-size: 40px; line-height: 1.1; letter-spacing: -.032em; }
+.hero h1 { font-size: 40px; font-weight: 900; line-height: 1.12; letter-spacing: -.035em; }
 .hero .muted { font-size: 17px !important; }
 .hero form .input { border-radius: 980px; padding: 0 20px; }
 .hero form .btn { border-radius: 980px; padding: 0 26px; }
@@ -161,7 +161,7 @@ select.input, select.select {
 }
 .btn:hover { background: var(--fill-hover); color: var(--ink); }
 .btn:active { transform: scale(.98); }
-.btn.primary { background: var(--navy); border-color: var(--navy); color: #fff; font-weight: 600; }
+.btn.primary { background: var(--navy); border-color: var(--navy); color: #fff; font-weight: 700; }
 .btn.primary:hover { background: var(--navy-hover); color: #fff; }
 .btn.soft { background: var(--blue-soft); border-color: transparent; color: var(--blue); font-weight: 600; }
 .btn.soft:hover { background: #DCEBFD; color: var(--blue-dark); }
@@ -181,7 +181,7 @@ select.input, select.select {
 
 .stat-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
 .stat { border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 2px; }
-.stat b { font-size: 30px; line-height: 1.1; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.stat b { font-size: 30px; font-weight: 800; line-height: 1.1; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
 .stat span { font-size: 12px; font-weight: 500; color: var(--muted); }
 
 .list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
@@ -203,7 +203,7 @@ select.input, select.select {
 }
 .feature:hover { color: var(--ink); transform: translateY(-2px); box-shadow: var(--shadow-hover); }
 .feature .icon { flex: none; width: 46px; height: 46px; border-radius: 13px; display: flex; align-items: center; justify-content: center; }
-.feature b { display: block; font-size: 17px; font-weight: 600; letter-spacing: -.02em; margin-bottom: 3px; }
+.feature b { display: block; font-size: 17px; font-weight: 800; letter-spacing: -.02em; margin-bottom: 3px; }
 .feature span { font-size: 14px; color: var(--muted); line-height: 1.45; display: block; }
 
 .table-wrap { overflow-x: auto; }
@@ -245,8 +245,8 @@ mark { background: #FFE98A; padding: 0 3px; border-radius: 4px; }
 .login .card { max-width: 480px; width: 100%; padding: 44px 40px 36px; gap: 20px; border-radius: 28px; text-align: center; box-shadow: 0 2px 6px rgba(0, 0, 0, .04), 0 24px 60px rgba(0, 0, 0, .1); }
 .login .card > .row:first-child { flex-direction: column; gap: 14px !important; }
 .login .brand-mark { width: 104px; height: 104px; }
-.login .brand-name { font-size: 30px; letter-spacing: -.03em; }
-.slogan { font-size: 13px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--navy); margin: 6px 0 4px; }
+.login .brand-name { font-size: 32px; font-weight: 900; letter-spacing: -.035em; }
+.slogan { font-size: 13px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--navy); margin: 6px 0 4px; }
 .login .btn.primary { min-height: 50px; font-size: 16px; }
 .role-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .role-grid a {
@@ -254,7 +254,7 @@ mark { background: #FFE98A; padding: 0 3px; border-radius: 4px; }
   transition: background .2s var(--ease), transform .2s var(--ease);
 }
 .role-grid a:hover { background: var(--blue-soft); transform: translateY(-1px); }
-.role-grid b { display: block; font-size: 17px; font-weight: 600; letter-spacing: -.02em; }
+.role-grid b { display: block; font-size: 17px; font-weight: 800; letter-spacing: -.02em; }
 .role-grid span { font-size: 12px; color: var(--muted); }
 
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
