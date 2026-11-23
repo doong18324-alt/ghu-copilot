@@ -33,7 +33,15 @@ const SEED_PROGRAMS = [
   { id: 'seed-3', type: '소단위과정', title: '[소단위과정명] (예시)', dept: '[주관 부서]', quota: 0, due: '', period: '[운영 기간]', benefits: ['학점 인정'], benefitNote: '[인정 학점]', desc: '[이수 조건]', open: true, applicants: [] },
 ]
 
-function usePrograms() { return useStored('programs:posts', SEED_PROGRAMS) }
+function usePrograms() {
+  const [posts, setPosts] = useStored('programs:posts', SEED_PROGRAMS)
+  // 혜택 항목이 생기기 전에 브라우저에 저장된 예시 공고에는 혜택을 채워서 보여 줍니다.
+  const patched = posts.map(p => {
+    const seed = SEED_PROGRAMS.find(x => x.id === p.id)
+    return seed && p.benefits === undefined ? { ...p, benefits: seed.benefits, benefitNote: seed.benefitNote, desc: seed.desc } : p
+  })
+  return [patched, setPosts]
+}
 
 function programState(p) {
   if (!p.open) return ['모집 마감', '']
