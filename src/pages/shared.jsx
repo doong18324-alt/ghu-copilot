@@ -5,7 +5,8 @@ import { useStored, uid, roleFromPath } from '../lib/store.js'
 import shotBody from '../assets/apps/body-aligner.jpg'
 import shotGait from '../assets/apps/gait-analyzer.jpg'
 import shotBalloon from '../assets/apps/balloon-exercise.jpg'
-import shotPpe from '../assets/apps/ppe.jpg'
+import shotPpe from '../assets/apps/ppe-concept.jpg'
+import shotBps from '../assets/apps/bps-concept.jpg'
 import shotFcs from '../assets/apps/fcs-assessment.jpg'
 
 const today = () => new Date().toISOString().slice(0, 10)
@@ -294,15 +295,14 @@ export function Cover({ item, className = '' }) {
 }
 
 // 실제 실적. 코드에 들어 있어 모든 방문자에게 보입니다(서버 연결 전까지는 이 방식으로만 공개 게시가 됩니다).
-// email: 문의 받을 주소를 받으면 채웁니다(비어 있으면 문의하기 버튼이 나오지 않습니다).
-const PROF = { role: 'faculty', author: '김현중', dept: '시니어운동처방학과', email: '' }
+const PROF = { role: 'faculty', author: '김현중', dept: '시니어운동처방학과', email: 'hjkim@ghu.ac.kr' }
 const APP_NOTE = '생성형 AI와 대화하며 코드를 작성하는 방식으로 제작했고, 설치 없이 웹 브라우저에서 사용합니다.'
 export const FEATURED = [
   { ...PROF, id: 'real-body-aligner', type: 'AI 앱·에이전트 개발', date: '2026-04-13', photo: shotBody, caption: 'BodyAligner 첫 화면',
     title: 'BodyAligner: 카메라로 하는 체형분석 웹앱',
     summary: '앞면·옆면·뒷면을 촬영하면 대칭성과 관절 각도를 분석하고 운동처방까지 제시합니다.',
     desc: 'MediaPipe Pose 기반 체형분석 웹앱입니다.\n앞면·옆면·뒷면 3방향을 촬영해 대칭성, 관절 각도 등 20개 이상의 변수를 산출하고, 임상 해석과 ACSM 기준 운동처방을 함께 보여 줍니다. 결과는 PDF로 내려받거나 구글 시트에 저장할 수 있습니다.\n' + APP_NOTE },
-  { ...PROF, id: 'real-nrf-bps', type: 'AI 활용 연구', date: '2026-09-01',
+  { ...PROF, id: 'real-nrf-bps', type: 'AI 활용 연구', date: '2026-09-01', photo: shotBps, caption: '만성통증 표현형 연구 개념 이미지',
     title: '한국연구재단 기본연구 선정: AI 기반 만성통증 표현형 정밀 중재 시스템',
     summary: '멀티모달 생체신호와 AI로 만성통증을 유형별로 나누고 맞춤 중재를 찾는 5개년 연구입니다.',
     desc: '2026년 한국연구재단 개인기초연구 기본연구 과제에 선정되었습니다.\n과제명은 「AI기반 멀티모달 생체신호 융합·합성 및 강화학습 매칭을 활용한 만성통증 표현형 정밀 중재 시스템(BPS-PPIS) 알고리즘 개발」이며 5개년 동안 수행합니다.\n만성 척추통증과 섬유근통을 대상으로 생체신호와 설문 자료를 모아 통증 표현형을 분류하고, 표현형에 맞는 중재를 연결하는 알고리즘을 개발합니다.\n과제번호: RS-2026-25591593' },
@@ -318,7 +318,7 @@ export const FEATURED = [
     title: 'FCS 노쇠중심스펙트럼 평가 도구',
     summary: '노쇠를 생물·심리·사회·기능 영역으로 나누어 16단계로 평가하는 웹 도구입니다.',
     desc: 'BPS-FN 모델에 따른 노쇠중심스펙트럼(Frailty-Centered Spectrum) 평가 웹앱입니다.\nK-FRAIL, MNA-SF, GDS-SF, K-MMSE, LSNS-6, 수정 바델지수, IADL 등의 평가를 차례로 입력하면 결과를 정리해 보여 줍니다.\n' + APP_NOTE },
-  { ...PROF, id: 'real-ppe', type: 'AI 수업 혁신', date: '2026-03-08', photo: shotPpe, caption: '스포츠 참가 전 평가(PPE) 화면',
+  { ...PROF, id: 'real-ppe', type: 'AI 수업 혁신', date: '2026-03-08', photo: shotPpe, caption: '스포츠 참가 전 평가 개념 이미지',
     title: '스포츠 참가 전 평가(PPE) 교육용 웹 도구',
     summary: '병력부터 판정까지 7단계 평가 흐름을 수업에서 직접 실습합니다.',
     desc: '스포츠 참가 전 평가(Preparticipation Evaluation)를 수업에서 실습하도록 만든 교육용 도구입니다.\n기본 정보, 병력, 심혈관, 근골격계, 신경학적 평가, 일반 건강, 판정 결과의 7단계로 구성되어 있습니다.\n' + APP_NOTE },
