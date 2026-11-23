@@ -133,4 +133,4 @@ const server = http.createServer(async (req, res) => {
 })
 
 const HOST = (process.env.AUTH_MODE || 'none') === 'none' ? '127.0.0.1' : process.env.HOST || '0.0.0.0'
-server.listen(PORT, HOST, () => console.log(`GHU 코파일럿 중계 서버: http://${HOST}:${PORT} (인증 방식: ${process.env.AUTH_MODE || 'none'})`))
+server.listen(PORT, HOST, () => console.log(`GHU 바이탈 중계 서버: http://${HOST}:${PORT} (인증 방식: ${process.env.AUTH_MODE || 'none'})`))

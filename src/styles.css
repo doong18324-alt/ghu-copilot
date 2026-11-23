@@ -246,6 +246,7 @@ mark { background: #FFE98A; padding: 0 3px; border-radius: 4px; }
 .login .card > .row:first-child { flex-direction: column; gap: 14px !important; }
 .login .brand-mark { width: 104px; height: 104px; }
 .login .brand-name { font-size: 30px; letter-spacing: -.03em; }
+.slogan { font-size: 13px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--navy); margin: 6px 0 4px; }
 .login .btn.primary { min-height: 50px; font-size: 16px; }
 .role-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .role-grid a {

@@ -90,6 +90,7 @@ export function Login() {
           <span className="brand-mark" aria-hidden="true" />
           <div>
             <div className="brand-name" style={{ color: 'var(--ink)' }}>{SITE.name}</div>
+            <div className="slogan">{SITE.slogan}</div>
             <div className="muted small">{SITE.sub}</div>
           </div>
         </div>

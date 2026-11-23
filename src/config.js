@@ -1,5 +1,6 @@
 export const SITE = {
-  name: 'GHU 코파일럿',
+  name: 'GHU 바이탈',
+  slogan: 'Saving Lives with AI',
   sub: '광주보건대학교 AI 업무·학습 플랫폼',
 }
 
