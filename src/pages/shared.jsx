@@ -239,7 +239,6 @@ export function maskName(name) {
 }
 
 // http(s) 주소만 링크로 씁니다.
-const safeLink = url => (/^https?:\/\/\S+$/i.test((url || '').trim()) ? url.trim() : '')
 
 const SEED_ACH = [
   { id: 'seed-b1', role: 'student', type: 'AI 프로젝트·캡스톤', title: '(예시) [AI를 활용한 캡스톤 프로젝트명]', author: '[학생 이름]', dept: '[학과]', date: '', desc: '[해결하려던 문제, 만든 결과물, 사용한 AI 도구]', cheers: 0 },
@@ -267,6 +266,26 @@ export function readCover(file) {
   })
 }
 
+// 문의하기: 누르면 글을 올린 사람의 메일 주소를 복사합니다.
+export function ContactButton({ email }) {
+  const [done, setDone] = useState(false)
+  if (!email) return null
+  async function copy() {
+    try { await navigator.clipboard.writeText(email) } catch {
+      // 클립보드 권한이 없는 브라우저용 예비 방법
+      const t = document.createElement('textarea'); t.value = email; t.style.position = 'fixed'; t.style.opacity = '0'
+      document.body.appendChild(t); t.select(); try { document.execCommand('copy') } catch { /* 복사 불가 */ } t.remove()
+    }
+    setDone(true); setTimeout(() => setDone(false), 6000)
+  }
+  return (
+    <div className="contact">
+      <button type="button" className="btn primary" onClick={copy}>문의하기</button>
+      <span className="small" role="status">{done ? <>메일 주소를 복사했습니다: <b>{email}</b></> : <span className="muted">누르면 올린 사람의 메일 주소가 복사됩니다.</span>}</span>
+    </div>
+  )
+}
+
 // 사진이 없는 글은 역할 색 바탕에 구분명을 보여 줍니다.
 export function Cover({ item, className = '' }) {
   return item.photo
@@ -275,11 +294,12 @@ export function Cover({ item, className = '' }) {
 }
 
 // 실제 실적. 코드에 들어 있어 모든 방문자에게 보입니다(서버 연결 전까지는 이 방식으로만 공개 게시가 됩니다).
-const PROF = { role: 'faculty', author: '김현중', dept: '시니어운동처방학과' }
-const APP_NOTE = '생성형 AI와 대화하며 코드를 작성하는 방식으로 제작했고, 설치 없이 웹 주소로 접속해 사용합니다.'
+// email: 문의 받을 주소를 받으면 채웁니다(비어 있으면 문의하기 버튼이 나오지 않습니다).
+const PROF = { role: 'faculty', author: '김현중', dept: '시니어운동처방학과', email: '' }
+const APP_NOTE = '생성형 AI와 대화하며 코드를 작성하는 방식으로 제작했고, 설치 없이 웹 브라우저에서 사용합니다.'
 export const FEATURED = [
   { ...PROF, id: 'real-body-aligner', type: 'AI 앱·에이전트 개발', date: '2026-04-13', photo: shotBody, caption: 'BodyAligner 첫 화면',
-    title: 'BodyAligner: 카메라로 하는 체형분석 웹앱', link: 'https://doong18324-alt.github.io/body-aligner/',
+    title: 'BodyAligner: 카메라로 하는 체형분석 웹앱',
     summary: '앞면·옆면·뒷면을 촬영하면 대칭성과 관절 각도를 분석하고 운동처방까지 제시합니다.',
     desc: 'MediaPipe Pose 기반 체형분석 웹앱입니다.\n앞면·옆면·뒷면 3방향을 촬영해 대칭성, 관절 각도 등 20개 이상의 변수를 산출하고, 임상 해석과 ACSM 기준 운동처방을 함께 보여 줍니다. 결과는 PDF로 내려받거나 구글 시트에 저장할 수 있습니다.\n' + APP_NOTE },
   { ...PROF, id: 'real-nrf-bps', type: 'AI 활용 연구', date: '2026-09-01',
@@ -287,19 +307,19 @@ export const FEATURED = [
     summary: '멀티모달 생체신호와 AI로 만성통증을 유형별로 나누고 맞춤 중재를 찾는 5개년 연구입니다.',
     desc: '2026년 한국연구재단 개인기초연구 기본연구 과제에 선정되었습니다.\n과제명은 「AI기반 멀티모달 생체신호 융합·합성 및 강화학습 매칭을 활용한 만성통증 표현형 정밀 중재 시스템(BPS-PPIS) 알고리즘 개발」이며 5개년 동안 수행합니다.\n만성 척추통증과 섬유근통을 대상으로 생체신호와 설문 자료를 모아 통증 표현형을 분류하고, 표현형에 맞는 중재를 연결하는 알고리즘을 개발합니다.\n과제번호: RS-2026-25591593' },
   { ...PROF, id: 'real-gait-analyzer', type: 'AI 앱·에이전트 개발', date: '2026-04-13', photo: shotGait, caption: 'GaitAnalyzer Web 첫 화면',
-    title: 'GaitAnalyzer Web: 카메라 기반 보행분석', link: 'https://doong18324-alt.github.io/gait-analyzer/',
+    title: 'GaitAnalyzer Web: 카메라 기반 보행분석',
     summary: '측면에서 6m 보행을 촬영하면 보행 변수를 자동으로 분석합니다.',
     desc: 'MediaPipe Pose 기반 보행분석 웹앱입니다.\n연령, 키, 성별을 입력하고 카메라를 보행 경로 측면에 둔 뒤 평소 속도로 6m를 걷는 모습을 촬영하면 자동으로 분석합니다.\n' + APP_NOTE },
   { ...PROF, id: 'real-balloon', type: 'AI 앱·에이전트 개발', date: '2026-04-07', photo: shotBalloon, caption: 'AI 맞춤형 운동 트레이너 첫 화면',
-    title: 'AI 맞춤형 운동 트레이너: 풍선 터트리기 운동 게임', link: 'https://doong18324-alt.github.io/balloon-exercise/',
+    title: 'AI 맞춤형 운동 트레이너: 풍선 터트리기 운동 게임',
     summary: 'ACSM 평가로 맞춤 프로그램을 만들고, 화면 속 풍선을 터트리며 운동합니다.',
     desc: 'AI스포츠테크연구센터에서 만든 운동 웹앱입니다.\nACSM 평가, 맞춤 프로그램, 카메라 앞에서 움직여 풍선을 터트리는 운동, PDF 리포트 순서로 진행하며 식이 제안도 함께 제공합니다.\n' + APP_NOTE },
   { ...PROF, id: 'real-fcs', type: 'AI 앱·에이전트 개발', date: '2026-03-22', photo: shotFcs, caption: 'FCS 노쇠중심스펙트럼 평가 첫 화면',
-    title: 'FCS 노쇠중심스펙트럼 평가 도구', link: 'https://doong18324-alt.github.io/fcs-assessment/',
+    title: 'FCS 노쇠중심스펙트럼 평가 도구',
     summary: '노쇠를 생물·심리·사회·기능 영역으로 나누어 16단계로 평가하는 웹 도구입니다.',
     desc: 'BPS-FN 모델에 따른 노쇠중심스펙트럼(Frailty-Centered Spectrum) 평가 웹앱입니다.\nK-FRAIL, MNA-SF, GDS-SF, K-MMSE, LSNS-6, 수정 바델지수, IADL 등의 평가를 차례로 입력하면 결과를 정리해 보여 줍니다.\n' + APP_NOTE },
   { ...PROF, id: 'real-ppe', type: 'AI 수업 혁신', date: '2026-03-08', photo: shotPpe, caption: '스포츠 참가 전 평가(PPE) 화면',
-    title: '스포츠 참가 전 평가(PPE) 교육용 웹 도구', link: 'https://doong18324-alt.github.io/PPE/',
+    title: '스포츠 참가 전 평가(PPE) 교육용 웹 도구',
     summary: '병력부터 판정까지 7단계 평가 흐름을 수업에서 직접 실습합니다.',
     desc: '스포츠 참가 전 평가(Preparticipation Evaluation)를 수업에서 실습하도록 만든 교육용 도구입니다.\n기본 정보, 병력, 심혈관, 근골격계, 신경학적 평가, 일반 건강, 판정 결과의 7단계로 구성되어 있습니다.\n' + APP_NOTE },
 ]
@@ -326,7 +346,8 @@ function AchievementBoard({ role }) {
   const [cheered, setCheered] = useStored(`achievements:cheered:${role}`, [])
   const [author, setAuthor] = useStored(`profile:${role}-author`, '')
   const [dept, setDept] = useStored(`profile:${role}-dept`, '')
-  const blank = { type: types[0], title: '', summary: '', date: today(), desc: '', photo: '', caption: '', link: '' }
+  const [email, setEmail] = useStored(`profile:${role}-email`, '')
+  const blank = { type: types[0], title: '', summary: '', date: today(), desc: '', photo: '', caption: '' }
   const [form, setForm] = useState(blank)
   const [view, setView] = useState('전체')
   const [note, setNote] = useState('')
@@ -341,7 +362,7 @@ function AchievementBoard({ role }) {
     e.preventDefault()
     if (!form.title.trim()) return
     // 사진이 많아져 브라우저 저장 공간이 차면 올리지 않고 알려 줍니다.
-    const next = [{ ...form, link: safeLink(form.link), id: uid(), title: form.title.trim(), summary: form.summary.trim(), caption: form.caption.trim(), role, owner: role, author: author.trim() || `[${ROLE_LABEL[role]} 이름]`, dept: dept.trim(), cheers: 0 }, ...items]
+    const next = [{ ...form, email: email.trim(), id: uid(), title: form.title.trim(), summary: form.summary.trim(), caption: form.caption.trim(), role, owner: role, author: author.trim() || `[${ROLE_LABEL[role]} 이름]`, dept: dept.trim(), cheers: 0 }, ...items]
     try { localStorage.setItem('ghu-copilot:achievements', JSON.stringify(next)) } catch { setNote('브라우저 저장 공간이 부족해 올리지 못했습니다. 사진을 빼거나 예전에 올린 글을 지운 뒤 다시 시도해 주세요.'); return }
     setItems(next)
     setForm(blank); setNote('')
@@ -379,6 +400,8 @@ function AchievementBoard({ role }) {
               <input id="a-author" className="input" placeholder="통합인증 연결 후에는 자동 입력" value={author} onChange={e => setAuthor(e.target.value)} /></div>
             <div className="field" style={{ flex: '1 1 200px' }}><label htmlFor="a-dept">{role === 'staff' ? '부서' : '학과'}</label>
               <input id="a-dept" className="input" value={dept} onChange={e => setDept(e.target.value)} /></div>
+            <div className="field" style={{ flex: '1 1 240px' }}><label htmlFor="a-email">문의 받을 이메일</label>
+              <input id="a-email" className="input" type="email" required placeholder="기사의 '문의하기'를 누르면 복사됩니다" value={email} onChange={e => setEmail(e.target.value)} /></div>
           </div>
           <div className="field"><label htmlFor="a-summary">한 줄 요약</label>
             <input id="a-summary" className="input" maxLength={80} placeholder="기사 제목 아래에 들어가는 한 문장 (예: 휴대전화 카메라만으로 관절 각도를 재는 앱을 만들었습니다)" value={form.summary} onChange={set('summary')} /></div>
@@ -395,10 +418,8 @@ function AchievementBoard({ role }) {
             <input id="a-caption" className="input" maxLength={60} placeholder="예: 캡스톤 발표회에서 앱을 시연하는 모습" value={form.caption} onChange={set('caption')} /></div>}
           <div className="field"><label htmlFor="a-desc">본문</label>
             <textarea id="a-desc" className="textarea" style={{ minHeight: 150 }} placeholder={'줄을 바꾸면 문단이 나뉩니다.\n1) 어떤 문제에서 시작했는지\n2) 어떤 AI 도구로 무엇을 만들었거나 바꿨는지\n3) 결과와 다음 계획'} value={form.desc} onChange={set('desc')} /></div>
-          <div className="field"><label htmlFor="a-link">결과물 주소 (선택)</label>
-            <input id="a-link" className="input" type="url" placeholder="https://로 시작하는 앱, 영상, 발표자료 주소" value={form.link} onChange={set('link')} /></div>
           {note && <div className="check warn" role="alert">{note}</div>}
-          <div className="check warn">성적, 건강 정보, 다른 사람의 개인정보는 적지 마세요. 다른 사람 얼굴이 나온 사진은 동의를 받은 것만 올려 주세요. 올린 내용은 모든 구성원이 볼 수 있습니다.</div>
+          <div className="check warn">성적, 건강 정보, 다른 사람의 개인정보는 적지 마세요. 다른 사람 얼굴이 나온 사진은 동의를 받은 것만 올려 주세요. 올린 내용과 문의 이메일은 모든 구성원이 볼 수 있습니다.</div>
           <div><button className="btn primary">올리기</button></div>
         </form>
       </Card>

@@ -4,7 +4,7 @@ import { SITE } from '../config.js'
 import jihu from '../assets/jihu.webp'
 import { Card, Empty } from '../components/ui.jsx'
 import { ABOUT_PAGES, GREETING_PRESIDENT as GP, GREETING_DIRECTOR as GD, VISION, STRATEGY, ORGANIZATION, CURRICULUM, SAFETY, LOCATION } from '../data/about.js'
-import { useAchievements, Cover, usePrograms, programState, Benefits, PROGRAM_TYPES, ROLE_LABEL, ROLE_TONE, TypeFilter, maskName } from './shared.jsx'
+import { useAchievements, Cover, ContactButton, usePrograms, programState, Benefits, PROGRAM_TYPES, ROLE_LABEL, ROLE_TONE, TypeFilter, maskName } from './shared.jsx'
 
 /* 로그인 없이 누구나 보는 영역: 본부 소개, 성과 소식, 프로그램 모집 */
 
@@ -368,7 +368,7 @@ export function Article() {
       <div className="article-body">
         {paras.length ? paras.map((t, i) => <p key={i}>{t}</p>) : <p className="muted">본문이 없습니다.</p>}
       </div>
-      {x.link && <div><a className="btn primary news-link" href={x.link} target="_blank" rel="noopener noreferrer">결과물 보기</a></div>}
+      <ContactButton email={x.email} />
       {more.length > 0 && (
         <section className="stack" style={{ gap: 16 }}>
           <h2 className="article-more">다른 소식</h2>

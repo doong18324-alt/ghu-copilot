@@ -465,3 +465,4 @@ mark { background: #FFE98A; padding: 0 3px; border-radius: 4px; }
   .home-hero img { max-height: 200px; order: -1; }
   .home-roles { grid-template-columns: 1fr; }
 }
+.contact { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 18px 20px; background: #fff; border-radius: 18px; }
