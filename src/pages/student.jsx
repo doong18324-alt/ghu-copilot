@@ -37,6 +37,8 @@ export function StudentHome() {
         <Feature to="notes" icon="mic" tone="amber" title="강의 녹음·학습 노트" desc="수업 녹음을 요약, 용어, 복습 퀴즈로 정리" />
         <Feature to="clinical" icon="doc" tone="green" title="실습 일지 도우미" desc="환자 식별정보를 자동으로 가리고 일지 정리" />
         <Feature to="campus" icon="scale" title="학교생활 Q&A" desc="학칙·학사안내 근거로 휴학, 장학, 수강 질문 답변" />
+        <Feature to="programs" icon="calendar" tone="green" title="프로그램 신청" desc="서포터즈, 자격증 과정, 비교과를 보고 바로 신청" />
+        <Feature to="achievements" icon="check" tone="amber" title="실적 공유" desc="자격증, 수상, 프로젝트 실적을 올리고 서로 확인" />
       </div>
     </>
   )
@@ -215,24 +217,6 @@ export function StudyRoom() {
             </div>
           </div>
         ))}
-      </Card>
-    </>
-  )
-}
-
-export function Programs() {
-  const [applied, setApplied] = useStored('programs', [])
-  const list = [['[소단위과정명]', '소단위과정'], ['[비교과 프로그램명]', '비교과'], ['AI 서포터즈 모집', '서포터즈'], ['[가상학과명] 참여 신청', '가상학과']]
-  return (
-    <>
-      <PageHead title="비교과·소단위과정" desc="모집 중인 프로그램을 한곳에서 신청합니다. 목록은 학사 시스템과 연동할 예정입니다." />
-      <Card>
-        <ul className="list">
-          {list.map(([n, t]) => (
-            <li key={n}><span><span className="badge blue" style={{ marginRight: 8 }}>{t}</span>{n}<br /><span className="muted small">마감 [날짜]</span></span>
-              <button className={applied.includes(n) ? 'btn' : 'btn primary'} onClick={() => setApplied(applied.includes(n) ? applied.filter(x => x !== n) : [...applied, n])}>{applied.includes(n) ? '신청 취소' : '신청'}</button></li>
-          ))}
-        </ul>
       </Card>
     </>
   )
