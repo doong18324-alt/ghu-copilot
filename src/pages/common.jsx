@@ -115,6 +115,7 @@ export function Login() {
           ))}
         </div>
         <div className="login-links">
+          <Link to="/home">홈페이지</Link>
           <Link to="/about">본부 소개</Link>
           <Link to="/news">성과 소식</Link>
           <Link to="/recruit">프로그램 모집</Link>

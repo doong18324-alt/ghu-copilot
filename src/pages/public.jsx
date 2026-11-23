@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, NavLink, Outlet, useParams, Navigate } from 'react-router-dom'
 import { SITE } from '../config.js'
+import jihu from '../assets/jihu.webp'
 import { Card, Empty } from '../components/ui.jsx'
 import { ABOUT_PAGES, GREETING_PRESIDENT as GP, GREETING_DIRECTOR as GD, VISION, STRATEGY, ORGANIZATION, CURRICULUM, SAFETY, LOCATION } from '../data/about.js'
 import { useAchievements, Cover, usePrograms, programState, Benefits, PROGRAM_TYPES, ROLE_LABEL, ROLE_TONE, TypeFilter, maskName } from './shared.jsx'
@@ -20,7 +21,7 @@ export function PublicLayout() {
           <NavLink to="/news">성과 소식</NavLink>
           <NavLink to="/recruit">프로그램 모집</NavLink>
         </nav>
-        <Link to="/" className="btn primary" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }}>시작하기</Link>
+        <Link to="/start" className="btn primary" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }}>시작하기</Link>
       </header>
       <main className="public-main"><Outlet /></main>
       <footer className="public-foot">
@@ -189,6 +190,104 @@ export function About() {
 }
 
 /* 성과 소식: 구성원이 'AI 활용 실적'에 올린 프로젝트·개발·사례를 소식처럼 보여 줍니다. */
+// 휴대폰으로 열었는지 판단합니다(화면 폭이 좁거나 휴대폰 브라우저인 경우).
+export function isPhone() {
+  if (typeof window === 'undefined') return false
+  return window.matchMedia('(max-width: 820px)').matches || /Android.+Mobile|iPhone|iPod/i.test(navigator.userAgent)
+}
+
+// 첫 주소: 휴대폰은 앱 시작 화면으로, 컴퓨터는 홈페이지로 보냅니다.
+export function Root() {
+  return isPhone() ? <Navigate to="/start" replace /> : <Home />
+}
+
+const HOME_ROLES = [
+  ['student', '학생', '지후 AI 학습 도우미, 국가고시 대비, 실습 일지, 프로그램 신청, 이력서 만들기'],
+  ['faculty', '교수', '수업 설계, 강좌봇 만들기, 문항 생성, 학습 분석, 연구와 전공 앱 제작'],
+  ['staff', '직원', '공문·기안 작성, 회의 정리, 규정 근거 Q&A, 평가·인증 자료, 프로그램 등록·관리'],
+]
+
+export function Home() {
+  const [news] = useAchievements()
+  const [programs] = usePrograms()
+  const open = programs.filter(p => programState(p)[0] !== '마감').slice(0, 3)
+  return (
+    <div className="container home">
+      <section className="home-hero card">
+        <div className="stack" style={{ gap: 18, minWidth: 0 }}>
+          <span className="home-eyebrow">광주보건대학교 AI대학혁신본부</span>
+          <h1>{SITE.slogan}</h1>
+          <p>학생·교수·직원이 함께 쓰는 {SITE.sub}, {SITE.name}입니다. 본부 소식과 프로그램 모집은 여기서 보고, 실제 업무와 학습은 앱에서 합니다.</p>
+          <div className="row" style={{ gap: 10 }}>
+            <Link to="/start" className="btn primary home-btn">{SITE.name} 시작하기</Link>
+            <Link to="/about" className="btn home-btn">본부 소개</Link>
+          </div>
+        </div>
+        <img src={jihu} alt="GHU 바이탈 AI 캐릭터 지후" />
+      </section>
+
+      <section className="stack" style={{ gap: 16 }}>
+        <h2 className="home-h">역할별 앱 바로가기</h2>
+        <div className="home-roles">
+          {HOME_ROLES.map(([key, label, desc]) => (
+            <Link key={key} to={`/${key}`} className="card home-role">
+              <span className={`badge ${ROLE_TONE[key]}`}>{label}</span>
+              <b>{label} 앱</b>
+              <span className="muted small">{desc}</span>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <section className="stack" style={{ gap: 16 }}>
+        <div className="home-head"><h2 className="home-h">성과 소식</h2><Link to="/news">전체 보기</Link></div>
+        {news.length === 0 ? <Empty>아직 올라온 소식이 없습니다.</Empty> : (
+          <div className="news-grid">
+            {news.slice(0, 3).map(x => (
+              <Link key={x.id} to={`/news/${x.id}`} className="card news-card">
+                <Cover item={x} />
+                <div className="news-card-body">
+                  <span className="row" style={{ gap: 6 }}><span className={`badge ${ROLE_TONE[x.role]}`}>{ROLE_LABEL[x.role]}</span><span className="badge">{x.type}</span></span>
+                  <h3>{x.title}</h3>
+                  {(x.summary || x.desc) && <p className="small clamp">{x.summary || x.desc}</p>}
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+      </section>
+
+      <section className="stack" style={{ gap: 16 }}>
+        <div className="home-head"><h2 className="home-h">모집 중인 프로그램</h2><Link to="/recruit">전체 보기</Link></div>
+        {open.length === 0 ? <Empty>지금 모집 중인 프로그램이 없습니다.</Empty> : (
+          <div className="news-grid">
+            {open.map(p => {
+              const [state, tone] = programState(p)
+              return (
+                <Link key={p.id} to="/recruit" className="card news-card">
+                  <div className="news-card-body">
+                    <span className="row" style={{ gap: 6 }}><span className="badge blue">{p.type}</span><span className={`badge ${tone}`}>{state}</span></span>
+                    <h3>{p.title}</h3>
+                    <Benefits program={p} />
+                    <p className="muted small" style={{ marginTop: 'auto' }}>{p.dept || '[주관 부서]'} · 마감 {p.due || '[날짜]'}</p>
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
+        )}
+      </section>
+
+      <section className="stack" style={{ gap: 16 }}>
+        <h2 className="home-h">AI대학혁신본부</h2>
+        <div className="home-about">
+          {ABOUT_PAGES.map(([key, label]) => <Link key={key} to={`/about/${key}`} className="card">{label}</Link>)}
+        </div>
+      </section>
+    </div>
+  )
+}
+
 export function Showcase() {
   const [items] = useAchievements()
   const [view, setView] = useState('전체')
@@ -232,7 +331,7 @@ export function Showcase() {
       )}
       <Card>
         <p className="muted" style={{ margin: 0 }}>내 성과를 올리려면 역할을 선택해 들어간 뒤 &lsquo;AI 활용 실적&rsquo;에서 등록합니다.</p>
-        <div><Link to="/" className="btn primary" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }}>역할 선택으로 가기</Link></div>
+        <div><Link to="/start" className="btn primary" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }}>역할 선택으로 가기</Link></div>
       </Card>
     </div>
   )
