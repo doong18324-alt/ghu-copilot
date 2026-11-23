@@ -2,6 +2,11 @@ import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Card, PageHead, Empty } from '../components/ui.jsx'
 import { useStored, uid, roleFromPath } from '../lib/store.js'
+import shotBody from '../assets/apps/body-aligner.jpg'
+import shotGait from '../assets/apps/gait-analyzer.jpg'
+import shotBalloon from '../assets/apps/balloon-exercise.jpg'
+import shotPpe from '../assets/apps/ppe.jpg'
+import shotFcs from '../assets/apps/fcs-assessment.jpg'
 
 const today = () => new Date().toISOString().slice(0, 10)
 export const ROLE_LABEL = { staff: '직원', faculty: '교수', student: '학생' }
@@ -269,10 +274,45 @@ export function Cover({ item, className = '' }) {
     : <div className={`news-cover empty ${className}`} style={{ background: `var(--${ROLE_TONE[item.role]}-soft)` }} aria-hidden="true"><span>{item.type}</span></div>
 }
 
+// 실제 실적. 코드에 들어 있어 모든 방문자에게 보입니다(서버 연결 전까지는 이 방식으로만 공개 게시가 됩니다).
+const PROF = { role: 'faculty', author: '김현중', dept: '시니어운동처방학과' }
+const APP_NOTE = '생성형 AI와 대화하며 코드를 작성하는 방식으로 제작했고, 설치 없이 웹 주소로 접속해 사용합니다.'
+export const FEATURED = [
+  { ...PROF, id: 'real-body-aligner', type: 'AI 앱·에이전트 개발', date: '2026-04-13', photo: shotBody, caption: 'BodyAligner 첫 화면',
+    title: 'BodyAligner: 카메라로 하는 체형분석 웹앱', link: 'https://doong18324-alt.github.io/body-aligner/',
+    summary: '앞면·옆면·뒷면을 촬영하면 대칭성과 관절 각도를 분석하고 운동처방까지 제시합니다.',
+    desc: 'MediaPipe Pose 기반 체형분석 웹앱입니다.\n앞면·옆면·뒷면 3방향을 촬영해 대칭성, 관절 각도 등 20개 이상의 변수를 산출하고, 임상 해석과 ACSM 기준 운동처방을 함께 보여 줍니다. 결과는 PDF로 내려받거나 구글 시트에 저장할 수 있습니다.\n' + APP_NOTE },
+  { ...PROF, id: 'real-nrf-bps', type: 'AI 활용 연구', date: '2026-09-01',
+    title: '한국연구재단 기본연구 선정: AI 기반 만성통증 표현형 정밀 중재 시스템',
+    summary: '멀티모달 생체신호와 AI로 만성통증을 유형별로 나누고 맞춤 중재를 찾는 5개년 연구입니다.',
+    desc: '2026년 한국연구재단 개인기초연구 기본연구 과제에 선정되었습니다.\n과제명은 「AI기반 멀티모달 생체신호 융합·합성 및 강화학습 매칭을 활용한 만성통증 표현형 정밀 중재 시스템(BPS-PPIS) 알고리즘 개발」이며 5개년 동안 수행합니다.\n만성 척추통증과 섬유근통을 대상으로 생체신호와 설문 자료를 모아 통증 표현형을 분류하고, 표현형에 맞는 중재를 연결하는 알고리즘을 개발합니다.\n과제번호: RS-2026-25591593' },
+  { ...PROF, id: 'real-gait-analyzer', type: 'AI 앱·에이전트 개발', date: '2026-04-13', photo: shotGait, caption: 'GaitAnalyzer Web 첫 화면',
+    title: 'GaitAnalyzer Web: 카메라 기반 보행분석', link: 'https://doong18324-alt.github.io/gait-analyzer/',
+    summary: '측면에서 6m 보행을 촬영하면 보행 변수를 자동으로 분석합니다.',
+    desc: 'MediaPipe Pose 기반 보행분석 웹앱입니다.\n연령, 키, 성별을 입력하고 카메라를 보행 경로 측면에 둔 뒤 평소 속도로 6m를 걷는 모습을 촬영하면 자동으로 분석합니다.\n' + APP_NOTE },
+  { ...PROF, id: 'real-balloon', type: 'AI 앱·에이전트 개발', date: '2026-04-07', photo: shotBalloon, caption: 'AI 맞춤형 운동 트레이너 첫 화면',
+    title: 'AI 맞춤형 운동 트레이너: 풍선 터트리기 운동 게임', link: 'https://doong18324-alt.github.io/balloon-exercise/',
+    summary: 'ACSM 평가로 맞춤 프로그램을 만들고, 화면 속 풍선을 터트리며 운동합니다.',
+    desc: 'AI스포츠테크연구센터에서 만든 운동 웹앱입니다.\nACSM 평가, 맞춤 프로그램, 카메라 앞에서 움직여 풍선을 터트리는 운동, PDF 리포트 순서로 진행하며 식이 제안도 함께 제공합니다.\n' + APP_NOTE },
+  { ...PROF, id: 'real-fcs', type: 'AI 앱·에이전트 개발', date: '2026-03-22', photo: shotFcs, caption: 'FCS 노쇠중심스펙트럼 평가 첫 화면',
+    title: 'FCS 노쇠중심스펙트럼 평가 도구', link: 'https://doong18324-alt.github.io/fcs-assessment/',
+    summary: '노쇠를 생물·심리·사회·기능 영역으로 나누어 16단계로 평가하는 웹 도구입니다.',
+    desc: 'BPS-FN 모델에 따른 노쇠중심스펙트럼(Frailty-Centered Spectrum) 평가 웹앱입니다.\nK-FRAIL, MNA-SF, GDS-SF, K-MMSE, LSNS-6, 수정 바델지수, IADL 등의 평가를 차례로 입력하면 결과를 정리해 보여 줍니다.\n' + APP_NOTE },
+  { ...PROF, id: 'real-ppe', type: 'AI 수업 혁신', date: '2026-03-08', photo: shotPpe, caption: '스포츠 참가 전 평가(PPE) 화면',
+    title: '스포츠 참가 전 평가(PPE) 교육용 웹 도구', link: 'https://doong18324-alt.github.io/PPE/',
+    summary: '병력부터 판정까지 7단계 평가 흐름을 수업에서 직접 실습합니다.',
+    desc: '스포츠 참가 전 평가(Preparticipation Evaluation)를 수업에서 실습하도록 만든 교육용 도구입니다.\n기본 정보, 병력, 심혈관, 근골격계, 신경학적 평가, 일반 건강, 판정 결과의 7단계로 구성되어 있습니다.\n' + APP_NOTE },
+]
+const FEATURED_IDS = new Set(FEATURED.map(f => f.id))
+
 export function useAchievements() {
-  const [items, setItems] = useStored('achievements', SEED_ACH)
-  // 예전 버전의 예시 글(자격증 등)은 저장되어 있어도 빼고 보여 줍니다.
-  return [items.filter(x => !String(x.id).startsWith('seed-a')), setItems]
+  const [stored, setItems] = useStored('achievements', SEED_ACH)
+  // 실제 실적은 항상 맨 앞에 두고(확인 수만 브라우저 값 사용), 예전 버전의 예시 글(자격증 등)은 뺍니다.
+  const items = [
+    ...FEATURED.map(f => ({ ...f, cheers: stored.find(x => x.id === f.id)?.cheers || 0 })),
+    ...stored.filter(x => !FEATURED_IDS.has(x.id) && !String(x.id).startsWith('seed-a') && !['seed-b2', 'seed-b4'].includes(x.id)),
+  ]
+  return [items, setItems]
 }
 
 export function Achievements() {
