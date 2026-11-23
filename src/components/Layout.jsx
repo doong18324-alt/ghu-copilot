@@ -31,6 +31,12 @@ export default function Layout() {
           </div>
         ))}
 
+        <div className="side-links">
+          <Link to="/about">본부 소개</Link>
+          <Link to="/news">성과 소식</Link>
+          <Link to="/recruit">프로그램 모집</Link>
+        </div>
+
         <div className="usage">
           <small>이번 달 사용량</small>
           <div className="meter" aria-hidden="true"><div style={{ width: '0%' }} /></div>

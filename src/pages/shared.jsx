@@ -4,8 +4,8 @@ import { Card, PageHead, Empty } from '../components/ui.jsx'
 import { useStored, uid, roleFromPath } from '../lib/store.js'
 
 const today = () => new Date().toISOString().slice(0, 10)
-const ROLE_LABEL = { staff: '직원', faculty: '교수', student: '학생' }
-const ROLE_TONE = { staff: 'blue', faculty: 'green', student: 'amber' }
+export const ROLE_LABEL = { staff: '직원', faculty: '교수', student: '학생' }
+export const ROLE_TONE = { staff: 'blue', faculty: 'green', student: 'amber' }
 
 /* ── 프로그램 등록(직원) · 신청(학생) ── */
 
@@ -14,7 +14,7 @@ export const PROGRAM_TYPES = ['서포터즈', '자격증 과정', '비교과', '
 export const BENEFIT_TYPES = ['장학금', '비교과 마일리지', '수료증', '활동비', '학점 인정', '응시료 지원', '봉사시간', '취업 연계']
 
 // 참여 혜택을 눈에 띄게 보여 주는 상자. 학생 목록, 내 신청 현황, 직원 관리 화면에서 같이 씁니다.
-function Benefits({ program, compact = false }) {
+export function Benefits({ program, compact = false }) {
   const tags = program.benefits || []
   const note = (program.benefitNote || '').trim()
   if (tags.length === 0 && !note) return compact ? null : <div className="benefit-box empty">참여 혜택이 아직 적혀 있지 않습니다.</div>
@@ -33,7 +33,7 @@ const SEED_PROGRAMS = [
   { id: 'seed-3', type: '소단위과정', title: '[소단위과정명] (예시)', dept: '[주관 부서]', quota: 0, due: '', period: '[운영 기간]', benefits: ['학점 인정'], benefitNote: '[인정 학점]', desc: '[이수 조건]', open: true, applicants: [] },
 ]
 
-function usePrograms() {
+export function usePrograms() {
   const [posts, setPosts] = useStored('programs:posts', SEED_PROGRAMS)
   // 혜택 항목이 생기기 전에 브라우저에 저장된 예시 공고에는 혜택을 채워서 보여 줍니다.
   const patched = posts.map(p => {
@@ -43,14 +43,14 @@ function usePrograms() {
   return [patched, setPosts]
 }
 
-function programState(p) {
+export function programState(p) {
   if (!p.open) return ['모집 마감', '']
   if (p.due && p.due < today()) return ['기한 지남', 'red']
   if (p.quota > 0 && p.applicants.length >= p.quota) return ['정원 마감', 'amber']
   return ['모집 중', 'green']
 }
 
-function TypeFilter({ value, onChange, options }) {
+export function TypeFilter({ value, onChange, options }) {
   return (
     <ul className="steps" aria-label="구분 선택">
       {options.map(o => <li key={o}><button type="button" className={value === o ? 'on' : ''} aria-pressed={value === o} onClick={() => onChange(o)}>{o}</button></li>)}
@@ -219,16 +219,31 @@ export function Programs() {
 /* ── 실적 공유(직원·교수·학생 공통) ── */
 
 const ACH_TYPES = {
-  staff: ['업무 개선', '자동화 사례', '교육 이수', '수상·표창', '기타'],
-  faculty: ['논문·학술', '수업 혁신', '연구과제', '산학협력', '수상', '기타'],
-  student: ['자격증', '수상·공모전', '프로젝트·캡스톤', '서포터즈·봉사', '비교과 이수', '기타'],
+  staff: ['프로젝트', '개발(앱·에이전트)', '자동화 사례', '업무 개선', '교육 이수', '수상·표창', '기타'],
+  faculty: ['프로젝트', '개발(앱·에이전트)', '수업 혁신', '논문·학술', '연구과제', '산학협력', '수상', '기타'],
+  student: ['프로젝트·캡스톤', '개발(앱·에이전트)', '자격증', '수상·공모전', '서포터즈·봉사', '비교과 이수', '기타'],
 }
+
+// 공개 화면(성과 소식)에서는 이름의 가운데 글자를 가립니다. 자리표시자([ ])는 그대로 둡니다.
+export function maskName(name) {
+  const n = (name || '').trim()
+  if (n.startsWith('[') || n.length <= 1) return n
+  if (n.length === 2) return n[0] + '*'
+  return n[0] + '*'.repeat(n.length - 2) + n[n.length - 1]
+}
+
+// http(s) 주소만 링크로 씁니다.
+const safeLink = url => (/^https?:\/\/\S+$/i.test((url || '').trim()) ? url.trim() : '')
 
 const SEED_ACH = [
   { id: 'seed-a1', role: 'staff', type: '자동화 사례', title: '(예시) 회의록 정리와 할 일 추출 자동화', author: '[직원 이름]', dept: '[부서]', date: '', desc: '[어떤 업무를 어떻게 바꿨는지, 줄어든 시간이나 건수]', cheers: 0 },
   { id: 'seed-a2', role: 'faculty', type: '수업 혁신', title: '(예시) 강좌봇을 활용한 실습 사전학습 운영', author: '[교수 이름]', dept: '[학과]', date: '', desc: '[적용 교과목, 운영 방식, 학생 반응]', cheers: 0 },
-  { id: 'seed-a3', role: 'student', type: '자격증', title: '(예시) [자격증명] 취득', author: '[학생 이름]', dept: '[학과]', date: '', desc: '[준비 과정, 도움이 된 프로그램]', cheers: 0 },
+  { id: 'seed-a3', role: 'student', type: '프로젝트·캡스톤', title: '(예시) [캡스톤 프로젝트명]', author: '[학생 이름]', dept: '[학과]', date: '', desc: '[해결하려던 문제, 만든 결과물, 사용한 AI 도구]', cheers: 0 },
+  { id: 'seed-a4', role: 'student', type: '자격증', title: '(예시) [자격증명] 취득', author: '[학생 이름]', dept: '[학과]', date: '', desc: '[준비 과정, 도움이 된 프로그램]', cheers: 0 },
+  { id: 'seed-a5', role: 'faculty', type: '개발(앱·에이전트)', title: '(예시) [전공 실습용 앱 이름]', author: '[교수 이름]', dept: '[학과]', date: '', desc: '[어떤 수업에서 어떻게 쓰는지]', cheers: 0 },
 ]
+
+export function useAchievements() { return useStored('achievements', SEED_ACH) }
 
 export function Achievements() {
   const role = roleFromPath(useLocation().pathname)
@@ -237,18 +252,18 @@ export function Achievements() {
 
 function AchievementBoard({ role }) {
   const types = ACH_TYPES[role] || ACH_TYPES.staff
-  const [items, setItems] = useStored('achievements', SEED_ACH)
+  const [items, setItems] = useAchievements()
   const [cheered, setCheered] = useStored(`achievements:cheered:${role}`, [])
   const [author, setAuthor] = useStored(`profile:${role}-author`, '')
   const [dept, setDept] = useStored(`profile:${role}-dept`, '')
-  const blank = { type: types[0], title: '', date: today(), desc: '' }
+  const blank = { type: types[0], title: '', date: today(), desc: '', link: '' }
   const [form, setForm] = useState(blank)
   const [view, setView] = useState('전체')
   const set = k => e => setForm({ ...form, [k]: e.target.value })
   function add(e) {
     e.preventDefault()
     if (!form.title.trim()) return
-    setItems([{ ...form, id: uid(), title: form.title.trim(), role, owner: role, author: author.trim() || `[${ROLE_LABEL[role]} 이름]`, dept: dept.trim(), cheers: 0 }, ...items])
+    setItems([{ ...form, link: safeLink(form.link), id: uid(), title: form.title.trim(), role, owner: role, author: author.trim() || `[${ROLE_LABEL[role]} 이름]`, dept: dept.trim(), cheers: 0 }, ...items])
     setForm(blank)
   }
   function cheer(id) {
@@ -260,7 +275,8 @@ function AchievementBoard({ role }) {
   const shown = items.filter(x => view === '전체' || (view === '내가 올린 실적' ? x.owner === role : ROLE_LABEL[x.role] === view))
   return (
     <>
-      <PageHead title="실적 공유" desc="직원·교수·학생이 각자의 실적을 올리고 서로 확인합니다. 올린 실적은 세 역할 화면 모두에 보입니다." />
+      <PageHead title="실적 공유" desc="프로젝트, 직접 개발한 앱·에이전트, 자격증·수상 같은 실적을 올리고 서로 확인합니다. 올린 내용은 세 역할 화면과 공개 '성과 소식'에 함께 보입니다." />
+      <div><Link to="/news" className="btn soft" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }}>성과 소식 화면 보기</Link></div>
       <Card>
         <div className="stat-row">
           {['staff', 'faculty', 'student'].map(r => (
@@ -285,7 +301,9 @@ function AchievementBoard({ role }) {
               <input id="a-dept" className="input" value={dept} onChange={e => setDept(e.target.value)} /></div>
           </div>
           <div className="field"><label htmlFor="a-desc">내용</label>
-            <textarea id="a-desc" className="textarea" style={{ minHeight: 90 }} placeholder="무엇을 했고 어떤 결과가 있었는지 적어 주세요" value={form.desc} onChange={set('desc')} /></div>
+            <textarea id="a-desc" className="textarea" style={{ minHeight: 90 }} placeholder="무엇을 만들었거나 해냈는지, 어떤 결과가 있었는지 적어 주세요" value={form.desc} onChange={set('desc')} /></div>
+          <div className="field"><label htmlFor="a-link">결과물 주소 (선택)</label>
+            <input id="a-link" className="input" type="url" placeholder="https://로 시작하는 앱, 영상, 발표자료 주소" value={form.link} onChange={set('link')} /></div>
           <div className="check warn">성적, 건강 정보, 다른 사람의 개인정보는 적지 마세요. 올린 내용은 모든 구성원이 볼 수 있습니다.</div>
           <div><button className="btn primary">올리기</button></div>
         </form>
@@ -301,6 +319,7 @@ function AchievementBoard({ role }) {
                   <span className={`badge ${ROLE_TONE[x.role]}`} style={{ marginRight: 6 }}>{ROLE_LABEL[x.role]}</span><span className="badge" style={{ marginRight: 8 }}>{x.type}</span><b>{x.title}</b><br />
                   <span className="muted small">{x.author}{x.dept ? ` · ${x.dept}` : ''} · {x.date || '[날짜]'}</span>
                   {x.desc && <><br /><span className="small">{x.desc}</span></>}
+                  {x.link && <><br /><a className="small" href={x.link} target="_blank" rel="noopener noreferrer">결과물 보기</a></>}
                 </span>
                 <span className="row" style={{ gap: 8, flex: 'none' }}>
                   <button className={on ? 'btn soft' : 'btn'} style={{ minHeight: 36, padding: '0 14px' }} aria-pressed={on} onClick={() => cheer(x.id)}>확인했어요 {x.cheers || 0}</button>

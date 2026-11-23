@@ -6,11 +6,19 @@ import { FacultyHome, Courses, BotBuilder, ItemGen, Analytics, Training } from '
 import { StudentHome, MyCourses, Exam, Clinical, StudyRoom, CampusQA, Notes } from './pages/student.jsx'
 import { ProgramAdmin, Programs, Achievements } from './pages/shared.jsx'
 import { AdminHome, Models, Users, Connection } from './pages/admin.jsx'
+import { PublicLayout, About, Showcase, Recruit } from './pages/public.jsx'
 
 export default function App() {
   return (
     <Routes>
       <Route path="/" element={<Login />} />
+
+      <Route element={<PublicLayout />}>
+        <Route path="/about" element={<About />} />
+        <Route path="/about/:page" element={<About />} />
+        <Route path="/news" element={<Showcase />} />
+        <Route path="/recruit" element={<Recruit />} />
+      </Route>
 
       <Route path="/staff" element={<Layout />}>
         <Route index element={<StaffHome />} />

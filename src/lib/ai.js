@@ -84,6 +84,6 @@ function demoReply(task, prompt, context) {
     case 'campus':
       return head + '학칙·학사안내를 근거로 답합니다. 실제 연결 전에는 학사 담당 부서 안내를 확인해 주세요.'
     default:
-      return head + `"${q}"에 대해 실제 연결 시 선택한 AI 모델이 답변합니다.`
+      return head + `안녕하세요, 지후예요. "${q}"에 대해서는 실제 연결 시 선택한 AI 모델로 답변해 드립니다.`
   }
 }

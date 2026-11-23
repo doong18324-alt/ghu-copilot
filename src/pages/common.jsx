@@ -4,6 +4,7 @@ import ChatPanel from '../components/ChatPanel.jsx'
 import { Card, PageHead, Empty } from '../components/ui.jsx'
 import { MODELS, ROLES, SITE } from '../config.js'
 import { useStored, uid, roleFromPath } from '../lib/store.js'
+import jihu from '../assets/jihu.webp'
 
 export function Hero({ title, desc, placeholder, chips = [] }) {
   const role = roleFromPath(useLocation().pathname)
@@ -13,8 +14,14 @@ export function Hero({ title, desc, placeholder, chips = [] }) {
   const go = text => text.trim() && nav(`/${role}/chat?q=${encodeURIComponent(text.trim())}&m=${model}`)
   return (
     <Card className="hero">
-      <h1>{title}</h1>
-      <p className="muted" style={{ fontSize: 15 }}>{desc}</p>
+      <div className="hero-top">
+        <div className="stack" style={{ gap: 10, flex: '1 1 320px' }}>
+          <span className="jihu-tag">지후 AI에게 물어보기</span>
+          <h1>{title}</h1>
+          <p className="muted" style={{ fontSize: 15 }}>{desc}</p>
+        </div>
+        <img className="jihu-hero" src={jihu} alt="광주보건대학교 AI 캐릭터 지후" width="148" height="148" />
+      </div>
       <form className="row" onSubmit={e => { e.preventDefault(); go(q) }}>
         <label className="sr-only" htmlFor="hero-ask">요청</label>
         <input id="hero-ask" className="input" style={{ flex: '1 1 320px', width: 'auto', minHeight: 52, fontSize: 15 }} placeholder={placeholder} value={q} onChange={e => setQ(e.target.value)} />
@@ -37,9 +44,15 @@ export function ChatPage() {
   const role = roleFromPath(useLocation().pathname)
   return (
     <>
-      <PageHead title="AI 채팅" desc="모델을 고르거나 자동 선택에 맡기세요. 대화 기록은 이 브라우저에만 저장됩니다." />
+      <Card className="jihu-head">
+        <img src={jihu} alt="광주보건대학교 AI 캐릭터 지후" width="112" height="112" />
+        <div className="stack" style={{ gap: 6 }}>
+          <h1 className="page-title">지후 AI</h1>
+          <p className="muted">광주보건대학교의 AI 도우미 지후입니다. 업무, 수업, 학교생활 무엇이든 물어보세요. 모델은 자동으로 고르거나 직접 선택할 수 있고, 대화 기록은 이 브라우저에만 저장됩니다.</p>
+        </div>
+      </Card>
       <Card>
-        <ChatPanel key={q} task="chat" storageKey={`chat:${role}`} initial={q} initialModel={params.get('m') || 'auto'} placeholder="무엇이든 물어보세요" />
+        <ChatPanel key={q} task="chat" name="지후" storageKey={`chat:${role}`} initial={q} initialModel={params.get('m') || 'auto'} placeholder="지후에게 무엇이든 물어보세요" />
       </Card>
     </>
   )
@@ -100,6 +113,11 @@ export function Login() {
           {Object.entries(ROLES).map(([key, r]) => (
             <Link key={key} to={`/${key}`}><b>{r.label}</b><span>{key === 'admin' ? '모델·비용·권한' : `${r.label} 앱 시연`}</span></Link>
           ))}
+        </div>
+        <div className="login-links">
+          <Link to="/about">본부 소개</Link>
+          <Link to="/news">성과 소식</Link>
+          <Link to="/recruit">프로그램 모집</Link>
         </div>
       </div>
     </div>

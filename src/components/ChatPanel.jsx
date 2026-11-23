@@ -3,7 +3,7 @@ import { askAI } from '../lib/ai.js'
 import { MODELS } from '../config.js'
 import { useStored } from '../lib/store.js'
 
-export default function ChatPanel({ task = 'chat', storageKey, initial = '', initialModel = 'auto', placeholder = '메시지를 입력하세요', context = '', modelPicker = true }) {
+export default function ChatPanel({ task = 'chat', storageKey, initial = '', initialModel = 'auto', placeholder = '메시지를 입력하세요', context = '', modelPicker = true, name = '' }) {
   const [log, setLog] = useStored(storageKey || `chat:${task}`, [])
   const [input, setInput] = useState('')
   const [model, setModel] = useState(initialModel)
@@ -52,7 +52,7 @@ export default function ChatPanel({ task = 'chat', storageKey, initial = '', ini
         <div className="chat-log" aria-live="polite">
           {log.map((m, i) => (
             <div key={i} className={`msg ${m.role === 'user' ? 'user' : 'ai'}`}>
-              {m.role !== 'user' && <span className="meta">{modelLabel(m.model)}</span>}
+              {m.role !== 'user' && <span className="meta">{name ? `${name} · ${modelLabel(m.model)}` : modelLabel(m.model)}</span>}
               {m.content || '…'}
             </div>
           ))}
