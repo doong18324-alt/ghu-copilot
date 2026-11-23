@@ -61,7 +61,7 @@ export function PageHead({ eyebrow, title, desc }) {
   return (
     <div className="stack" style={{ gap: 4 }}>
       {eyebrow && <span className="muted small">{eyebrow}</span>}
-      <h1 style={{ fontSize: 24 }}>{title}</h1>
+      <h1 className="page-title">{title}</h1>
       {desc && <p className="muted">{desc}</p>}
     </div>
   )
