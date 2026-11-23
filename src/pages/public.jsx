@@ -188,7 +188,7 @@ export function About() {
   )
 }
 
-/* 성과 소식: 구성원이 '실적 공유'에 올린 프로젝트·개발·실적을 소식처럼 보여 줍니다. */
+/* 성과 소식: 구성원이 'AI 활용 실적'에 올린 프로젝트·개발·사례를 소식처럼 보여 줍니다. */
 export function Showcase() {
   const [items] = useAchievements()
   const [view, setView] = useState('전체')
@@ -201,8 +201,8 @@ export function Showcase() {
     <div className="container">
       <div className="stack" style={{ gap: 6 }}>
         <span className="muted small">GHU 바이탈 성과 소식</span>
-        <h1 className="page-title">학생·교수·직원이 만든 성과</h1>
-        <p className="muted">프로젝트, 직접 개발한 앱과 에이전트, 자격증·수상·수업 혁신·업무 개선 실적을 역할별로 모았습니다. 이름은 가운데 글자를 가려 표시합니다.</p>
+        <h1 className="page-title">학생·교수·직원의 AI 활용 성과</h1>
+        <p className="muted">AI를 활용한 프로젝트, 직접 개발한 앱과 에이전트, 수업 혁신과 업무 개선 사례를 역할별로 모았습니다. 이름은 가운데 글자를 가려 표시합니다.</p>
       </div>
       <TypeFilter value={view} onChange={v => { setView(v); setOpen(null) }} options={['전체', '학생', '교수', '직원']} />
       {shown.length === 0 ? <Empty>아직 올라온 소식이 없습니다.</Empty> : (
@@ -231,7 +231,7 @@ export function Showcase() {
         </>
       )}
       <Card>
-        <p className="muted" style={{ margin: 0 }}>내 성과를 올리려면 역할을 선택해 들어간 뒤 &lsquo;실적 공유&rsquo;에서 등록합니다.</p>
+        <p className="muted" style={{ margin: 0 }}>내 성과를 올리려면 역할을 선택해 들어간 뒤 &lsquo;AI 활용 실적&rsquo;에서 등록합니다.</p>
         <div><Link to="/" className="btn primary" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }}>역할 선택으로 가기</Link></div>
       </Card>
     </div>

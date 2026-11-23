@@ -7,6 +7,7 @@ import { StudentHome, MyCourses, Exam, Clinical, StudyRoom, CampusQA, Notes } fr
 import { ProgramAdmin, Programs, Achievements } from './pages/shared.jsx'
 import { AdminHome, Models, Users, Connection } from './pages/admin.jsx'
 import { PublicLayout, About, Showcase, Recruit } from './pages/public.jsx'
+import { Resume } from './pages/resume.jsx'
 
 export default function App() {
   return (
@@ -61,6 +62,7 @@ export default function App() {
         <Route path="campus" element={<CampusQA />} />
         <Route path="room" element={<StudyRoom />} />
         <Route path="programs" element={<Programs />} />
+        <Route path="resume" element={<Resume />} />
         <Route path="achievements" element={<Achievements />} />
         <Route path="files" element={<FilesPage />} />
       </Route>

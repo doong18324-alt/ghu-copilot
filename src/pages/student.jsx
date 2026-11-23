@@ -38,7 +38,8 @@ export function StudentHome() {
         <Feature to="clinical" icon="doc" tone="green" title="실습 일지 도우미" desc="환자 식별정보를 자동으로 가리고 일지 정리" />
         <Feature to="campus" icon="scale" title="학교생활 Q&A" desc="학칙·학사안내 근거로 휴학, 장학, 수강 질문 답변" />
         <Feature to="programs" icon="calendar" tone="green" title="프로그램 신청" desc="서포터즈, 자격증 과정, 비교과를 보고 바로 신청" />
-        <Feature to="achievements" icon="check" tone="amber" title="실적 공유" desc="자격증, 수상, 프로젝트 실적을 올리고 서로 확인" />
+        <Feature to="resume" icon="doc" tone="amber" title="이력서 만들기" desc="사진과 활동을 넣어 PDF·워드 이력서 완성" />
+        <Feature to="achievements" icon="check" title="AI 활용 실적" desc="AI로 만든 프로젝트와 앱을 올리고 서로 확인" />
       </div>
     </>
   )

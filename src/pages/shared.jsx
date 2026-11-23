@@ -178,7 +178,7 @@ export function Programs() {
         <div className="field" style={{ maxWidth: 320 }}><label htmlFor="s-name">신청자 이름</label>
           <input id="s-name" className="input" placeholder="통합인증 연결 후에는 자동 입력" value={name} onChange={e => setName(e.target.value)} /></div>
       </Card>
-      <Card title="내 신청 현황" action={<Link to="../achievements" className="small">실적으로 공유하기</Link>}>
+      <Card title="내 신청 현황" action={<Link to="../resume" className="small">이력서에 넣기</Link>}>
         {myList.length === 0 ? <Empty>신청한 프로그램이 없습니다.</Empty> : (
           <ul className="list">{myList.map(p => {
             const a = mine(p)
@@ -216,12 +216,13 @@ export function Programs() {
   )
 }
 
-/* ── 실적 공유(직원·교수·학생 공통) ── */
+/* ── AI 활용 실적(직원·교수·학생 공통) ── */
 
+// 공유하는 것은 AI 활용 실적뿐입니다. 자격증 같은 개인 이력은 '이력서 만들기'에서 본인이 관리합니다.
 const ACH_TYPES = {
-  staff: ['프로젝트', '개발(앱·에이전트)', '자동화 사례', '업무 개선', '교육 이수', '수상·표창', '기타'],
-  faculty: ['프로젝트', '개발(앱·에이전트)', '수업 혁신', '논문·학술', '연구과제', '산학협력', '수상', '기타'],
-  student: ['프로젝트·캡스톤', '개발(앱·에이전트)', '자격증', '수상·공모전', '서포터즈·봉사', '비교과 이수', '기타'],
+  staff: ['업무 자동화', 'AI 앱·에이전트 개발', 'AI 업무 개선 사례', 'AI 프로젝트'],
+  faculty: ['AI 수업 혁신', 'AI 앱·에이전트 개발', 'AI 활용 연구', 'AI 프로젝트'],
+  student: ['AI 프로젝트·캡스톤', 'AI 앱·에이전트 개발', 'AI 활용 사례', 'AI 공모전·수상'],
 }
 
 // 공개 화면(성과 소식)에서는 이름의 가운데 글자를 가립니다. 자리표시자([ ])는 그대로 둡니다.
@@ -236,14 +237,17 @@ export function maskName(name) {
 const safeLink = url => (/^https?:\/\/\S+$/i.test((url || '').trim()) ? url.trim() : '')
 
 const SEED_ACH = [
-  { id: 'seed-a1', role: 'staff', type: '자동화 사례', title: '(예시) 회의록 정리와 할 일 추출 자동화', author: '[직원 이름]', dept: '[부서]', date: '', desc: '[어떤 업무를 어떻게 바꿨는지, 줄어든 시간이나 건수]', cheers: 0 },
-  { id: 'seed-a2', role: 'faculty', type: '수업 혁신', title: '(예시) 강좌봇을 활용한 실습 사전학습 운영', author: '[교수 이름]', dept: '[학과]', date: '', desc: '[적용 교과목, 운영 방식, 학생 반응]', cheers: 0 },
-  { id: 'seed-a3', role: 'student', type: '프로젝트·캡스톤', title: '(예시) [캡스톤 프로젝트명]', author: '[학생 이름]', dept: '[학과]', date: '', desc: '[해결하려던 문제, 만든 결과물, 사용한 AI 도구]', cheers: 0 },
-  { id: 'seed-a4', role: 'student', type: '자격증', title: '(예시) [자격증명] 취득', author: '[학생 이름]', dept: '[학과]', date: '', desc: '[준비 과정, 도움이 된 프로그램]', cheers: 0 },
-  { id: 'seed-a5', role: 'faculty', type: '개발(앱·에이전트)', title: '(예시) [전공 실습용 앱 이름]', author: '[교수 이름]', dept: '[학과]', date: '', desc: '[어떤 수업에서 어떻게 쓰는지]', cheers: 0 },
+  { id: 'seed-b1', role: 'student', type: 'AI 프로젝트·캡스톤', title: '(예시) [AI를 활용한 캡스톤 프로젝트명]', author: '[학생 이름]', dept: '[학과]', date: '', desc: '[해결하려던 문제, 만든 결과물, 사용한 AI 도구]', cheers: 0 },
+  { id: 'seed-b2', role: 'faculty', type: 'AI 수업 혁신', title: '(예시) 강좌봇을 활용한 실습 사전학습 운영', author: '[교수 이름]', dept: '[학과]', date: '', desc: '[적용 교과목, 운영 방식, 학생 반응]', cheers: 0 },
+  { id: 'seed-b3', role: 'staff', type: '업무 자동화', title: '(예시) 회의록 정리와 할 일 추출 자동화', author: '[직원 이름]', dept: '[부서]', date: '', desc: '[어떤 업무를 어떻게 바꿨는지, 줄어든 시간이나 건수]', cheers: 0 },
+  { id: 'seed-b4', role: 'faculty', type: 'AI 앱·에이전트 개발', title: '(예시) [전공 실습용 앱 이름]', author: '[교수 이름]', dept: '[학과]', date: '', desc: '[어떤 수업에서 어떻게 쓰는지]', cheers: 0 },
 ]
 
-export function useAchievements() { return useStored('achievements', SEED_ACH) }
+export function useAchievements() {
+  const [items, setItems] = useStored('achievements', SEED_ACH)
+  // 예전 버전의 예시 글(자격증 등)은 저장되어 있어도 빼고 보여 줍니다.
+  return [items.filter(x => !String(x.id).startsWith('seed-a')), setItems]
+}
 
 export function Achievements() {
   const role = roleFromPath(useLocation().pathname)
@@ -275,7 +279,7 @@ function AchievementBoard({ role }) {
   const shown = items.filter(x => view === '전체' || (view === '내가 올린 실적' ? x.owner === role : ROLE_LABEL[x.role] === view))
   return (
     <>
-      <PageHead title="실적 공유" desc="프로젝트, 직접 개발한 앱·에이전트, 자격증·수상 같은 실적을 올리고 서로 확인합니다. 올린 내용은 세 역할 화면과 공개 '성과 소식'에 함께 보입니다." />
+      <PageHead title="AI 활용 실적" desc="AI를 활용한 프로젝트, 직접 개발한 앱·에이전트, 수업·업무 개선 사례를 올리고 서로 확인합니다. 올린 내용은 세 역할 화면과 공개 '성과 소식'에 함께 보입니다." />
       <div><Link to="/news" className="btn soft" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }}>성과 소식 화면 보기</Link></div>
       <Card>
         <div className="stat-row">
@@ -284,13 +288,13 @@ function AchievementBoard({ role }) {
           ))}
         </div>
       </Card>
-      <Card title={`${ROLE_LABEL[role] || ''} 실적 올리기`}>
+      <Card title={`${ROLE_LABEL[role] || ''} AI 활용 실적 올리기`}>
         <form className="stack" style={{ gap: 14 }} onSubmit={add}>
           <div className="row" style={{ alignItems: 'flex-end' }}>
             <div className="field" style={{ flex: '0 0 180px' }}><label htmlFor="a-type">구분</label>
               <select id="a-type" className="input" value={form.type} onChange={set('type')}>{types.map(t => <option key={t}>{t}</option>)}</select></div>
             <div className="field" style={{ flex: '1 1 280px' }}><label htmlFor="a-title">실적 제목</label>
-              <input id="a-title" className="input" required placeholder="예: 물리치료사 국가고시 합격" value={form.title} onChange={set('title')} /></div>
+              <input id="a-title" className="input" required placeholder="예: 관절가동범위 측정 앱 개발" value={form.title} onChange={set('title')} /></div>
             <div className="field" style={{ flex: '0 0 180px' }}><label htmlFor="a-date">날짜</label>
               <input id="a-date" type="date" className="input" value={form.date} onChange={set('date')} /></div>
           </div>
@@ -301,14 +305,14 @@ function AchievementBoard({ role }) {
               <input id="a-dept" className="input" value={dept} onChange={e => setDept(e.target.value)} /></div>
           </div>
           <div className="field"><label htmlFor="a-desc">내용</label>
-            <textarea id="a-desc" className="textarea" style={{ minHeight: 90 }} placeholder="무엇을 만들었거나 해냈는지, 어떤 결과가 있었는지 적어 주세요" value={form.desc} onChange={set('desc')} /></div>
+            <textarea id="a-desc" className="textarea" style={{ minHeight: 90 }} placeholder="어떤 AI 도구로 무엇을 만들었거나 바꿨는지, 어떤 결과가 있었는지 적어 주세요" value={form.desc} onChange={set('desc')} /></div>
           <div className="field"><label htmlFor="a-link">결과물 주소 (선택)</label>
             <input id="a-link" className="input" type="url" placeholder="https://로 시작하는 앱, 영상, 발표자료 주소" value={form.link} onChange={set('link')} /></div>
           <div className="check warn">성적, 건강 정보, 다른 사람의 개인정보는 적지 마세요. 올린 내용은 모든 구성원이 볼 수 있습니다.</div>
           <div><button className="btn primary">올리기</button></div>
         </form>
       </Card>
-      <Card title="공유된 실적">
+      <Card title="공유된 AI 활용 실적">
         <TypeFilter value={view} onChange={setView} options={['전체', '직원', '교수', '학생', '내가 올린 실적']} />
         {shown.length === 0 ? <Empty>해당하는 실적이 없습니다.</Empty> : (
           <ul className="list">{shown.map(x => {
