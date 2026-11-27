@@ -34,12 +34,12 @@ export const WEBAPPS = [
     features: ['초등·중고등·대학 신입생 눈높이 선택', '보건·경제·IT·인문 분야 선택', '확인 퀴즈 3문제'],
   },
   {
-    id: 'career-clinic', mono: '취업', tone: 'green', version: 'V1',
+    id: 'career-clinic', mono: '취업', tone: 'green', version: 'V2',
     title: '대학병원·의료기관 취업 자소서·면접 클리닉',
-    summary: '임상실습 경험을 STAR 구조 자기소개서로 정리하고 직군별 예상 면접 질문을 준비합니다.',
+    summary: '실습 경험을 상황·과제·행동·결과(STAR)로 적으면 자기소개서 초안과 직군별 면접 질문을 만듭니다. 적지 않은 성과는 지어내지 않습니다.',
     roles: ['student'], category: '취업·진로',
     tags: ['자소서', '자기소개서', '면접', '취업', '병원', 'STAR', '실습 경험'],
-    features: ['간호사·물리치료사 등 8개 직군', '목표 글자 수에 맞춘 문단', '면접 예상 질문'],
+    features: ['간호사·물리치료사 등 8개 직군', '문항 유형 4가지와 목표 글자 수', '직군별 면접 질문 6개와 답변 방향', '빈칸은 [ ]로 남겨 직접 채우기'],
     caution: '실제 환자의 이름·병실·등록번호는 쓰지 말고 익명으로 적으세요.',
   },
   {
@@ -151,7 +151,7 @@ export const WEBAPPS = [
 
 export const appUrl = a => `./webapps/${a.id}.html`
 // 바이탈 디자인으로 다시 만든 앱(src/webapps/index.js에 등록)은 이 목록에 있습니다.
-export const NATIVE_IDS = ['press-notice', 'toast-maker', 'mind-rest', 'advising-guide', 'rules-chatbot', 'complaint-script', 'easy-explainer', 'license-cbt', 'admission-studio']
+export const NATIVE_IDS = ['press-notice', 'toast-maker', 'mind-rest', 'advising-guide', 'rules-chatbot', 'complaint-script', 'easy-explainer', 'license-cbt', 'admission-studio', 'career-clinic']
 export const appById = id => WEBAPPS.find(a => a.id === id)
 
 // 띄어쓰기·대소문자와 관계없이 제목, 설명, 태그, 기능에서 찾습니다.
