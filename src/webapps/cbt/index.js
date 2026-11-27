@@ -3,5 +3,11 @@ import pt from './pt.js'
 import rn from './rn.js'
 import rt from './rt.js'
 import mt from './mt.js'
+import dh from './dh.js'
+import emt from './emt.js'
+import dt from './dt.js'
+import opt from './opt.js'
+import him from './him.js'
+import rd from './rd.js'
 
-export const MORE = { pt, rn, rt, mt }
+export const MORE = { pt, rn, rt, mt, dh, emt, dt, opt, him, rd }
