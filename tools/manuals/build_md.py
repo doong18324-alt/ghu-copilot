@@ -12,7 +12,7 @@ def md_to_html(md):
         blocks.append(html); return f'\n\nXXBLOCK{len(blocks)-1}XX\n\n'
     def prompt(m):
         label = m.group(1).strip() or '복사해서 쓰는 프롬프트'
-        body = m.group(2).strip('\n')
+        body = m.group(2).strip('\n').replace('**', '')
         paras = ''.join(f'<p>{H.escape(p)}</p>' for p in re.split(r'\n\s*\n', body))
         return keep(f'<div class="prompt"><div class="plab">{H.escape(label)}</div>{paras}</div>')
     md = re.sub(r'```prompt[ \t]*([^\n]*)\n(.*?)\n```', prompt, md, flags=re.S)
