@@ -52,11 +52,13 @@ import him3 from './him3.js'
 import him4 from './him4.js'
 import him5 from './him5.js'
 import him6 from './him6.js'
+import him7 from './him7.js'
 import rd from './rd.js'
 import rd3 from './rd3.js'
 import rd4 from './rd4.js'
 import rd5 from './rd5.js'
 import rd6 from './rd6.js'
+import rd7 from './rd7.js'
 
 export const MORE = {
   pt: [...pt, ...pt3, ...pt4, ...pt5, ...pt6, ...pt7],
@@ -67,6 +69,6 @@ export const MORE = {
   emt: [...emt, ...emt3, ...emt4, ...emt5, ...emt6, ...emt7],
   dt: [...dt, ...dt3, ...dt4, ...dt5, ...dt6, ...dt7],
   opt: [...opt, ...opt3, ...opt4, ...opt5, ...opt6, ...opt7],
-  him: [...him, ...him3, ...him4, ...him5, ...him6],
-  rd: [...rd, ...rd3, ...rd4, ...rd5, ...rd6],
+  him: [...him, ...him3, ...him4, ...him5, ...him6, ...him7],
+  rd: [...rd, ...rd3, ...rd4, ...rd5, ...rd6, ...rd7],
 }
