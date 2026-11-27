@@ -19,4 +19,5 @@ export const NATIVE = {
   'future-strategy': lazy(() => import('./future-strategy.jsx')),
   'privacy-shield': lazy(() => import('./privacy-shield.jsx')),
   'item-analysis': lazy(() => import('./item-analysis.jsx')),
+  'grading-helper': lazy(() => import('./grading-helper.jsx')),
 }

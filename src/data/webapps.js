@@ -44,6 +44,15 @@ export const WEBAPPS = [
     caution: '학생 이름 대신 번호를 쓰세요. 응시 인원이 30명 미만이면 수치가 크게 흔들립니다.',
   },
   {
+    id: 'grading-helper', mono: '채점', tone: 'green', version: 'V1', isNew: true, stored: true,
+    title: '평가 도우미: 루브릭·채점표·학생별 피드백',
+    summary: '평가 영역과 기준을 적으면 수준별 루브릭을 만들고, 채점표를 채워 붙여 넣으면 점수에 근거한 학생별 피드백을 한꺼번에 만듭니다.',
+    roles: ['faculty'], category: '학습·국가고시',
+    tags: ['루브릭', '채점', '채점표', '피드백', '과제', '실기 평가', '수행평가', 'LMS'],
+    features: ['영역·배점·기준으로 4수준 루브릭', '학생 번호가 들어간 채점표 CSV', '영역 점수 근거 피드백 일괄 생성', '영역별 평균'],
+    caution: '학생 이름 대신 번호를 쓰세요. 피드백은 보낸 뒤가 아니라 보내기 전에 한 번 읽어 확인하세요.',
+  },
+  {
     id: 'easy-explainer', mono: '쉽게', tone: 'amber', version: 'V2',
     title: '어려운 개념 쉽게 풀기·미니 퀴즈',
     summary: '전공 문장이나 기사를 붙여 넣으면 어려운 문장과 용어를 짚어 주고 퀴즈를 냅니다. AI 연결 후에는 눈높이 설명과 비유까지 만듭니다.',
@@ -169,7 +178,7 @@ export const WEBAPPS = [
 
 export const appUrl = a => `./webapps/${a.id}.html`
 // 바이탈 디자인으로 다시 만든 앱(src/webapps/index.js에 등록)은 이 목록에 있습니다.
-export const NATIVE_IDS = ['press-notice', 'toast-maker', 'mind-rest', 'advising-guide', 'rules-chatbot', 'complaint-script', 'easy-explainer', 'license-cbt', 'admission-studio', 'career-clinic', 'home-massage', 'diet-planner', 'pet-signal', 'voucher-checker', 'future-strategy', 'privacy-shield', 'item-analysis']
+export const NATIVE_IDS = ['press-notice', 'toast-maker', 'mind-rest', 'advising-guide', 'rules-chatbot', 'complaint-script', 'easy-explainer', 'license-cbt', 'admission-studio', 'career-clinic', 'home-massage', 'diet-planner', 'pet-signal', 'voucher-checker', 'future-strategy', 'privacy-shield', 'item-analysis', 'grading-helper']
 export const appById = id => WEBAPPS.find(a => a.id === id)
 
 // 띄어쓰기·대소문자와 관계없이 제목, 설명, 태그, 기능에서 찾습니다.
