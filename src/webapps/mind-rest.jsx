@@ -33,6 +33,14 @@ function buildLetter(emotions, text) {
   return { letter: p.join('\n\n'), tags: [...picked.map(e => e[1]), ...found.map(s => s.tag)].slice(0, 4), tips }
 }
 
+// 예시 이야기(가상): 누를 때마다 다른 상황으로 채웁니다
+const SAMPLES = [
+  { emo: ['exhausted'], text: '실습이 끝나고 과제까지 하다 보니 새벽 2시. 내일도 8시에 나가야 하는데 아무것도 하기 싫다.' },
+  { emo: ['anxious'], text: '국가시험이 두 달 남았는데 모의고사 점수가 그대로다. 나만 제자리인 것 같아서 불안하다.' },
+  { emo: ['angry'], text: '조별 과제에서 혼자 다 했는데 발표 때 다른 사람이 칭찬을 받았다. 말도 못 하고 억울했다.' },
+  { emo: ['frustrated', 'exhausted'], text: '일 끝나고 야간 수업까지 듣는데, 집에 가면 아이 숙제도 봐야 한다. 언제까지 버틸 수 있을지 모르겠다.' },
+]
+
 const PHASES = [['들이마시기', 4, '코로 천천히 숨을 들이마셔요', 1.12], ['멈추기', 7, '편안하게 숨을 머금어요', 1.12], ['내쉬기', 8, '입으로 길고 가늘게 내쉬어요', 0.72]]
 
 function Breathing() {
@@ -81,6 +89,11 @@ export default function MindRest({ app }) {
     setMsg(''); setDone({})
     setRes({ ...buildLetter(emo, text), crisis: isCrisis(text) })
   }
+  const [si, setSi] = useState(-1)
+  function sample() {
+    let i = Math.floor(Math.random() * SAMPLES.length); if (i === si) i = (i + 1) % SAMPLES.length
+    setSi(i); setEmo(SAMPLES[i].emo.filter(k => EMOTIONS.some(e => e[0] === k))); setText(SAMPLES[i].text); setRes(null); setMsg('')
+  }
   function empty() {
     setText(''); setEmo([]); setRes(null)
     setMsg('적은 마음을 모두 비웠어요. 한결 가벼워진 마음으로 깊게 숨을 쉬어 보세요.')
@@ -102,6 +115,7 @@ export default function MindRest({ app }) {
         <div className="row">
           <button type="button" className="btn primary" onClick={comfort}>공감 편지 받기</button>
           <button type="button" className="btn" onClick={empty}>비우고 지우기</button>
+          <button type="button" className="btn" onClick={sample}>예시 보기</button>
         </div>
       </section>
 
@@ -135,7 +149,7 @@ export default function MindRest({ app }) {
           {!res.crisis && (
             <AiRefine appId="mind-rest" label="지후에게 이야기 더 들려주기"
               note="적은 이야기를 바탕으로 판단 없이 공감하는 짧은 답장을 받습니다. 진단이나 치료 조언은 하지 않습니다."
-              prompt={`감정: ${emo.map(k => EMOTIONS.find(e => e[0] === k)?.[1]).join(', ') || '선택 없음'}\n이야기: ${text || '(적지 않음)'}`} />
+              prompt={`역할: 판단하지 않고 들어 주는 대학 상담 동료입니다.\n지킬 것: 진단·약 이야기 하지 않기, "힘내" 같은 재촉 말 쓰지 않기, 해결책은 요청이 있을 때만 하나만, 4~6문장, 존댓말.\n순서: ① 들은 내용을 내 말로 되짚기 ② 감정 이름 붙여 주기 ③ 그럴 만하다고 인정하기 ④ 오늘 밤 할 수 있는 아주 작은 것 하나(선택)\n\n감정: ${emo.map(k => EMOTIONS.find(e => e[0] === k)?.[1]).join(', ') || '선택 없음'}\n이야기: ${text || '(적지 않음)'}`} />
           )}
         </>
       )}

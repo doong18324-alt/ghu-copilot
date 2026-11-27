@@ -61,6 +61,15 @@ const DONT_QUIET = ['대답을 해야 도와주지, 왜 아무 말도 안 해?',
 const DONT_ANX = ['감정적으로 불안해한다고 해결되는 건 없어. 냉정해져야지.', '많이 놀라고 불안한 게 당연해. 마음부터 진정시키고 할 수 있는 것부터 하나씩 정리해 보자.']
 
 // 학생이 직접 말하지 않아도 꼭 확인해야 하는 위기 신호
+// 예시 상황(가상): 누를 때마다 다른 사례로 채웁니다
+const SAMPLES = [
+  { grade: '1학년', crises: ['leave', 'people'], style: 'quiet', obs: '전공기초 2주 연속 결석 후 학과 사무실에 휴학 절차를 물어봄. 면담 요청에 "별일 없습니다"라고만 답함. 조별 과제에서 혼자 빠져 있다는 동기의 말이 있음.' },
+  { grade: '2학년', crises: ['grade', 'money'], style: 'practical', obs: '중간고사 3과목 과락 위기. 주 25시간 야간 아르바이트를 하고 있어 1교시 지각이 잦음. 장학금 기준을 물어봄.' },
+  { grade: '3·4학년', crises: ['exam', 'mood'], style: 'masked', obs: '임상실습 중 실수 이후 국가시험 모의고사 점수가 크게 떨어짐. 면담 중 웃으며 괜찮다고 했지만 잠을 거의 못 잔다고 말함.' },
+  { grade: '복학생', crises: ['major', 'people'], style: 'anxious', obs: '군 복무 후 복학. 동기들은 졸업했고 후배들과 어울리기 어렵다고 함. 전공이 자신과 맞는지 다시 고민 중이라며 목소리가 떨림.' },
+  { grade: '2학년', crises: ['major'], style: 'practical', obs: '실습 전 전공 수업은 성실히 듣지만 실제 현장 일이 맞을지 확신이 없다고 함. 다른 보건 직종이나 편입도 알아보고 있음.' },
+]
+
 const RISK_WORDS = ['자해', '자살', '죽고', '죽을', '사라지고', '끝내고', '살기싫', '유서', '손목', '뛰어내']
 
 function build({ grade, crises, style, obs }) {
@@ -104,7 +113,13 @@ function build({ grade, crises, style, obs }) {
     '- 향후 계획: [다음 면담 일시]에 짧은 후속 면담으로 프로그램 신청 여부와 생활 안정도를 재점검할 예정임.',
   ].join('\n')
 
-  return { script, log, programs, donts, risk, coach: s[2] }
+  const follow = [
+    `${'OO'}야, 오늘 이야기 나눠 줘서 고마워. 쉽지 않은 이야기였을 텐데 솔직하게 말해 준 덕분에 같이 방법을 찾을 수 있었어.`,
+    `오늘 이야기한 ${programs[0].dept} ${programs[0].name}은 [신청 방법·장소]에서 신청할 수 있어. 혼자 가기 어려우면 교수님이 먼저 연락해 둘게.`,
+    `[다음 면담 일시]에 10분만 다시 보자. 그 전에라도 힘든 일 있으면 언제든 연락해.`,
+    ...(risk ? ['혹시 마음이 많이 힘들어지면 109(자살예방상담, 24시간)나 [학생상담센터 연락처]로 바로 연락해도 돼.'] : []),
+  ].join('\n')
+  return { script, log, programs, donts, risk, coach: s[2], follow }
 }
 
 export default function AdvisingGuide({ app }) {
@@ -115,13 +130,18 @@ export default function AdvisingGuide({ app }) {
   const [res, setRes] = useState(null)
   const [log, setLog] = useState('')
   const pii = findPII(obs)
+  const [si, setSi] = useState(-1)
+  function sample() {
+    let i = Math.floor(Math.random() * SAMPLES.length); if (i === si) i = (i + 1) % SAMPLES.length
+    const x = SAMPLES[i]; setSi(i); setGrade(x.grade); setCrises(x.crises); setStyle(x.style); setObs(x.obs); setRes(null)
+  }
 
   function make() {
     if (!crises.length) return
     const r = build({ grade, crises, style, obs })
     setRes(r); setLog(r.log)
   }
-  const aiPrompt = useMemo(() => !res ? '' : `학년: ${grade}\n고민 유형: ${crises.map(k => CRISES.find(c => c[0] === k)[1]).join(', ')}\n성향: ${STYLES.find(x => x[0] === style)[1]}\n관찰 메모: ${obs || '없음'}\n\n[규칙 기반 화법 초안]\n${res.script}`, [res, grade, crises, style, obs])
+  const aiPrompt = useMemo(() => !res ? '' : `역할: 대학 지도교수의 면담 준비를 돕는 상담 코치입니다. 진단하거나 판단하지 말고, 학생을 탓하지 않는 말로 질문과 지지 문장을 다듬어 주세요.\n지킬 것: 학생 이름·학번 쓰지 않기, 약속할 수 없는 해결(성적 정정, 장학 확정) 말하지 않기, 위기 신호가 있으면 안전 확인을 가장 먼저 두기.\n출력: ① 여는 말 1개 ② 탐색 질문 3개 ③ 마무리와 다음 약속 1개 ④ 면담 후 보낼 메시지 1개\n\n학년: ${grade}\n고민 유형: ${crises.map(k => CRISES.find(c => c[0] === k)[1]).join(', ')}\n성향: ${STYLES.find(x => x[0] === style)[1]}\n관찰 메모: ${obs || '없음'}\n\n[규칙 기반 화법 초안]\n${res.script}`, [res, grade, crises, style, obs])
 
   return (
     <>
@@ -138,7 +158,7 @@ export default function AdvisingGuide({ app }) {
         </Field>
         {pii.length > 0 && <Notice tone="bad">개인정보로 보이는 내용({pii.map(p => p.label).join(', ')})이 있습니다. 지우고 상황만 남겨 주세요.</Notice>}
         {!crises.length && <Notice>고민 유형을 하나 이상 골라 주세요.</Notice>}
-        <div className="row"><button type="button" className="btn primary" disabled={!crises.length} onClick={make}>면담 준비지 만들기</button></div>
+        <div className="row"><button type="button" className="btn primary" disabled={!crises.length} onClick={make}>면담 준비지 만들기</button><button type="button" className="btn" onClick={sample}>예시 채우기</button><span className="small muted">누를 때마다 다른 가상 사례로 채웁니다.</span></div>
       </section>
 
       {res && (
@@ -169,6 +189,7 @@ export default function AdvisingGuide({ app }) {
             ))}</ul>
           </section>
           <ResultDoc title="상담일지 초안" text={log} onChange={setLog} fileName="상담일지_초안.txt" />
+          <ResultDoc title="면담 후 보낼 메시지 (당일~3일 안)" text={res.follow} fileName="후속메시지.txt" />
           <AiRefine appId="advising-guide" label="지후 AI로 화법 맞춤 다듬기" note="입력한 상황에 맞춰 질문과 지지 문장을 자연스럽게 다듬습니다. 진단이나 판단은 하지 않습니다." prompt={aiPrompt} />
         </>
       )}

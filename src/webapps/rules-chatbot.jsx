@@ -7,7 +7,7 @@ import { RegLibrary, useRegs, allArticles, Highlight } from './regs.jsx'
    기존 챗봇(V1)처럼 올린 규정의 조항을 찾아 근거로 답하되, 바이탈 공용 조항 검색 엔진과
    PDF 읽기(외부 CDN 없이)로 바꾸고, 찾은 조항을 근거로 지후 AI가 문장으로 정리하도록 했습니다. */
 
-const SUGGEST = ['휴학은 몇 학기까지 할 수 있나요?', '성적 이의신청은 언제까지 하나요?', '자퇴하면 등록금은 얼마나 돌려받나요?', '출석이 부족하면 어떻게 되나요?', '성적장학금 기준이 뭔가요?']
+const SUGGEST = ['휴학은 몇 학기까지 할 수 있나요?', '성적 이의신청은 언제까지 하나요?', '자퇴하면 등록금은 얼마나 돌려받나요?', '출석이 부족하면 어떻게 되나요?', '성적장학금 기준이 뭔가요?', '복학 신청은 언제 하나요?', '학사경고를 몇 번 받으면 제적되나요?', '계절학기는 몇 학점까지 들을 수 있나요?']
 
 const words = q => (q.match(/[가-힣A-Za-z0-9]{2,}/g) || []).map(t => t.replace(/(은|는|이|가|을|를|에|의|로|으로|와|과|도|만|에서|하나요|인가요|되나요|있나요|나요|까지)$/, '')).filter(t => t.length >= 2)
 
@@ -31,7 +31,7 @@ export default function RulesChatbot({ app }) {
   }
 
   const last = log[0]
-  const aiPrompt = !last || !last.found.length ? '' : `질문: ${last.question}\n\n[찾은 조항]\n${last.found.map(a => `${a.source} ${a.no}(${a.title})\n${a.body}`).join('\n\n')}\n\n위 조항만 근거로 질문에 답하고, 답할 때마다 조항 번호를 인용해 주세요. 조항에 없는 내용은 담당 부서 확인을 안내해 주세요.`
+  const aiPrompt = !last || !last.found.length ? '' : `질문: ${last.question}\n\n[찾은 조항]\n${last.found.map(a => `${a.source} ${a.no}(${a.title})\n${a.body}`).join('\n\n')}\n\n역할: 학생에게 학칙을 풀어 주는 학사 상담 직원입니다.\n지킬 것: 위 조항만 근거로 하기, 숫자·기간은 조항 그대로 옮기기, 조항에 없는 내용은 "[담당 부서]에 확인"으로 안내하기, 존댓말.\n출력: ① 한 줄 답 ② 근거 조항 인용(조항 번호 포함) ③ 학생이 지금 할 일 1~3개 ④ 예외·주의할 점(조항에 있을 때만)`
 
   return (
     <>

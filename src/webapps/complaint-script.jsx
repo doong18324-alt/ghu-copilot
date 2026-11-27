@@ -37,6 +37,16 @@ const CATS = [
     ['질병 등 사유가 증빙되면 적용될 수 있는 다른 휴학 유형 안내', '복학 신청 기간과 미복학 시 처리 안내', '자퇴 전 학생상담·학업 지원 상담 연계'], '[학사 담당 부서]'],
 ]
 
+// 예시 민원(가상): 누를 때마다 다른 사례로 채웁니다
+const SAMPLES = [
+  { who: 'parent', channel: 'phone', mood: 'angry', cat: 'scholarship', summary: '평점 3.48로 기준 3.50에 0.02점 모자라 성적장학금에서 탈락. 반올림해서 선발해 달라고 요구.' },
+  { who: 'student', channel: 'written', mood: 'upset', cat: 'grade', summary: '기말 과제 점수가 반영되지 않은 것 같다며 성적 정정을 요청. 성적 공시 기간은 지난 상태.' },
+  { who: 'parent', channel: 'visit', mood: 'upset', cat: 'tuition', summary: '개강 5주 차에 자퇴 서류를 냈는데 반환액이 생각보다 적다며 전액 반환을 요구.' },
+  { who: 'student', channel: 'phone', mood: 'calm', cat: 'attendance', summary: '아르바이트 때문에 결석이 많아 학사경고를 받았다. 출석을 인정받을 방법이 있는지 문의.' },
+  { who: 'external', channel: 'written', mood: 'calm', cat: 'leave', summary: '직장인 학생의 보호자라고 밝히며 출장 때문에 학기 중 휴학이 가능한지 문의.' },
+  { who: 'student', channel: 'visit', mood: 'angry', cat: 'scholarship', summary: '근로장학생 선발에서 떨어졌는데 기준을 공개하지 않았다며 항의.' },
+]
+
 const MOOD_LINE = {
   calm: '먼저 확인해 주셔서 감사합니다. 대학의 공식 기준을 차근차근 설명해 드리겠습니다.',
   upset: '말씀하신 사정을 충분히 이해합니다. 대학이 어떤 원칙으로 처리하고 있는지 투명하게 말씀드리겠습니다.',
@@ -80,11 +90,16 @@ export default function ComplaintScript({ app }) {
   const pii = findPII(summary)
   const articles = allArticles(regs)
 
+  const [si, setSi] = useState(-1)
+  function sample() {
+    let i = Math.floor(Math.random() * SAMPLES.length); if (i === si) i = (i + 1) % SAMPLES.length
+    const x = SAMPLES[i]; setSi(i); setWho(x.who); setChannel(x.channel); setMood(x.mood); setCat(x.cat); setSummary(x.summary); setRes(null)
+  }
   function make() {
     const r = build({ who, channel, mood, cat, summary, articles })
     setRes(r); setText(r.full)
   }
-  const aiPrompt = useMemo(() => !res ? '' : `민원인: ${WHO.find(w => w[0] === who)[1]}, 채널: ${CHANNEL.find(c => c[0] === channel)[1]}, 감정: ${MOOD.find(m => m[0] === mood)[1]}\n분야: ${CATS.find(c => c[0] === cat)[1]}\n민원 요지: ${summary || '없음'}\n\n[규칙 기반 스크립트]\n${text}`, [res, who, channel, mood, cat, summary, text])
+  const aiPrompt = useMemo(() => !res ? '' : `역할: 대학 행정부서의 민원 응대 코치입니다.\n지킬 것: [근거] 안의 조항 원문과 숫자는 그대로 두기, 규정에 없는 예외·약속("검토해서 해 드리겠다") 만들지 않기, 민원인을 탓하는 말 쓰지 않기, 존댓말.\n출력: ① 다듬은 4단계 스크립트(말하듯 자연스럽게) ② 민원인이 다시 따질 만한 질문 3개와 답 ③ 상급자에게 넘길 기준 한 줄\n\n민원인: ${WHO.find(w => w[0] === who)[1]}, 채널: ${CHANNEL.find(c => c[0] === channel)[1]}, 감정: ${MOOD.find(m => m[0] === mood)[1]}\n분야: ${CATS.find(c => c[0] === cat)[1]}\n민원 요지: ${summary || '없음'}\n\n[규칙 기반 스크립트]\n${text}`, [res, who, channel, mood, cat, summary, text])
 
   return (
     <>
@@ -102,7 +117,7 @@ export default function ComplaintScript({ app }) {
           <TextArea id="cs-sum" rows={3} value={summary} onChange={setSummary} placeholder="어떤 내용을 요구하는지 짧게 적어 주세요." />
         </Field>
         {pii.length > 0 && <Notice tone="bad">개인정보로 보이는 내용({pii.map(p => p.label).join(', ')})이 있습니다. 지우고 요지만 남겨 주세요.</Notice>}
-        <div className="row"><button type="button" className="btn primary" onClick={make}>응대 스크립트 만들기</button></div>
+        <div className="row"><button type="button" className="btn primary" onClick={make}>응대 스크립트 만들기</button><button type="button" className="btn" onClick={sample}>예시 채우기</button><span className="small muted">누를 때마다 다른 가상 민원으로 채웁니다.</span></div>
       </section>
       {res && (
         <>
