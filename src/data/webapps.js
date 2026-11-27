@@ -121,12 +121,12 @@ export const WEBAPPS = [
     caution: '전문 상담을 대신하지 않습니다. 혼자 감당하기 어려우면 학생상담센터나 자살예방상담전화 109(24시간)에 연락하세요.',
   },
   {
-    id: 'diet-planner', mono: '식단', tone: 'green', version: 'V3',
+    id: 'diet-planner', mono: '식단', tone: 'green', version: 'V4',
     title: '건강 식단 플래너·장보기 예산',
     summary: '나이·활동량·건강 목표와 주간 식비를 넣으면 예산 안에서 7일 식단과 장보기 목록을 만듭니다.',
     roles: ['student', 'faculty', 'staff'], category: '건강·생활',
     tags: ['식단', '장보기', '식비', '예산', '저염식', '혈당', '자취'],
-    features: ['건강 목표별 식단', '제외 식재료 반영', '주간 예산 계산'],
+    features: ['건강 목표 6가지(신장질환은 상담 안내)', '빼는 재료·먹는 약 주의점', '예산 맞춘 7일 식단과 다른 조합 보기', '단가를 고칠 수 있는 장보기 목록'],
     caution: '질환이 있으면 식단은 담당 의료진과 상의하세요.',
   },
   {
@@ -151,7 +151,7 @@ export const WEBAPPS = [
 
 export const appUrl = a => `./webapps/${a.id}.html`
 // 바이탈 디자인으로 다시 만든 앱(src/webapps/index.js에 등록)은 이 목록에 있습니다.
-export const NATIVE_IDS = ['press-notice', 'toast-maker', 'mind-rest', 'advising-guide', 'rules-chatbot', 'complaint-script', 'easy-explainer', 'license-cbt', 'admission-studio', 'career-clinic', 'home-massage']
+export const NATIVE_IDS = ['press-notice', 'toast-maker', 'mind-rest', 'advising-guide', 'rules-chatbot', 'complaint-script', 'easy-explainer', 'license-cbt', 'admission-studio', 'career-clinic', 'home-massage', 'diet-planner']
 export const appById = id => WEBAPPS.find(a => a.id === id)
 
 // 띄어쓰기·대소문자와 관계없이 제목, 설명, 태그, 기능에서 찾습니다.
