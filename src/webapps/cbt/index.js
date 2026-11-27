@@ -10,6 +10,7 @@ import rn3 from './rn3.js'
 import rn4 from './rn4.js'
 import rn5 from './rn5.js'
 import rn6 from './rn6.js'
+import rn7 from './rn7.js'
 import rt from './rt.js'
 import rt3 from './rt3.js'
 import rt4 from './rt4.js'
@@ -53,7 +54,7 @@ import rd6 from './rd6.js'
 
 export const MORE = {
   pt: [...pt, ...pt3, ...pt4, ...pt5, ...pt6, ...pt7],
-  rn: [...rn, ...rn3, ...rn4, ...rn5, ...rn6],
+  rn: [...rn, ...rn3, ...rn4, ...rn5, ...rn6, ...rn7],
   rt: [...rt, ...rt3, ...rt4, ...rt5, ...rt6],
   mt: [...mt, ...mt3, ...mt4, ...mt5, ...mt6],
   dh: [...dh, ...dh3, ...dh4, ...dh5, ...dh6],
