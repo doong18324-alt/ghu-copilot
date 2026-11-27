@@ -176,6 +176,13 @@ function shotsFor(style, v, c, aud, challenge) {
   return S[style]
 }
 
+// 한 사람이 처음부터 끝까지 나오는 영상은 주인공 생김새를 구체적으로 고정해야 얼굴이 바뀌지 않습니다.
+// (힉스필드 Seedance 2.5 시험 결과: '40대 중반'만 쓰면 50대 후반처럼 나와 머리색·피부까지 적는 편이 맞습니다)
+const HEROES = {
+  adult: ['a Korean man who looks exactly 45, mostly black short hair, smooth skin, rimless glasses, slim build', 'a Korean woman who looks exactly 42, shoulder-length black hair tied back, natural makeup, warm eyes', 'a Korean man who looks exactly 38, neat black hair, clean-shaven, athletic build'],
+  teen: ['a Korean college student who looks 20, short black hair, bright eyes, slim build', 'a Korean college student who looks 20, long black hair in a ponytail, natural makeup'],
+}
+
 export function buildVideoPlan({ dept, aud, platform = 'reels', length = 30, style = 'story', challenge = {} }) {
   const v = VISUALS[dept] || VISUALS['물리치료학과']
   const en = EN[dept] || 'Health Sciences'
@@ -193,6 +200,7 @@ export function buildVideoPlan({ dept, aud, platform = 'reels', length = 30, sty
   const fmt = s => `${Math.round(s)}초`
   const style_ = `${STYLE}. ${c.light}. Mood: ${c.mood}. ${c.pace}. Aspect ratio ${p.ratio}${p.vertical ? ', vertical framing with subjects centered' : ', horizontal widescreen framing'}. ${NEG}.`
   const dance = style === 'dance'
+  const hero = pick(HEROES[aud === 'adult' ? 'adult' : 'teen'])
   const lines = [
     `[영상 기획 · ${p.label} · ${p.ratio} (${p.size}) · ${length < 60 ? length + "초" : length / 60 + "분"} · ${st.label}]`,
     `학과: ${dept} (Department of ${en}) / 독자: ${c.who}`,
@@ -200,6 +208,7 @@ export function buildVideoPlan({ dept, aud, platform = 'reels', length = 30, sty
     '',
     `공통 스타일(모든 컷 끝에 붙이기)`,
     style_,
+    style !== 'info' && style !== 'dance' ? `Main character (same face, hair and build in every shot): ${hero}.` : '',
     dance ? `Choreography: ${challenge.desc ? challenge.desc : 'a currently trending short-form dance challenge'}. Keep movements clean and readable, full body visible, synchronized group.` : '',
     '',
     ...shots.flatMap(([title, prompt], i) => [
@@ -210,7 +219,9 @@ export function buildVideoPlan({ dept, aud, platform = 'reels', length = 30, sty
     `[${p.label} 업로드 메모]`,
     `· 자막 안전 영역: ${p.safe}`,
     `· ${p.tip}`,
-    `· AI 영상 모델은 한 번에 5~15초가 가장 안정적입니다. 컷별로 생성해 편집 앱(캡컷, 프리미어 등)에서 이어 붙이고, 같은 인물을 유지하려면 첫 컷 이미지를 다음 컷의 참조 이미지로 넣습니다.`,
+    `· 한 번에 만들기: 힉스필드 Seedance 2.5처럼 30초까지 되는 모델은 위 컷을 한 프롬프트에 모두 넣어 한 번에 만들면 주인공 얼굴이 끝까지 유지됩니다(30초·720p 약 210크레딧).`,
+    `· 컷별로 만들기: 컷마다 다시 만들 수 있는 대신 얼굴이 바뀌기 쉬우니, 첫 컷 이미지를 다음 컷의 참조 이미지로 넣습니다. 이어 붙이기는 캡컷·프리미어 등에서 합니다.`,
+    `· 나이가 많아 보이면 "looks exactly 45, mostly black hair"처럼 나이와 머리색을 더 구체적으로 적습니다.`,
   ]
   if (dance) {
     lines.push(
