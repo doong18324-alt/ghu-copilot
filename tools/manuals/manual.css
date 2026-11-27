@@ -42,7 +42,7 @@ body { margin: 0; font-family: 'Noto Sans CJK KR'; color: #1a1a1a; word-break: k
 .bodydoc tr { break-inside: avoid }
 .bodydoc thead tr:first-child th { color: #F05A3C }
 .bodydoc colgroup { display: none }
-.prompt { background: #141414; color: #ececec; border-left: 2mm solid #F05A3C; padding: 4mm 5.5mm 3mm; margin: 3mm 0 5mm; font-size: 9.2pt; line-height: 1.65; break-inside: avoid-page }
+.prompt { background: #141414; color: #ececec; border-left: 2mm solid #F05A3C; padding: 4mm 5.5mm 3mm; margin: 3mm 0 5mm; font-size: 9.2pt; line-height: 1.65; break-inside: auto }
 .prompt .plab { font-size: 7.5pt; font-weight: 700; color: #F05A3C; letter-spacing: .05em; margin-bottom: 1.8mm }
 .prompt p { white-space: pre-wrap; text-align: left; margin: 0 0 1.6mm }
 .prompt strong { color: #fff }
@@ -54,3 +54,13 @@ hr { border: 0; border-top: .2mm solid #ccc; margin: 5mm 0 }
 
 .bodydoc h1 .sub { display: block; font-size: 9pt; font-weight: 500; color: #888; margin-top: 1.5mm; letter-spacing: .02em }
 .bodydoc h2 .sub, .bodydoc h3 .sub { display: block; font-size: 8.5pt; font-weight: 500; color: #888 }
+.bodydoc blockquote { margin: 3mm 0 4.5mm; padding: 3mm 4.5mm; background: #f4f4f4; border-left: 1.2mm solid #F05A3C; break-inside: avoid }
+.bodydoc blockquote p { margin: 0 0 1.4mm; text-align: left }
+.bodydoc blockquote p:last-child { margin: 0 }
+.check { border: .35mm solid #1a1a1a; padding: 3.5mm 5mm 2.5mm; margin: 3mm 0 5mm; break-inside: avoid }
+.check .clab { font-weight: 800; font-size: 9.5pt; margin-bottom: 2mm }
+.check ul { list-style: none; padding: 0; margin: 0 }
+.check li { padding-left: 6mm; position: relative; margin: 0 0 1.6mm; font-size: 9.4pt }
+.check li::before { content: ''; position: absolute; left: 0; top: 1.2mm; width: 3mm; height: 3mm; border: .3mm solid #1a1a1a }
+.bodydoc h1.next { margin-top: 12mm }
+.bodydoc td:empty { height: 7mm }
