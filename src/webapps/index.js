@@ -18,4 +18,5 @@ export const NATIVE = {
   'voucher-checker': lazy(() => import('./voucher-checker.jsx')),
   'future-strategy': lazy(() => import('./future-strategy.jsx')),
   'privacy-shield': lazy(() => import('./privacy-shield.jsx')),
+  'item-analysis': lazy(() => import('./item-analysis.jsx')),
 }

@@ -35,6 +35,15 @@ export const WEBAPPS = [
     caution: '내장 문항은 국시원 공개 기출의 출제 개념만 참고해 새로 쓴 연습 문항(AI 초안)이며 기출 원문이 아닙니다. 학과 교수 검토 후 사용하세요.',
   },
   {
+    id: 'item-analysis', mono: '분석', tone: 'blue', version: 'V1', isNew: true,
+    title: '시험 문항 분석기: 난이도·변별도·신뢰도',
+    summary: '응답표를 붙여 넣으면 문항별 난이도, 변별도, 오답지 선택 분포와 시험 신뢰도(KR-20)를 계산하고 다시 볼 문항을 짚어 줍니다.',
+    roles: ['faculty'], category: '학습·국가고시',
+    tags: ['문항분석', '난이도', '변별도', '신뢰도', 'KR-20', '오답지', '시험', 'CQI', '출제', '평가'],
+    features: ['응답 번호표·채점표 모두 지원', '상하 27% 변별도와 문항-나머지 상관', '오답지 작동 여부 점검', '엑셀용 CSV와 CQI 문장'],
+    caution: '학생 이름 대신 번호를 쓰세요. 응시 인원이 30명 미만이면 수치가 크게 흔들립니다.',
+  },
+  {
     id: 'easy-explainer', mono: '쉽게', tone: 'amber', version: 'V2',
     title: '어려운 개념 쉽게 풀기·미니 퀴즈',
     summary: '전공 문장이나 기사를 붙여 넣으면 어려운 문장과 용어를 짚어 주고 퀴즈를 냅니다. AI 연결 후에는 눈높이 설명과 비유까지 만듭니다.',
@@ -160,7 +169,7 @@ export const WEBAPPS = [
 
 export const appUrl = a => `./webapps/${a.id}.html`
 // 바이탈 디자인으로 다시 만든 앱(src/webapps/index.js에 등록)은 이 목록에 있습니다.
-export const NATIVE_IDS = ['press-notice', 'toast-maker', 'mind-rest', 'advising-guide', 'rules-chatbot', 'complaint-script', 'easy-explainer', 'license-cbt', 'admission-studio', 'career-clinic', 'home-massage', 'diet-planner', 'pet-signal', 'voucher-checker', 'future-strategy', 'privacy-shield']
+export const NATIVE_IDS = ['press-notice', 'toast-maker', 'mind-rest', 'advising-guide', 'rules-chatbot', 'complaint-script', 'easy-explainer', 'license-cbt', 'admission-studio', 'career-clinic', 'home-massage', 'diet-planner', 'pet-signal', 'voucher-checker', 'future-strategy', 'privacy-shield', 'item-analysis']
 export const appById = id => WEBAPPS.find(a => a.id === id)
 
 // 띄어쓰기·대소문자와 관계없이 제목, 설명, 태그, 기능에서 찾습니다.
