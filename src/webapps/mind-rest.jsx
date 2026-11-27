@@ -9,7 +9,7 @@ import { EMOTIONS, SITUATIONS, DEFAULT_TIPS, CRISIS_WORDS } from './mind-data.js
 const HELP = [
   ['자살예방상담전화', '109', '24시간'],
   ['정신건강위기상담전화', '1577-0199', '24시간'],
-  ['광주보건대학교 학생상담센터', '[연락처]', '평일 근무시간'],
+  ['광주보건대학교 학생상담센터', '062-958-7575', '평일 09:00~17:00(점심 12~13시) · 다윗관 1층 50105호 · counsel@ghu.ac.kr · 상담은 무료이고 비밀이 보장됩니다'],
 ]
 
 function isCrisis(text) {

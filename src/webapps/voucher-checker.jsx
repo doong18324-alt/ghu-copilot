@@ -58,11 +58,12 @@ export default function VoucherChecker({ app }) {
     `[결의서 사전 점검 결과서] ${guide.project || '사업명 미입력'} · ${vtype}`,
     `점검 일시: ${res.at} · 감지 비목: ${res.detectedCategories.join(', ')}`,
     `종합 판정: ${verdict} (반려 ${counts.REJECT}, 주의 ${counts.WARN}, 정상 ${counts.PASS})`,
+    ...(res.detectedCategories.includes('여비(출장비)') && rules.travelSummary ? [`여비 기준: ${rules.travelSummary}`] : []),
     '',
     ...res.results.filter(r => r.status !== 'PASS').map((r, i) => `${i + 1}. [${STATUS[r.status][0]}·${r.category}] ${r.snippet}\n   근거: ${r.basis}\n   조치: ${r.guide}`),
     '',
     '※ 자동 점검 결과는 담당자 확인을 돕는 참고 자료입니다. 최종 판단은 산학협력단 담당자가 지침 원문으로 합니다.',
-  ].join('\n'), [res, guide.project, vtype, verdict, counts])
+  ].join('\n'), [res, guide.project, vtype, verdict, counts, rules.travelSummary])
   const aiPrompt = !res ? '' : `역할: 산학협력단 회계 담당자에게 보완 요청을 전하는 행정 직원입니다.\n지킬 것: 점검 결과의 금액·날짜·조항은 그대로, 판정을 바꾸지 않기, 지침에 없는 규정 만들지 않기, 정중한 존댓말.\n출력: ① 집행 부서에 보낼 보완 요청 메시지(항목별 번호) ② 다시 낼 때 첨부할 서류 목록\n\n${report}`
 
   return (
@@ -84,7 +85,8 @@ export default function VoucherChecker({ app }) {
           <Field id="vc-e" label="전문가·강사 수당 상한(원)"><TextInput id="vc-e" inputMode="numeric" value={String(rules.expertLimit)} onChange={v => setRule('expertLimit', Number(v.replace(/\D/g, '')) || 0)} /></Field>
         </div>
         <Field id="vc-k" label="집행 제한 낱말" hint="쉼표로 구분"><TextInput id="vc-k" value={rules.restrictedKeywords.join(', ')} onChange={v => setRule('restrictedKeywords', v.split(',').map(x => x.trim()).filter(Boolean))} /></Field>
-        <p className="small" style={{ margin: 0 }}><b>필수 증빙</b> {rules.requiredDocs.join(', ')}</p>
+        <Field id="vc-t" label="여비 정산·출장 기준 요약" hint="지침에서 찾은 문장입니다. 점검 결과서에 근거로 함께 적힙니다"><TextInput id="vc-t" value={rules.travelSummary || ''} onChange={v => setRule('travelSummary', v)} /></Field>
+        <Field id="vc-d" label="필수 증빙" hint="쉼표로 구분. 점검 결과의 근거 문구로 쓰입니다. 누락 점검은 비목별(회의비는 회의록, 여비는 출장복명서 등)로 따로 합니다"><TextInput id="vc-d" value={rules.requiredDocs.join(', ')} onChange={v => setRule('requiredDocs', v.split(',').map(x => x.trim()).filter(Boolean))} /></Field>
       </section>
 
       <section className="card">
