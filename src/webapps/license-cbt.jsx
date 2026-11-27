@@ -100,6 +100,9 @@ export default function LicenseCbt({ app }) {
   const [custom, setCustom] = useStored('webapps:cbt-custom', [])
   const [wrong, setWrong] = useStored('webapps:cbt-wrong', [])
   const [exam, setExam] = useState(null)
+  const [stats, setStats] = useStored('webapps:cbt-stats', {})
+  const [dates, setDates] = useStored('webapps:cbt-date', {})
+  const [perDay, setPerDay] = useStored('webapps:cbt-perday', 20)
   const [msg, setMsg] = useState('')
 
   const job = jobById(jobId) || JOBS[0]
@@ -138,6 +141,11 @@ export default function LicenseCbt({ app }) {
   function submit() {
     const wrongNow = exam.qs.filter(it => exam.ans[it.id] !== it.a - 1)
     setExam(e => ({ ...e, done: true }))
+    setStats(prev => {
+      const js = { ...(prev[job.id] || {}) }
+      for (const it of exam.qs) { const x = js[it.subj] || { n: 0, c: 0 }; js[it.subj] = { n: x.n + 1, c: x.c + (exam.ans[it.id] === it.a - 1 ? 1 : 0) } }
+      return { ...prev, [job.id]: js }
+    })
     setWrong(prev => {
       const keep = prev.filter(w => !exam.qs.some(it => it.id === w.id && exam.ans[it.id] === it.a - 1))
       const add = wrongNow.filter(it => !keep.some(w => w.id === it.id)).map(({ view, ...rest }) => ({ ...rest, at: new Date().toISOString().slice(0, 10) }))
@@ -300,6 +308,9 @@ export default function LicenseCbt({ app }) {
         </section>
       )}
 
+
+      <StudyPlan job={job} subjects={subjects} stats={stats[job.id] || {}} wrong={myWrong} date={dates[job.id] || ''} setDate={d => setDates({ ...dates, [job.id]: d })} perDay={perDay} setPerDay={setPerDay}
+        onStart={id => { setSubj(id); setTimeout(() => document.getElementById('cbt-subj')?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 50) }} />
       <section className="card stack">
         <div className="card-head"><h2>오답노트 · {job.name}</h2><span className="muted small">{myWrong.length}문항 · 이 브라우저에만 저장</span></div>
         {!myWrong.length && <p className="muted small" style={{ margin: 0 }}>아직 틀린 문제가 없습니다. 채점하면 틀린 문제가 여기에 모이고, 다시 맞히면 빠집니다.</p>}
@@ -331,5 +342,48 @@ export default function LicenseCbt({ app }) {
       <AiRefine appId="license-cbt" prompt={aiPrompt} label="이 과목 유사 문항 10개 만들기"
         note="지금 고른 직종·과목의 문항을 예시로 보내 같은 개념의 새 문항 10개를 CSV로 받습니다. 받은 CSV를 교수 검토 후 위 '학과 문항 올리기'로 넣으면 출제에 포함됩니다." />
     </>
+  )
+}
+
+// 시험일까지 남은 주를 나눠, 정답률이 낮은 과목부터 주마다 두 과목씩 집중하고 마지막 2주는 전 과목 모의고사로 둡니다.
+function StudyPlan({ job, subjects, stats, wrong, date, setDate, perDay, setPerDay, onStart }) {
+  const today = new Date(); today.setHours(0, 0, 0, 0)
+  const d = date ? new Date(date + 'T00:00:00') : null
+  const left = d ? Math.round((d - today) / 86400000) : null
+  const subj = subjects.filter(([, , cnt]) => cnt > 0).map(([id, name]) => {
+    const st = stats[id]
+    const acc = st && st.n >= 5 ? st.c / st.n : null
+    const w = wrong.filter(x => x.subj === id).length
+    return { id, name, acc, n: st?.n || 0, w, need: acc == null ? 0.5 + Math.min(0.3, w * 0.03) : 1 - acc + Math.min(0.2, w * 0.02) }
+  }).sort((a, b) => b.need - a.need)
+  const weeks = left != null && left > 0 ? Math.ceil(left / 7) : 0
+  const rows = []
+  if (weeks) {
+    const focusWeeks = Math.max(0, weeks - 2)
+    for (let i = 0; i < weeks; i++) {
+      const start = new Date(today); start.setDate(start.getDate() + i * 7)
+      const label = `${start.getMonth() + 1}/${start.getDate()}~`
+      if (i < focusWeeks && subj.length) {
+        const a = subj[(i * 2) % subj.length], b = subj[(i * 2 + 1) % subj.length]
+        rows.push([`${i + 1}주 (${label})`, [a, b].filter((x, k, arr) => arr.indexOf(x) === k), `하루 ${perDay}문항, 그중 절반은 집중 과목`])
+      } else rows.push([`${i + 1}주 (${label})`, null, i === weeks - 1 ? '전 과목 모의고사 1회 + 오답노트만 다시 풀기' : `전 과목 모의고사 2회 + 오답 다시 풀기`])
+    }
+  }
+  return (
+    <section className="card stack">
+      <div className="card-head"><h2>D-day 공부 계획 · {job.name}</h2>{left != null && <span className={`badge ${left <= 14 ? 'red' : 'blue'}`}>{left > 0 ? `D-${left}` : left === 0 ? 'D-day' : '시험일이 지났습니다'}</span>}</div>
+      <div className="row" style={{ gap: 12 }}>
+        <label className="small"><b>시험일</b> <input type="date" className="input" value={date} onChange={e => setDate(e.target.value)} /></label>
+        <label className="small"><b>하루 문항 수</b> <input className="input" style={{ width: 80 }} inputMode="numeric" value={perDay} onChange={e => setPerDay(Number(e.target.value.replace(/\D/g, '')) || 0)} /></label>
+        <a className="small" href="https://www.kuksiwon.or.kr" target="_blank" rel="noopener">시험일은 국시원 누리집에서 확인 ↗</a>
+      </div>
+      <div className="table-wrap"><table className="table">
+        <thead><tr><th>과목</th><th>푼 문항</th><th>정답률</th><th>오답노트</th><th></th></tr></thead>
+        <tbody>{subj.map(x => <tr key={x.id}><td>{x.name}</td><td>{x.n}</td><td>{x.acc == null ? <span className="muted small">5문항 이상 풀면 표시</span> : <span className={`badge ${x.acc < 0.6 ? 'red' : x.acc < 0.8 ? 'amber' : 'green'}`}>{Math.round(x.acc * 100)}%</span>}</td><td>{x.w}</td><td><button type="button" className="btn app-open" onClick={() => onStart(x.id)}>이 과목 고르기</button></td></tr>)}</tbody>
+      </table></div>
+      {!weeks ? <p className="small muted" style={{ margin: 0 }}>시험일을 넣으면 남은 기간을 주 단위로 나눠, 정답률이 낮은 과목부터 집중하는 계획을 만듭니다.</p> : (
+        <ul className="list">{rows.map(([w, focus, how]) => <li key={w}><span><b>{w}</b> {focus ? `집중: ${focus.map(f => f.name).join(', ')}` : '마무리'}</span><span className="small muted">{how}</span></li>)}</ul>
+      )}
+    </section>
   )
 }
