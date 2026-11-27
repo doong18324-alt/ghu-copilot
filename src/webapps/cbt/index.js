@@ -40,11 +40,13 @@ import dt3 from './dt3.js'
 import dt4 from './dt4.js'
 import dt5 from './dt5.js'
 import dt6 from './dt6.js'
+import dt7 from './dt7.js'
 import opt from './opt.js'
 import opt3 from './opt3.js'
 import opt4 from './opt4.js'
 import opt5 from './opt5.js'
 import opt6 from './opt6.js'
+import opt7 from './opt7.js'
 import him from './him.js'
 import him3 from './him3.js'
 import him4 from './him4.js'
@@ -63,8 +65,8 @@ export const MORE = {
   mt: [...mt, ...mt3, ...mt4, ...mt5, ...mt6, ...mt7],
   dh: [...dh, ...dh3, ...dh4, ...dh5, ...dh6, ...dh7],
   emt: [...emt, ...emt3, ...emt4, ...emt5, ...emt6, ...emt7],
-  dt: [...dt, ...dt3, ...dt4, ...dt5, ...dt6],
-  opt: [...opt, ...opt3, ...opt4, ...opt5, ...opt6],
+  dt: [...dt, ...dt3, ...dt4, ...dt5, ...dt6, ...dt7],
+  opt: [...opt, ...opt3, ...opt4, ...opt5, ...opt6, ...opt7],
   him: [...him, ...him3, ...him4, ...him5, ...him6],
   rd: [...rd, ...rd3, ...rd4, ...rd5, ...rd6],
 }
