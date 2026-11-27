@@ -20,47 +20,74 @@ const isNative = app => NATIVE_IDS.includes(app.id)
 
 // 앱을 새 탭으로 열고, 최근 사용 목록에 남깁니다.
 function useRecent() { return useStored('webapps:recent', []) }
-function OpenButton({ app, primary = true, label = '열기' }) {
+function OpenButton({ app, primary = false, label = '열기' }) {
   const [, setRecent] = useRecent()
   const remember = () => setRecent(r => [app.id, ...r.filter(x => x !== app.id)].slice(0, 6))
-  if (NATIVE_IDS.includes(app.id)) {
-    return <Link to={`/run/${app.id}`} className={primary ? 'btn primary app-open' : 'btn app-open'} onClick={remember}>{label}</Link>
-  }
+  const cls = primary ? 'get-btn solid' : 'get-btn'
+  if (isNative(app)) return <Link to={`/run/${app.id}`} className={cls} onClick={remember}>{label}</Link>
   return (
-    <a href={appUrl(app)} target="_blank" rel="noopener" className={primary ? 'btn primary app-open' : 'btn app-open'}
-      onClick={() => setRecent(r => [app.id, ...r.filter(x => x !== app.id)].slice(0, 6))}
-      aria-label={`${app.title} 새 탭에서 열기`}>{label === '열기' ? '새 탭에서 열기' : label}</a>
+    <a href={appUrl(app)} target="_blank" rel="noopener" className={cls} onClick={remember} aria-label={`${app.title} 새 탭에서 열기`}>
+      {label}<svg width="11" height="11" viewBox="0 0 12 12" aria-hidden="true"><path d="M4 2h6v6M10 2 3 9" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+    </a>
   )
 }
 
-// 앱 한 줄: 두 글자 마크, 이름과 설명, 대상·판, 열기
-function AppRow({ app, detail = true }) {
+// 앱 카드(앱스토어형): 아이콘, 이름, 분야·대상, 설명, 열기
+function AppCard({ app, detail = true }) {
   return (
-    <article className="app-row">
-      <AppMark app={app} />
-      <div className="app-row-body">
-        <h3>{detail ? <Link to={`/market/${app.id}`}>{app.title}</Link> : app.title}</h3>
-        <p>{app.summary}</p>
-        <span className="app-row-meta">{roleText(app)} <i aria-hidden="true" /> {isNative(app) ? <b className="ed-new">바이탈판</b> : <span className="ed-old">이전판, 새 탭에서 열림</span>}</span>
-        {!detail && app.caution && <p className="app-caution">{app.caution}</p>}
+    <article className="store-card">
+      <div className="store-card-top">
+        <AppMark app={app} size={64} />
+        <div className="store-card-title">
+          <h3>{detail ? <Link to={`/market/${app.id}`}>{app.title}</Link> : app.title}</h3>
+          <span>{app.category} · {roleText(app)}</span>
+        </div>
       </div>
-      <div className="app-row-act"><OpenButton app={app} /></div>
+      <p className="store-card-sum">{app.summary}</p>
+      {!detail && app.caution && <p className="app-caution">{app.caution}</p>}
+      <div className="store-card-foot">
+        <OpenButton app={app} />
+        {isNative(app) ? <span className="ed-new">바이탈판</span> : <span className="ed-old">이전판 · 새 탭</span>}
+      </div>
     </article>
   )
 }
 
-// 분야별로 묶어 보여 줍니다(분야 색이 마크 색과 같습니다).
+// 앱스토어 '투데이'처럼 새로 바뀐 앱을 크게 소개합니다.
+const FEATURED = [
+  ['license-cbt', '문제은행이 새로 바뀌었습니다', '10개 직종 과목별로 풀고, 문제지와 해설을 내려받습니다.'],
+  ['admission-studio', '성인학습자 홍보까지', '학과를 고르면 공개 정보가 채워지고, 독자에 맞춘 카드뉴스가 나옵니다.'],
+  ['rules-chatbot', '규정은 조항으로 답합니다', '학칙 PDF를 올리면 질문에 맞는 조항을 찾아 보여 줍니다.'],
+]
+
+function Featured() {
+  return (
+    <section className="feat-row" aria-label="새로 바뀐 앱">
+      {FEATURED.map(([id, head, sub]) => {
+        const app = appById(id)
+        if (!app) return null
+        return (
+          <article key={id} className={`feat t-${CATEGORY_TONE[app.category]}`}>
+            <span className="feat-kicker">새로 바뀐 앱</span>
+            <h2>{head}</h2>
+            <p>{sub}</p>
+            <div className="feat-app">
+              <AppMark app={app} size={44} />
+              <div><b>{app.title}</b><span>{app.category}</span></div>
+              <OpenButton app={app} primary />
+            </div>
+          </article>
+        )
+      })}
+    </section>
+  )
+}
+
+// 한 그리드에 분야 순서대로 놓습니다(분야는 아이콘 색과 카드 위 글자로 보입니다).
 function Shelves({ apps, detail = true }) {
-  const cats = CATEGORIES.filter(c => apps.some(a => a.category === c))
-  return cats.map(c => {
-    const list = apps.filter(a => a.category === c)
-    return (
-      <section key={c} className={`shelf t-${CATEGORY_TONE[c]}`}>
-        <h2 className="shelf-h">{c}<span>{list.length}</span></h2>
-        <div className="shelf-list">{list.map(a => <AppRow key={a.id} app={a} detail={detail} />)}</div>
-      </section>
-    )
-  })
+  const order = a => CATEGORIES.indexOf(a.category)
+  const sorted = [...apps].sort((x, y) => order(x) - order(y) || (isNative(y) - isNative(x)))
+  return <div className="store-grid">{sorted.map(a => <AppCard key={a.id} app={a} detail={detail} />)}</div>
 }
 
 function SearchBox({ value, onChange, id = 'market-q', placeholder = '앱 이름이나 할 일로 찾기 (예: 국시, 공지, 민원)' }) {
@@ -100,6 +127,8 @@ export function AppMarket() {
         <SearchBox value={q} onChange={v => set('q', v)} />
       </section>
 
+      {!q && role === 'all' && cat === 'all' && <Featured />}
+
       <section className="stack" style={{ gap: 12 }}>
         <Chips label="대상 선택" value={role} onChange={v => set('role', v)} options={[['all', '전체'], ...Object.entries(MARKET_ROLES)]} />
         <Chips label="분야 선택" value={cat} onChange={v => set('cat', v)} options={[['all', '모든 분야'], ...usedCats.map(c => [c, c])]} />
@@ -137,7 +166,7 @@ export function AppDetail() {
           <h1 className="page-title">{app.title}</h1>
           <span className="row" style={{ gap: 6 }}><span className="badge">{app.category}</span><RoleBadges app={app} /><span className="badge">{app.version}</span>{isNative(app) ? <span className="badge green">바이탈판</span> : <span className="badge">이전판 · 새 탭</span>}</span>
           <p style={{ margin: 0, fontSize: 17, lineHeight: 1.65 }}>{app.summary}</p>
-          <div className="row"><OpenButton app={app} label="앱 열기" /></div>
+          <div className="row"><OpenButton app={app} label="앱 열기" primary /></div>
         </div>
       </section>
       <div className="grid-2">
@@ -156,7 +185,7 @@ export function AppDetail() {
       {related.length > 0 && (
         <section className="stack" style={{ gap: 16 }}>
           <h2 className="home-h">같은 분야의 앱</h2>
-          <div className="shelf-list">{related.map(a => <AppRow key={a.id} app={a} />)}</div>
+          <div className="store-grid">{related.map(a => <AppCard key={a.id} app={a} />)}</div>
         </section>
       )}
     </div>
@@ -192,21 +221,21 @@ export function RoleApps({ role }) {
 
       {found ? (
         found.length === 0 ? <Empty>찾는 앱이 없습니다. <Link to={`/market?q=${encodeURIComponent(q)}`}>앱마켓 전체에서 찾기</Link></Empty>
-          : <div className="shelf-list">{found.map(a => <AppRow key={a.id} app={a} detail={false} />)}</div>
+          : <div className="store-grid">{found.map(a => <AppCard key={a.id} app={a} detail={false} />)}</div>
       ) : (
         <>
           {recentApps.length > 0 && (
             <Card title="최근 사용">
-              <div className="row" style={{ gap: 8 }}>{recentApps.map(a => <OpenButton key={a.id} app={a} primary={false} label={a.title} />)}</div>
+              <div className="row" style={{ gap: 8 }}>{recentApps.map(a => <OpenButton key={a.id} app={a} label={a.title} />)}</div>
             </Card>
           )}
           <section className="stack" style={{ gap: 14 }}>
             <h2 className="section-h">{CORE_LABEL[role]}</h2>
-            <div className="shelf-list">{core.map(a => <AppRow key={a.id} app={a} detail={false} />)}</div>
+            <div className="store-grid">{core.map(a => <AppCard key={a.id} app={a} detail={false} />)}</div>
           </section>
           <section className="stack" style={{ gap: 14 }}>
             <h2 className="section-h">모든 구성원 공통</h2>
-            <div className="shelf-list">{common.map(a => <AppRow key={a.id} app={a} detail={false} />)}</div>
+            <div className="store-grid">{common.map(a => <AppCard key={a.id} app={a} detail={false} />)}</div>
           </section>
         </>
       )}
