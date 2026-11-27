@@ -130,12 +130,12 @@ export const WEBAPPS = [
     caution: '질환이 있으면 식단은 담당 의료진과 상의하세요.',
   },
   {
-    id: 'home-massage', mono: '손길', tone: 'blue', version: 'V2',
+    id: 'home-massage', mono: '손길', tone: 'blue', version: 'V3',
     title: '가족 맞춤 안전 홈 안마·지압',
-    summary: '통증 부위와 기저질환을 고르면 위험한 부위와 동작을 빼고 안전한 지압·스트레칭을 안내합니다.',
+    summary: '불편한 부위와 건강 상태를 고르면 근육 위치 기준의 안전한 안마와 마무리 스트레칭을 안내합니다. 안마하면 안 되는 위험 신호를 먼저 거릅니다.',
     roles: ['student', 'faculty', 'staff'], category: '건강·생활',
     tags: ['안마', '지압', '마사지', '스트레칭', '통증', '부모님', '관절염'],
-    features: ['대상 가족 선택', '기저질환별 금기 부위 제외', '단계별 동작 안내'],
+    features: ['위험 신호 먼저 확인', '건강 상태 9가지별 강도·금지 동작 자동 반영', '부위별 안마 순서와 마무리 스트레칭', '안마 타이머'],
     caution: '통증이 심하거나 오래가면 의료기관 진료를 먼저 받으세요.',
   },
   {
@@ -151,7 +151,7 @@ export const WEBAPPS = [
 
 export const appUrl = a => `./webapps/${a.id}.html`
 // 바이탈 디자인으로 다시 만든 앱(src/webapps/index.js에 등록)은 이 목록에 있습니다.
-export const NATIVE_IDS = ['press-notice', 'toast-maker', 'mind-rest', 'advising-guide', 'rules-chatbot', 'complaint-script', 'easy-explainer', 'license-cbt', 'admission-studio', 'career-clinic']
+export const NATIVE_IDS = ['press-notice', 'toast-maker', 'mind-rest', 'advising-guide', 'rules-chatbot', 'complaint-script', 'easy-explainer', 'license-cbt', 'admission-studio', 'career-clinic', 'home-massage']
 export const appById = id => WEBAPPS.find(a => a.id === id)
 
 // 띄어쓰기·대소문자와 관계없이 제목, 설명, 태그, 기능에서 찾습니다.
