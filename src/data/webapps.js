@@ -71,6 +71,15 @@ export const WEBAPPS = [
     caution: '의견 분류는 낱말 규칙이라 틀릴 수 있습니다. 분류 표를 확인한 뒤 계획서를 고쳐 쓰세요.',
   },
   {
+    id: 'senior-fitness', mono: '체력', tone: 'green', version: 'V1', isNew: true,
+    title: '노인 체력 측정 결과지·운동 처방 카드',
+    summary: '노인체력검사(SFT) 6개 항목 측정값을 연령·성별 정상 범위와 비교하고, 어르신용 큰 글씨 결과지와 빈도·강도·시간·종류 운동 카드를 만듭니다.',
+    roles: ['student', 'faculty', 'staff'], category: '건강·생활',
+    tags: ['노인체력', 'SFT', '체력측정', '운동처방', 'FITT', '시니어', '어르신', '의자 앉았다 일어서기', '방문운동', '통합돌봄'],
+    features: ['30초 의자 앉았다 일어서기 등 6개 항목', '연령·성별 정상 범위(출처 표기)와 비교', '부족한 체력부터 운동 카드', '운동 전 확인 항목'],
+    caution: '기준은 미국 지역사회 노인 표본(Jones & Rikli 2002)이라 참고용입니다. 질환이 있으면 의료진 확인 뒤 운동을 시작하세요.',
+  },
+  {
     id: 'easy-explainer', mono: '쉽게', tone: 'amber', version: 'V2',
     title: '어려운 개념 쉽게 풀기·미니 퀴즈',
     summary: '전공 문장이나 기사를 붙여 넣으면 어려운 문장과 용어를 짚어 주고 퀴즈를 냅니다. AI 연결 후에는 눈높이 설명과 비유까지 만듭니다.',
@@ -196,7 +205,7 @@ export const WEBAPPS = [
 
 export const appUrl = a => `./webapps/${a.id}.html`
 // 바이탈 디자인으로 다시 만든 앱(src/webapps/index.js에 등록)은 이 목록에 있습니다.
-export const NATIVE_IDS = ['press-notice', 'toast-maker', 'mind-rest', 'advising-guide', 'rules-chatbot', 'complaint-script', 'easy-explainer', 'license-cbt', 'admission-studio', 'career-clinic', 'home-massage', 'diet-planner', 'pet-signal', 'voucher-checker', 'future-strategy', 'privacy-shield', 'item-analysis', 'grading-helper', 'reflection-journal', 'lecture-cqi']
+export const NATIVE_IDS = ['press-notice', 'toast-maker', 'mind-rest', 'advising-guide', 'rules-chatbot', 'complaint-script', 'easy-explainer', 'license-cbt', 'admission-studio', 'career-clinic', 'home-massage', 'diet-planner', 'pet-signal', 'voucher-checker', 'future-strategy', 'privacy-shield', 'item-analysis', 'grading-helper', 'reflection-journal', 'lecture-cqi', 'senior-fitness']
 export const appById = id => WEBAPPS.find(a => a.id === id)
 
 // 띄어쓰기·대소문자와 관계없이 제목, 설명, 태그, 기능에서 찾습니다.

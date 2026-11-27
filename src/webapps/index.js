@@ -22,4 +22,5 @@ export const NATIVE = {
   'grading-helper': lazy(() => import('./grading-helper.jsx')),
   'reflection-journal': lazy(() => import('./reflection-journal.jsx')),
   'lecture-cqi': lazy(() => import('./lecture-cqi.jsx')),
+  'senior-fitness': lazy(() => import('./senior-fitness.jsx')),
 }
