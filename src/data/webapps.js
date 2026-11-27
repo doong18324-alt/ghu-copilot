@@ -62,6 +62,15 @@ export const WEBAPPS = [
     caution: '자동 가림은 정해진 모양만 찾습니다. 제출 전 환자를 알아볼 수 있는 내용이 없는지 다시 읽어 보세요.',
   },
   {
+    id: 'lecture-cqi', mono: 'CQI', tone: 'amber', version: 'V1', isNew: true,
+    title: '강의개선·CQI 계획서 도우미',
+    summary: '강의평가 점수와 서술 의견, 학습목표 달성도를 넣으면 강점·약점을 나누고 개선 과제·실행 시기·확인 지표가 있는 CQI 계획을 만듭니다.',
+    roles: ['faculty'], category: '학습·국가고시',
+    tags: ['CQI', '강의평가', '강의개선', '환류', '교육과정', '학습목표', '성취도', '인증평가'],
+    features: ['비교 점수 대비 강점·약점 문항', '서술 의견 주제·긍정/보완 분류', '주제별 개선 과제와 확인 지표', '보고서용 개조식 문장'],
+    caution: '의견 분류는 낱말 규칙이라 틀릴 수 있습니다. 분류 표를 확인한 뒤 계획서를 고쳐 쓰세요.',
+  },
+  {
     id: 'easy-explainer', mono: '쉽게', tone: 'amber', version: 'V2',
     title: '어려운 개념 쉽게 풀기·미니 퀴즈',
     summary: '전공 문장이나 기사를 붙여 넣으면 어려운 문장과 용어를 짚어 주고 퀴즈를 냅니다. AI 연결 후에는 눈높이 설명과 비유까지 만듭니다.',
@@ -187,7 +196,7 @@ export const WEBAPPS = [
 
 export const appUrl = a => `./webapps/${a.id}.html`
 // 바이탈 디자인으로 다시 만든 앱(src/webapps/index.js에 등록)은 이 목록에 있습니다.
-export const NATIVE_IDS = ['press-notice', 'toast-maker', 'mind-rest', 'advising-guide', 'rules-chatbot', 'complaint-script', 'easy-explainer', 'license-cbt', 'admission-studio', 'career-clinic', 'home-massage', 'diet-planner', 'pet-signal', 'voucher-checker', 'future-strategy', 'privacy-shield', 'item-analysis', 'grading-helper', 'reflection-journal']
+export const NATIVE_IDS = ['press-notice', 'toast-maker', 'mind-rest', 'advising-guide', 'rules-chatbot', 'complaint-script', 'easy-explainer', 'license-cbt', 'admission-studio', 'career-clinic', 'home-massage', 'diet-planner', 'pet-signal', 'voucher-checker', 'future-strategy', 'privacy-shield', 'item-analysis', 'grading-helper', 'reflection-journal', 'lecture-cqi']
 export const appById = id => WEBAPPS.find(a => a.id === id)
 
 // 띄어쓰기·대소문자와 관계없이 제목, 설명, 태그, 기능에서 찾습니다.
