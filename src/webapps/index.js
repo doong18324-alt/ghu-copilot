@@ -16,4 +16,5 @@ export const NATIVE = {
   'diet-planner': lazy(() => import('./diet-planner.jsx')),
   'pet-signal': lazy(() => import('./pet-signal.jsx')),
   'voucher-checker': lazy(() => import('./voucher-checker.jsx')),
+  'future-strategy': lazy(() => import('./future-strategy.jsx')),
 }

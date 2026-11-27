@@ -87,12 +87,12 @@ export const WEBAPPS = [
     caution: '올리는 규정이 최신 개정본인지 먼저 확인하세요.',
   },
   {
-    id: 'future-strategy', mono: '전략', tone: 'blue', version: 'V8',
-    title: '미래전략 추천·수익성 분석',
-    summary: '대학·지역·주변 대학 자료를 바탕으로 학과·MD·평생교육 개설안을 추천하고 손익분기를 계산합니다.',
+    id: 'future-strategy', mono: '전략', tone: 'blue', version: 'V9',
+    title: '미래전략: 학과 진단·개설 후보·수익성 계산',
+    summary: '공시 표를 붙여 넣어 학과를 진단하고, 우리 대학 여건과 맞는 학과·MD·평생교육 후보를 비교하며, 넣은 값으로 손익분기를 계산합니다. 점수나 수치를 지어내지 않습니다.',
     roles: ['staff', 'faculty'], category: '기획·홍보',
     tags: ['기획', '학과 개편', '평생교육', 'MD', '수익성', '손익분기', 'BEP', '재정', '공시'],
-    features: ['공시·CSV 기초자료 불러오기', '학과·MD·평생교육 추천', '재정·BEP 시뮬레이션'],
+    features: ['대학알리미 표 붙여넣기와 기준 조정 진단', '여건과 맞는 개수로 보는 개설 후보', '공식이 보이는 수익성·손익분기 계산', '위원회 검토 자료'] ,
   },
   {
     id: 'admission-studio', mono: '입시', tone: 'amber', version: 'V2',
@@ -151,7 +151,7 @@ export const WEBAPPS = [
 
 export const appUrl = a => `./webapps/${a.id}.html`
 // 바이탈 디자인으로 다시 만든 앱(src/webapps/index.js에 등록)은 이 목록에 있습니다.
-export const NATIVE_IDS = ['press-notice', 'toast-maker', 'mind-rest', 'advising-guide', 'rules-chatbot', 'complaint-script', 'easy-explainer', 'license-cbt', 'admission-studio', 'career-clinic', 'home-massage', 'diet-planner', 'pet-signal', 'voucher-checker']
+export const NATIVE_IDS = ['press-notice', 'toast-maker', 'mind-rest', 'advising-guide', 'rules-chatbot', 'complaint-script', 'easy-explainer', 'license-cbt', 'admission-studio', 'career-clinic', 'home-massage', 'diet-planner', 'pet-signal', 'voucher-checker', 'future-strategy']
 export const appById = id => WEBAPPS.find(a => a.id === id)
 
 // 띄어쓰기·대소문자와 관계없이 제목, 설명, 태그, 기능에서 찾습니다.
