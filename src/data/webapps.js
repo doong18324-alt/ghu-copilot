@@ -17,6 +17,15 @@ export const CATEGORIES = ['학습·국가고시', '취업·진로', '학생 지
 // caution: 사용 전 꼭 알려야 할 내용
 export const WEBAPPS = [
   {
+    id: 'vital-oncare', mono: '온케어', tone: 'green', version: 'V1', isNew: true,
+    title: 'GHU 바이탈 온케어: 다학제 지역사회 건강관리',
+    summary: '10개 보건계열 학과가 휴대폰 센서와 카메라로 지역 주민을 평가하고, 결과를 하나의 건강지도와 맞춤계획으로 묶어 지속 관리합니다.',
+    roles: ['faculty', 'student'], category: '건강·생활',
+    tags: ['온케어', 'OnCare', '지역사회', '다학제', '건강평가', '균형', 'TUG', '보행속도', '시력', '청력', 'Mini-Cog', 'SPPB', '근감소증', '낙상', '물리치료', '간호', '치위생', '임상병리', '응급구조', '안경광학', '식품영양', '방사선', '시니어운동처방'],
+    features: ['영유아부터 노인까지 연령대별 평가 항목 자동 구성', '휴대폰 측정 19종(균형, 의자 일어서기, TUG, 보행속도, 카메라 맥박, 시력, 청력 등)과 문진 도구 20종', '학과 결과를 묶은 SPPB·근감소증 선별·낙상 위험 종합 지표', '건강확인 → 건강지도 → 맞춤계획 → 지속관리 → 성과보고'],
+    caution: '시제품입니다. 건강관리·교육·선별 목적이며 진단이나 치료를 대신하지 않습니다. 데이터는 이 기기 브라우저에만 저장됩니다.',
+  },
+  {
     id: 'privacy-shield', mono: '가림', tone: 'red', version: 'V1', isNew: true,
     title: '개인정보 가명처리기: AI에 넣기 전에 가리기',
     summary: '이름·학번·연락처·계좌·등록번호를 찾아 "학생A", "[전화1]"로 바꾸고, AI 결과를 붙여 넣으면 원래 값으로 되돌립니다.',
@@ -205,7 +214,7 @@ export const WEBAPPS = [
 
 export const appUrl = a => `./webapps/${a.id}.html`
 // 바이탈 디자인으로 다시 만든 앱(src/webapps/index.js에 등록)은 이 목록에 있습니다.
-export const NATIVE_IDS = ['press-notice', 'toast-maker', 'mind-rest', 'advising-guide', 'rules-chatbot', 'complaint-script', 'easy-explainer', 'license-cbt', 'admission-studio', 'career-clinic', 'home-massage', 'diet-planner', 'pet-signal', 'voucher-checker', 'future-strategy', 'privacy-shield', 'item-analysis', 'grading-helper', 'reflection-journal', 'lecture-cqi', 'senior-fitness']
+export const NATIVE_IDS = ['press-notice', 'toast-maker', 'mind-rest', 'advising-guide', 'rules-chatbot', 'complaint-script', 'easy-explainer', 'license-cbt', 'admission-studio', 'career-clinic', 'home-massage', 'diet-planner', 'pet-signal', 'voucher-checker', 'future-strategy', 'privacy-shield', 'item-analysis', 'grading-helper', 'reflection-journal', 'lecture-cqi', 'senior-fitness', 'vital-oncare']
 export const appById = id => WEBAPPS.find(a => a.id === id)
 
 // 띄어쓰기·대소문자와 관계없이 제목, 설명, 태그, 기능에서 찾습니다.

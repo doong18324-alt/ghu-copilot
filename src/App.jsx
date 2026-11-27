@@ -1,3 +1,5 @@
+import { lazy, Suspense } from 'react'
+const VitalOnCare = lazy(() => import('./webapps/vital-oncare.jsx'))
 import { Routes, Route, Navigate } from 'react-router-dom'
 import Layout from './components/Layout.jsx'
 import { ChatPage, FilesPage, Login, TaskPage } from './pages/common.jsx'
@@ -65,6 +67,7 @@ export default function App() {
         <Route path="training" element={<Training />} />
         <Route path="achievements" element={<Achievements />} />
         <Route path="webapps" element={<RoleApps role="faculty" />} />
+        <Route path="oncare" element={<Suspense fallback={null}><VitalOnCare /></Suspense>} />
         <Route path="prompts" element={<PromptLibrary role="faculty" />} />
         <Route path="manuals" element={<ManualLibrary role="faculty" />} />
         <Route path="files" element={<FilesPage />} />
@@ -83,6 +86,7 @@ export default function App() {
         <Route path="resume" element={<Resume />} />
         <Route path="achievements" element={<Achievements />} />
         <Route path="webapps" element={<RoleApps role="student" />} />
+        <Route path="oncare" element={<Suspense fallback={null}><VitalOnCare /></Suspense>} />
         <Route path="prompts" element={<PromptLibrary role="student" />} />
         <Route path="manuals" element={<ManualLibrary role="student" />} />
         <Route path="files" element={<FilesPage />} />
