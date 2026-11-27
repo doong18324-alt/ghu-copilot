@@ -1,0 +1,56 @@
+* { box-sizing: border-box }
+body { margin: 0; font-family: 'Noto Sans CJK KR'; color: #1a1a1a; word-break: keep-all; -webkit-print-color-adjust: exact }
+.page { width: 210mm; height: 297mm; position: relative; overflow: hidden; page-break-after: always; background: #fff }
+.cover { background: #141414; color: #fff }
+.cover .vl { position: absolute; left: 24mm; top: 22mm; bottom: 40mm; width: .45mm; background: #fff; opacity: .8 }
+.cover .hl { position: absolute; left: 18mm; right: 22mm; bottom: 52mm; height: .45mm; background: #fff; opacity: .8 }
+.cover .who { position: absolute; left: 32mm; top: 62mm; font-size: 10pt; letter-spacing: .03em; color: #cfcfcf }
+.cover h1 { position: absolute; left: 32mm; right: 24mm; top: 74mm; margin: 0; font-size: 31pt; line-height: 1.24; font-weight: 900; letter-spacing: -.02em }
+.cover h1 span, .cover h1 em { display: block; font-style: normal }
+.cover h1 em { color: #F05A3C }
+.cover .no { position: absolute; right: 22mm; top: 22mm; font-size: 9pt; color: #bdbdbd; text-align: right; line-height: 1.6; max-width: 90mm }
+.cover .no b { display: block; font-size: 30pt; color: #fff; font-weight: 900 }
+.cover .org { position: absolute; left: 32mm; bottom: 30mm; font-size: 9pt; color: #9a9a9a }
+.open .blk { position: absolute; right: 0; top: 0; width: 92mm; height: 112mm; background: #F05A3C }
+.open .blk span { position: absolute; left: 10mm; right: 10mm; bottom: 10mm; color: #fff; font-size: 9.5pt; line-height: 1.6 }
+.open .blk span.k { bottom: 17mm; font-weight: 700; font-size: 8pt; letter-spacing: .05em; opacity: .9 }
+.open .vl { position: absolute; left: 22mm; top: 30mm; height: 112mm; width: .45mm; background: #F05A3C }
+.open .chap { position: absolute; left: 30mm; top: 30mm; font-size: 9pt; color: #777; letter-spacing: .03em; width: 75mm }
+.open h2 { position: absolute; left: 30mm; top: 42mm; width: 76mm; margin: 0; font-size: 19pt; line-height: 1.38; color: #F05A3C; font-weight: 800; letter-spacing: -.01em }
+.open .summary { position: absolute; left: 30mm; right: 22mm; top: 128mm; font-size: 10.5pt; line-height: 1.75; color: #333 }
+.open .summary p { margin: 0 0 3mm }
+.open .meta { position: absolute; left: 30mm; right: 22mm; bottom: 30mm; margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 7mm 12mm; border-top: .45mm solid #1a1a1a; padding-top: 6mm }
+.open .meta dt { font-size: 8pt; color: #F05A3C; font-weight: 700; margin-bottom: 1.5mm; letter-spacing: .03em }
+.open .meta dd { margin: 0; font-size: 10pt; line-height: 1.55 }
+/* 본문 */
+.bodydoc { font-size: 10pt; line-height: 1.72 }
+.bodydoc h1 { font-size: 17pt; line-height: 1.35; margin: 2mm 0 5mm; padding-bottom: 3mm; border-bottom: .45mm solid #1a1a1a; font-weight: 800; letter-spacing: -.01em; break-after: avoid }
+.bodydoc h1.brk { break-before: page }
+.bodydoc h1 i { font-style: normal; color: #F05A3C; margin-right: 2.5mm; font-weight: 900 }
+.bodydoc h2 { font-size: 12.8pt; margin: 8mm 0 3mm; font-weight: 800; color: #1a1a1a; border-left: 1.6mm solid #F05A3C; padding-left: 3mm; line-height: 1.4; break-after: avoid }
+.bodydoc h3 { font-size: 11pt; margin: 6mm 0 2mm; font-weight: 800; color: #F05A3C; break-after: avoid }
+.bodydoc h4 { font-size: 10.5pt; margin: 4mm 0 1.5mm; font-weight: 700 }
+.bodydoc p { margin: 0 0 2.6mm; text-align: justify }
+.bodydoc ul, .bodydoc ol { margin: 0 0 3mm; padding-left: 5.5mm }
+.bodydoc li { margin: 0 0 1.2mm }
+.bodydoc li > p { margin: 0 }
+.bodydoc strong { font-weight: 700; color: #000 }
+.bodydoc table { width: 100%; border-collapse: collapse; margin: 3mm 0 5mm; font-size: 8.8pt; line-height: 1.5; break-inside: auto; border-top: .45mm solid #1a1a1a; border-bottom: .45mm solid #1a1a1a }
+.bodydoc th { text-align: left; font-weight: 700; padding: 1.6mm 2mm; border-bottom: .3mm solid #1a1a1a; vertical-align: top }
+.bodydoc td { padding: 1.5mm 2mm; border-bottom: .2mm solid #d4d4d4; vertical-align: top }
+.bodydoc td p, .bodydoc th p { margin: 0; text-align: left }
+.bodydoc tr { break-inside: avoid }
+.bodydoc thead tr:first-child th { color: #F05A3C }
+.bodydoc colgroup { display: none }
+.prompt { background: #141414; color: #ececec; border-left: 2mm solid #F05A3C; padding: 4mm 5.5mm 3mm; margin: 3mm 0 5mm; font-size: 9.2pt; line-height: 1.65; break-inside: avoid-page }
+.prompt .plab { font-size: 7.5pt; font-weight: 700; color: #F05A3C; letter-spacing: .05em; margin-bottom: 1.8mm }
+.prompt p { white-space: pre-wrap; text-align: left; margin: 0 0 1.6mm }
+.prompt strong { color: #fff }
+.prompt ul, .prompt ol { margin: 0 0 1.6mm }
+.qprompt, .q { background: #f3f3f3; border-left: 1.2mm solid #F05A3C }
+.qprompt { padding: 2.5mm 4mm; text-align: left !important }
+.q { display: block; padding: 1.8mm 3.5mm; margin: 1.2mm 0; font-size: 9.4pt }
+hr { border: 0; border-top: .2mm solid #ccc; margin: 5mm 0 }
+
+.bodydoc h1 .sub { display: block; font-size: 9pt; font-weight: 500; color: #888; margin-top: 1.5mm; letter-spacing: .02em }
+.bodydoc h2 .sub, .bodydoc h3 .sub { display: block; font-size: 8.5pt; font-weight: 500; color: #888 }

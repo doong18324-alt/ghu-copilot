@@ -123,7 +123,7 @@ const ROLE_NAME = { student: '학생', faculty: '교수', staff: '직원' }
 function ManualRow({ m }) {
   return (
     <li>
-      <span style={{ minWidth: 0 }}>{m.title}<br /><span className="muted small">PDF · {m.pages}쪽 · {(m.size / 1024 / 1024).toFixed(1)}MB</span></span>
+      <span style={{ minWidth: 0 }}><b>{m.title}</b>{m.desc && <><br /><span className="small" style={{ color: 'var(--ink-2, #4b5563)' }}>{m.desc}</span></>}<br /><span className="muted small">A4 PDF · {m.pages}쪽 · {(m.size / 1024 / 1024).toFixed(1)}MB</span></span>
       <span className="row" style={{ gap: 6, flex: 'none' }}>
         <a className="btn app-open" href={manualUrl(m)} target="_blank" rel="noopener">PDF 보기</a>
         {m.docx && <a className="btn app-open" href={manualUrl(m, 'docx')} download>워드 양식</a>}
@@ -135,11 +135,11 @@ function ManualRow({ m }) {
 export function ManualLibrary({ role }) {
   const [who, setWho] = useState(role || 'all')
   const [q, setQ] = useState('')
-  const list = MANUALS.filter(m => (who === 'all' || m.roles.includes(who)) && has(m.title + ' ' + m.group, q))
+  const list = MANUALS.filter(m => (who === 'all' || m.roles.includes(who)) && has(m.title + ' ' + m.group + ' ' + (m.desc || ''), q))
   const groups = MANUAL_GROUPS.filter(([g]) => list.some(m => m.group === g))
   return (
     <>
-      <PageHead title="AI 활용 매뉴얼" desc="학생 학습 트랙, 교수자·직원 업무 매뉴얼, 전공융합 가이드와 수업설계 양식을 한곳에서 내려받습니다." />
+      <PageHead title="AI 활용 매뉴얼" desc="학생 학습 트랙, 교수자·직원 업무 매뉴얼, 전공융합 가이드와 수업설계 양식입니다. 2026년 11월에 모두 A4 판형으로 다시 짜고, 프롬프트는 복사해 쓸 수 있게 상자로 나눴습니다." />
       <Card>
         <Search id="manual-q" value={q} onChange={setQ} placeholder="매뉴얼 제목으로 찾기 (예: 국가고시, 회의록, 루브릭)" />
         <Chips label="대상 선택" value={who} onChange={setWho} options={[['all', '전체'], ...Object.entries(ROLE_NAME)]} />
