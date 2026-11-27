@@ -69,12 +69,12 @@ export const WEBAPPS = [
     features: ['보도자료·공지문 양식 선택', '담당자 인용 코멘트', '문서 톤 선택'],
   },
   {
-    id: 'voucher-checker', mono: '결의', tone: 'amber', version: 'V2', stored: true,
+    id: 'voucher-checker', mono: '결의', tone: 'amber', version: 'V3', stored: true,
     title: '산학협력단 결의서 스마트 검증기',
     summary: '사업별 집행 지침을 등록하고 결의서의 금액·일자·필수 증빙을 지침과 대조해 점검합니다.',
     roles: ['staff', 'faculty'], category: '행정·문서',
     tags: ['결의서', '연구비', '사업비', '산학협력단', '증빙', '집행 지침', '회계', '정산'],
-    features: ['집행 지침 PDF 자동 분석', '회계 산식·일자 선후관계 점검', '비목별 필수 증빙 대조', '검증 결과서 출력'],
+    features: ['지침 PDF에서 한도·제한·필수 증빙 자동 추출(직접 수정 가능)', '증빙별 부가세 산식, 결제 요일, 품의-집행 선후 점검', '사업자등록번호 검증', '점검 결과서와 보완 요청문'],
     caution: '최종 판단은 산학협력단 담당자가 합니다.',
   },
   {
@@ -151,7 +151,7 @@ export const WEBAPPS = [
 
 export const appUrl = a => `./webapps/${a.id}.html`
 // 바이탈 디자인으로 다시 만든 앱(src/webapps/index.js에 등록)은 이 목록에 있습니다.
-export const NATIVE_IDS = ['press-notice', 'toast-maker', 'mind-rest', 'advising-guide', 'rules-chatbot', 'complaint-script', 'easy-explainer', 'license-cbt', 'admission-studio', 'career-clinic', 'home-massage', 'diet-planner', 'pet-signal']
+export const NATIVE_IDS = ['press-notice', 'toast-maker', 'mind-rest', 'advising-guide', 'rules-chatbot', 'complaint-script', 'easy-explainer', 'license-cbt', 'admission-studio', 'career-clinic', 'home-massage', 'diet-planner', 'pet-signal', 'voucher-checker']
 export const appById = id => WEBAPPS.find(a => a.id === id)
 
 // 띄어쓰기·대소문자와 관계없이 제목, 설명, 태그, 기능에서 찾습니다.
