@@ -4,6 +4,7 @@ import { Card, PageHead, Empty } from '../components/ui.jsx'
 import { useStored, uid, roleFromPath } from '../lib/store.js'
 import { josa } from '../lib/korean.js'
 import shotBody from '../assets/apps/body-aligner.jpg'
+import shotOncare from '../assets/apps/vital-oncare.jpg'
 import shotGait from '../assets/apps/gait-analyzer.jpg'
 import shotBalloon from '../assets/apps/balloon-exercise.jpg'
 import shotPpe from '../assets/apps/ppe-concept.jpg'
@@ -449,6 +450,10 @@ export function Cover({ item, className = '' }) {
 const PROF = { role: 'faculty', author: '김현중', dept: '시니어운동처방학과', email: 'hjkim@ghu.ac.kr' }
 const APP_NOTE = '생성형 AI와 대화하며 코드를 작성하는 방식으로 제작했고, 설치 없이 웹 브라우저에서 사용합니다.'
 export const FEATURED = [
+  { ...PROF, id: 'real-vital-oncare', type: 'AI 앱·에이전트 개발', date: '2026-11-27', photo: shotOncare, caption: 'GHU 바이탈 온케어 첫 화면', link: 'https://doong18324-alt.github.io/vital-oncare/',
+    title: 'GHU 바이탈 온케어(Vital OnCare): 휴대폰 하나로 하는 다학제 지역사회 전신 건강관리',
+    summary: '10개 보건계열 학과가 휴대폰으로 지역 주민을 평가하고, 결과를 하나의 건강지도와 맞춤계획으로 묶어 지속 관리하는 웹앱입니다.',
+    desc: '지역사회 건강평가는 학과별로 따로 이루어져 한 주민의 상태를 전신 관점에서 함께 보기 어렵고, 장비가 없는 현장에서는 객관적 측정이 어렵습니다. 바이탈 온케어는 휴대폰 센서와 카메라로 현장에서 바로 측정하고, 여러 학과의 결과를 하나의 건강지도와 맞춤계획으로 묶어 지속 관리하도록 만든 웹앱입니다.\n참여 학과는 물리치료학과, 시니어운동처방학과, 간호학과, 임상병리학과, 응급구조학과, 치위생학과, 치기공학과, 안경광학과, 식품영양학과, 방사선학과의 10개 학과입니다. 영유아·아동, 청소년, 성인, 노인 가운데 대상자의 연령대를 고르면 평가 항목이 그에 맞게 구성됩니다.\n휴대폰으로 측정하는 항목은 균형 검사, 의자 일어서기, TUG, 보행속도, 관절가동범위, 자세 정렬, 얼굴·손가락 카메라 맥박, CPR 교육 피드백, 원거리·근거리 시력, 암슬러 격자, 청력 선별, 인지 선별(Mini-Cog), 선 잇기, 반응속도, 구강 사진, 교합·보철 사진, 소변 시험지 기록 등 19개이며, 문진·입력 도구 20개가 함께 들어 있습니다. 학과별 결과를 묶어 SPPB, 근감소증 선별, 낙상 위험 종합 같은 통합 지표를 자동으로 산출합니다.\n화면은 건강확인, 건강지도, 맞춤계획, 지속관리, 성과보고 순서로 이어집니다. 건강관리·교육·선별 목적의 도구이며 진단이나 치료를 대신하지 않고, 모든 결과는 면허를 가진 지도교수가 확인합니다.\n현재는 시제품 단계로, 아이폰과 안드로이드 브라우저에서 설치 없이 실행됩니다. 기획, 평가 항목 근거 검토, 웹앱 설계·코드 작성과 배포에는 Claude(Anthropic)를, 얼굴·자세 인식(카메라 맥박, 보행속도, 자세 정렬)에는 Google MediaPipe를 활용했습니다.\n앞으로 학과별 지도교수 검토로 평가 기준을 확정하고, 보행분석·HRV·악력계 등 기준 장비와 휴대폰 측정값을 비교해 검증할 계획입니다. 이후 GHU 바이탈에 탑재해 학교 통합인증(SSO)과 서버 저장을 연동하고, 지후 AI의 결과 요약·안내문 생성 기능과 연결해 스마트케어빌리지 등 지역 거점에서 시범 적용할 예정입니다.' },
   { ...PROF, id: 'real-body-aligner', type: 'AI 앱·에이전트 개발', date: '2026-04-13', photo: shotBody, caption: 'BodyAligner 첫 화면',
     title: 'BodyAligner: 카메라로 하는 체형분석 웹앱',
     summary: '앞면·옆면·뒷면을 촬영하면 대칭성과 관절 각도를 분석하고 운동처방까지 제시합니다.',

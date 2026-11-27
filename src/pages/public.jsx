@@ -452,6 +452,7 @@ export function Article() {
       <div className="article-body">
         {paras.length ? paras.map((t, i) => <p key={i}>{t}</p>) : <p className="muted">본문이 없습니다.</p>}
       </div>
+      {x.link && <div><a href={x.link} target="_blank" rel="noreferrer" className="btn primary" style={{ display: 'inline-flex', textDecoration: 'none' }}>결과물 열어 보기</a></div>}
       <ContactButton email={x.email} />
       {more.length > 0 && (
         <section className="stack" style={{ gap: 16 }}>
