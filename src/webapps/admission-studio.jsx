@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { AppHeader, Field, TextInput, TextArea, ChipGroup, ResultDoc, AiRefine, Notice } from './kit.jsx'
 import { josa } from '../lib/korean.js'
-import { buildPrompts } from './admission-prompts.js'
+import { buildPrompts, buildVideoPlan, PLATFORMS, STYLES } from './admission-prompts.js'
 import { DEPTS, deptByName, deptUrl, ADULT_PERKS, ADMISSION_TEL, ADULT_CENTER_TEL, ADULT_URL, PERIODS } from './admission-data.js'
 
 /* 입시 홍보 카드뉴스·숏폼 대본
@@ -17,7 +17,7 @@ const AUDIENCES = [
   ['mix', '수험생과 학부모', '두 독자를 함께'],
 ]
 
-const OUTPUTS = [['card', '카드뉴스 5장'], ['short', '숏폼 대본'], ['msg', '안내 문자·게시글'], ['prompt', '영상·이미지 AI 프롬프트']]
+const OUTPUTS = [['card', '카드뉴스 5장'], ['short', '숏폼 대본'], ['msg', '안내 문자·게시글'], ['video', '영상 기획·AI 프롬프트'], ['prompt', '이미지 AI 프롬프트']]
 
 const EMPTY = { dept: '시니어운동처방학과', licenses: '', strength: '', outcome: '', careers: '', period: '', contact: '' }
 
@@ -179,6 +179,13 @@ export default function AdmissionStudio({ app }) {
   const [aud, setAud] = useState('adult')
   const [out, setOut] = useState('card')
   const [texts, setTexts] = useState(null)
+  const [vp, setVp] = useState({ platform: 'reels', length: 30, style: 'story', url: '', song: '', desc: '' })
+  const setVpK = k => val => setVp(s => {
+    const n = { ...s, [k]: val }
+    if (k === 'platform' && !PLATFORMS[val].lengths.includes(n.length)) n.length = PLATFORMS[val].lengths[1] || PLATFORMS[val].lengths[0]
+    return n
+  })
+  const videoText = useMemo(() => buildVideoPlan({ dept: v.dept, aud, platform: vp.platform, length: Number(vp.length), style: vp.style, challenge: { url: vp.url.trim(), song: vp.song.trim(), desc: vp.desc.trim() } }), [v.dept, aud, vp])
   const set = k => val => setV(s => ({ ...s, [k]: val }))
   const d = deptByName(v.dept) || {}
 
@@ -196,7 +203,7 @@ export default function AdmissionStudio({ app }) {
 
   const result = useMemo(() => build(v, aud), [v, aud])
   function run() { setTexts(result) }
-  const shown = texts?.[out] ?? ''
+  const shown = out === 'video' ? (texts?.videoEdited ?? videoText) : (texts?.[out] ?? '')
   const aiPrompt = !texts ? '' : `학과: ${v.dept}\n독자: ${AUDIENCES.find(a => a[0] === aud)[1]}\n자격: ${v.licenses}\n강점: ${v.strength}\n성과: ${v.outcome}\n진로: ${v.careers}\n모집: ${v.period}\n\n[초안]\n${shown}\n\n입력한 사실만 쓰고 수치를 새로 만들지 마세요. 과장·압박 문구(정원 마감 임박, 취업 보장 등) 없이 독자에게 맞는 말투로 다듬어 주세요.`
 
   return (
@@ -258,7 +265,41 @@ export default function AdmissionStudio({ app }) {
             <ChipGroup label="볼 결과" options={OUTPUTS} value={out} onChange={setOut} />
             {/\[[^\]]+\]/.test(shown.replace(/^\[[^\]\n]*\]$/gm, '')) && <Notice>대괄호로 남은 자리는 입력하지 않은 정보입니다. 채운 뒤 게시하세요.</Notice>}
           </section>
-          <ResultDoc key={out + aud} title={OUTPUTS.find(o => o[0] === out)[1]} text={shown} onChange={t => setTexts(s => ({ ...s, [out]: t }))} fileName={`${v.dept}_${OUTPUTS.find(o => o[0] === out)[1]}.txt`} />
+          {out === 'video' && (
+            <section className="card stack">
+              <div className="wa-form">
+                <div className="field">
+                  <label htmlFor="vp-plat">올릴 곳</label>
+                  <select id="vp-plat" className="input" value={vp.platform} onChange={e => { setVpK('platform')(e.target.value); setTexts(s => ({ ...s, videoEdited: undefined })) }}>
+                    {Object.entries(PLATFORMS).map(([k, p]) => <option key={k} value={k}>{p.label} ({p.ratio})</option>)}
+                  </select>
+                </div>
+                <div className="field">
+                  <label htmlFor="vp-len">길이</label>
+                  <select id="vp-len" className="input" value={vp.length} onChange={e => { setVpK('length')(Number(e.target.value)); setTexts(s => ({ ...s, videoEdited: undefined })) }}>
+                    {PLATFORMS[vp.platform].lengths.map(l => <option key={l} value={l}>{l < 60 ? `${l}초` : `${l / 60}분`}</option>)}
+                  </select>
+                </div>
+              </div>
+              <ChipGroup label="영상 스타일" options={Object.entries(STYLES).map(([k, x]) => [k, x.label])} value={vp.style} onChange={st => { setVpK('style')(st); setTexts(s => ({ ...s, videoEdited: undefined })) }} />
+              <span className="small muted">{STYLES[vp.style].how}</span>
+              {vp.style === 'dance' && (
+                <div className="wa-form">
+                  <Field id="vp-url" label="챌린지 참고 영상 링크" hint="릴스·쇼츠·틱톡 주소">
+                    <TextInput id="vp-url" value={vp.url} onChange={val => { setVpK('url')(val); setTexts(s => ({ ...s, videoEdited: undefined })) }} placeholder="https://" />
+                  </Field>
+                  <Field id="vp-song" label="음원 이름">
+                    <TextInput id="vp-song" value={vp.song} onChange={val => { setVpK('song')(val); setTexts(s => ({ ...s, videoEdited: undefined })) }} placeholder="예: 챌린지 곡 제목 - 가수" />
+                  </Field>
+                  <Field id="vp-desc" label="핵심 동작" hint="영어로 적으면 AI가 더 정확히 따라 합니다">
+                    <TextInput id="vp-desc" value={vp.desc} onChange={val => { setVpK('desc')(val); setTexts(s => ({ ...s, videoEdited: undefined })) }} placeholder="예: two claps, hip sway left-right, point to camera on the beat drop" />
+                  </Field>
+                </div>
+              )}
+              {vp.style === 'dance' && <span className="small muted">이 화면은 링크 속 영상을 직접 열어 보지 못합니다. 곡과 동작을 적어 주시면 컷 구성에 반영하고, 정확한 안무는 아래 안내처럼 힉스필드 「Genjutsu」에 그 영상을 참조로 넣어 맞춥니다.</span>}
+            </section>
+          )}
+          <ResultDoc key={out + aud + (out === 'video' ? JSON.stringify(vp) : '')} title={OUTPUTS.find(o => o[0] === out)[1]} text={shown} onChange={t => setTexts(s => ({ ...s, [out === 'video' ? 'videoEdited' : out]: t }))} fileName={`${v.dept}_${OUTPUTS.find(o => o[0] === out)[1]}.txt`} />
           <AiRefine appId="admission-studio" prompt={aiPrompt} />
         </>
       )}

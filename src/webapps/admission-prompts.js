@@ -50,22 +50,6 @@ export function buildPrompts({ dept, aud, adult }) {
     : `Opening: ${v.scene}, door opens and ${c.who.split(' with ')[0]} walk in, camera follows from behind`
   const move = pick(['slow dolly-in', 'smooth handheld follow', 'slow orbit', 'slider move left to right'])
 
-  const video = [
-    `[숏폼 영상 · 9:16 · 약 15초, 3컷으로 나눠 생성 후 이어 붙이기]`,
-    `공통 스타일(모든 컷 끝에 붙이기): ${STYLE}. ${c.light}. Mood: ${c.mood}. ${c.pace}. Vertical 9:16. ${NEG}.`,
-    '',
-    `컷 1 (0~5초, 도입)`,
-    `${hook}. ${move}.`,
-    '',
-    `컷 2 (5~10초, 실습)`,
-    `Inside ${v.scene}: ${v.action}. Visible details: ${v.props}. Medium shot then a close-up on hands at work. ${c.who}.`,
-    '',
-    `컷 3 (10~15초, 마무리)`,
-    `${v.hero}. Then a quick match cut to ${v.field}, suggesting their future career. Slow push-in, hold for the last second with empty space at the top for a caption.`,
-    '',
-    `편집 메모: 숏폼 대본의 자막을 컷 순서대로 얹고, 마지막 컷 위쪽 여백에 학과명과 모집 일정을 넣습니다. 배경음악은 ${aud === 'adult' ? '잔잔한 피아노' : '가벼운 비트'}가 어울립니다.`,
-  ].join('\n')
-
   const cover = [
     `[카드뉴스 1장 표지 · 4:5 (1080×1350)]`,
     `Editorial admissions photo for a Korean health university, Department of ${en}. Setting: ${v.scene}. Action: ${v.action}. Cast: ${c.who}. ${c.light}. Mood: ${c.mood}. Subject in the lower two-thirds, clean empty space in the top third for a large Korean headline. ${STYLE}. 4:5 portrait. ${NEG}.`,
@@ -86,11 +70,158 @@ export function buildPrompts({ dept, aud, adult }) {
 
   const notes = [
     '[쓰는 법]',
-    '· 영어 그대로 넣는 것이 결과가 안정적입니다. 영상은 컷마다 따로 생성해 편집 프로그램에서 이어 붙이면 인물과 장면이 덜 흔들립니다.',
-    '· 같은 인물이 이어져야 하면 컷 1에서 나온 이미지를 컷 2·3의 참조 이미지로 넣으세요.',
+    '· 영어 그대로 넣는 것이 결과가 안정적입니다.',
     '· 실제 재학생 사진이 있으면 AI 이미지보다 우선 쓰고, 출연자 초상권 동의를 받습니다. 대학 로고와 글자는 생성하지 말고 편집 단계에서 얹습니다.',
     adult === 'only' || aud === 'adult' ? '· 성인학습자 홍보는 "퇴근 후 저녁 수업" 장면이 핵심입니다. 지나치게 젊은 모델이 나오면 "in their 40s"처럼 나이를 더 구체적으로 적어 다시 생성하세요.' : '',
   ].filter(Boolean).join('\n')
 
-  return [video, '', cover, '', slides, '', poster, '', notes].join('\n')
+  return [cover, '', slides, '', poster, '', notes].join('\n')
+}
+
+/* ── 플랫폼·길이·스타일별 영상 기획 ── */
+
+// 플랫폼 규격(2026년 기준 일반 권장값). 길이는 플랫폼에서 잘 보이는 범위로만 고르게 합니다.
+export const PLATFORMS = {
+  reels: { label: '인스타 릴스', ratio: '9:16', size: '1080×1920', lengths: [15, 30, 60, 90], vertical: true,
+    safe: '위쪽 약 1/8(계정 이름)과 아래쪽 약 1/5(설명·음원), 오른쪽 가장자리(좋아요·댓글 버튼)에는 자막과 얼굴을 두지 않습니다.',
+    tip: '처음 1~2초에 결론이나 가장 강한 장면을 둡니다. 음악은 인스타 앱의 음원 목록에서 붙이면 저작권 문제를 피할 수 있습니다. 커버 이미지는 4:5로 잘려 보이니 가운데에 핵심을 둡니다.' },
+  shorts: { label: '유튜브 쇼츠', ratio: '9:16', size: '1080×1920', lengths: [15, 30, 60], vertical: true,
+    safe: '아래쪽 약 1/4(제목·채널·구독 버튼)과 오른쪽 가장자리(좋아요·댓글)에는 자막을 두지 않습니다.',
+    tip: '반복 재생되므로 마지막 컷이 첫 컷으로 자연스럽게 이어지면 좋습니다. 음악은 유튜브 오디오 보관함이나 쇼츠 음원에서 고릅니다. 제목에 학과명과 #Shorts를 넣습니다.' },
+  youtube: { label: '유튜브 일반 영상', ratio: '16:9', size: '1920×1080', lengths: [60, 120, 180], vertical: false,
+    safe: '아래쪽 약 1/10은 재생 막대에 가려질 수 있습니다. 마지막 5~20초는 최종 화면(구독·다른 영상) 자리로 비워 둡니다.',
+    tip: '썸네일은 따로 만듭니다(1280×720). 처음 15초 안에 무엇을 보여 줄지 말하고, 챕터를 나눠 설명란에 시간표를 적습니다.' },
+  feed: { label: '인스타 피드 영상', ratio: '4:5', size: '1080×1350', lengths: [15, 30, 60], vertical: true,
+    safe: '가장자리 5% 안쪽에 자막을 둡니다. 소리 없이 보는 사람이 많으니 자막을 꼭 넣습니다.',
+    tip: '카드뉴스와 같은 4:5 비율이라 게시물 묶음으로 올리기 좋습니다.' },
+  tiktok: { label: '틱톡', ratio: '9:16', size: '1080×1920', lengths: [15, 30, 60], vertical: true,
+    safe: '아래쪽 약 1/5(설명·음원)과 오른쪽 가장자리(버튼)에는 자막과 얼굴을 두지 않습니다.',
+    tip: '유행 음원과 챌린지 해시태그를 함께 씁니다. 음원은 앱 안의 상업용 음원 목록에서 고릅니다.' },
+}
+
+// 영상 스타일: sec(컷 길이), how(한 줄 설명), shots(컷 장면 목록. 길이에 맞춰 순서대로 쓰고 모자라면 가운데를 반복)
+export const STYLES = {
+  story: { label: '스토리형(하루 이야기)', sec: 5, how: '한 사람의 하루를 따라가며 자연스럽게 학과를 보여 줍니다.' },
+  interview: { label: '재학생 인터뷰형', sec: 6, how: '재학생 한마디와 실습 장면을 번갈아 보여 줍니다. 말하는 장면은 실제 촬영을 권합니다.' },
+  highlight: { label: '실습 하이라이트', sec: 3, how: '빠른 컷 몽타주로 실습 장비와 손동작을 리듬감 있게 보여 줍니다.' },
+  info: { label: '정보형(자막 카드)', sec: 5, how: '자격, 진로, 수업 방식을 자막으로 하나씩 보여 주는 배경 영상입니다.' },
+  dance: { label: '댄스·챌린지', sec: 4, how: '유행 챌린지 안무를 실습복 차림으로 학과 공간을 옮겨 가며 춥니다.' },
+  beforeafter: { label: '입학 전·후 비교', sec: 5, how: '입학 전 고민하던 모습과 지금의 실습 모습을 대비합니다.' },
+  skit: { label: '상황극', sec: 5, how: '짧은 대화 상황으로 웃음을 주고 마지막에 학과를 소개합니다.' },
+}
+
+function shotsFor(style, v, c, aud, challenge) {
+  const adult = aud === 'adult'
+  const who = c.who.split(',')[0]
+  const S = {
+    story: [
+      ['도입', adult ? `Dusk, ${who} leaving an office building and checking the time, then driving to a college campus` : `Morning, ${who} walking onto a college campus with friends`],
+      ['준비', `${adult ? 'An adult learner' : 'A student'} changing into practice attire at a locker, determined look in the mirror`],
+      ['실습 시작', `Inside ${v.scene}: ${v.action}`],
+      ['손 클로즈업', `Close-up of hands working with ${v.props}`],
+      ['동기들과', `Classmates laughing together during a short break in ${v.scene}`],
+      ['교수님 피드백', `A professor giving one-on-one feedback, the learner nodding and trying again`],
+      ['핵심 장면', v.hero],
+      ['미래 현장', `Match cut to ${v.field}, the same person now working there`],
+      ['마무리', adult ? 'Night campus, the learner walking out under street lights, tired but smiling, empty sky for a caption' : 'Golden hour campus, the student turning back to the camera with a smile, empty sky for a caption'],
+    ],
+    interview: [
+      ['인터뷰 1', `Medium close-up of ${adult ? 'an adult learner in their 40s' : 'a student'} speaking to someone just off camera in ${v.scene}, natural gestures, soft key light`],
+      ['B-roll', `${v.action}`],
+      ['인터뷰 2', `Same person, tighter framing, thoughtful pause then a confident smile`],
+      ['B-roll', `Close-up of ${v.props}`],
+      ['인터뷰 3', `Same person walking with the camera through the hallway while talking`],
+      ['마무리', `${v.hero}, empty space at the top for a caption`],
+    ],
+    highlight: [
+      ['훅', `Extreme close-up of ${v.props.split(',')[0]} snapping into action, fast whip pan`],
+      ['실습 1', v.action],
+      ['장비 매크로', `Macro details of ${v.props}`],
+      ['팀', `Team of ${who} working together, quick handheld`],
+      ['핵심 장면', v.hero],
+      ['현장', v.field],
+      ['마무리', `Final freeze-frame of the group in ${v.scene}, empty space for a caption`],
+    ],
+    info: [
+      ['제목 배경', `Slow push-in on ${v.scene}, softly blurred, large empty space in the center for a title`],
+      ['자격 소개 배경', `Top-down flat lay of ${v.props} on a light-blue surface, empty space on the left`],
+      ['수업 방식 배경', adult ? 'Evening classroom with warm lights, laptops open, soft focus' : `${who} in ${v.scene}, soft focus background`],
+      ['진로 배경', `${v.field}, soft focus, calm`],
+      ['마무리 배경', 'Navy to sky-blue gradient with subtle light movement, space for contact details'],
+    ],
+    dance: [
+      ['시작 포즈', `${who} in practice attire striking the opening pose of the dance challenge in ${v.scene}, full body in frame`],
+      ['안무 1', `Group performing the first part of the choreography in sync, full body, camera static at chest height`],
+      ['장소 전환', `On the beat drop, a quick transition to the hallway, same choreography continuing`],
+      ['안무 2', `Close shot on the signature move, playful expressions, one member holding ${v.props.split(',')[0]} as a prop`],
+      ['안무 3', `Rooftop or campus lawn, the group finishing the choreography`],
+      ['마지막 포즈', `Final pose facing the camera, a beat of silence, empty space at the top for the department name`],
+    ],
+    beforeafter: [
+      ['입학 전', adult ? 'An office worker in their 40s at a desk late at night, staring at a career search page, tired' : 'A high school student at a desk surrounded by college brochures, confused'],
+      ['전환', 'A hand flipping a page or a lamp switching on, used as a transition'],
+      ['입학 후 실습', `Inside ${v.scene}: ${v.action}`],
+      ['성장', v.hero],
+      ['졸업 후', v.field],
+      ['마무리', 'Split screen of before and after, empty space for a caption'],
+    ],
+    skit: [
+      ['대화 시작', adult ? 'Two coworkers in an office at 6 pm, one packing a bag quickly, the other asking where they are going' : 'Two friends at a cafe, one showing their phone with a college admissions page'],
+      ['반전', `Cut to the same person entering ${v.scene}, putting on practice attire`],
+      ['실습', v.action],
+      ['한마디', `The person looking at the camera with a knowing smile`],
+      ['마무리', `${v.hero}, empty space for a caption`],
+    ],
+  }
+  return S[style]
+}
+
+export function buildVideoPlan({ dept, aud, platform = 'reels', length = 30, style = 'story', challenge = {} }) {
+  const v = VISUALS[dept] || VISUALS['물리치료학과']
+  const en = EN[dept] || 'Health Sciences'
+  const c = CAST[aud] || CAST.teen
+  const p = PLATFORMS[platform]
+  const st = STYLES[style]
+  const n = Math.max(3, Math.round(length / st.sec))
+  const base = shotsFor(style, v, c, aud, challenge)
+  // 길이에 맞춰 컷을 고릅니다: 첫 컷과 마지막 컷은 고정하고, 가운데는 순서대로 쓰고 모자라면 반복합니다.
+  const mid = base.slice(1, -1)
+  const shots = n <= base.length
+    ? [base[0], ...mid.slice(0, n - 2), base[base.length - 1]]
+    : [base[0], ...Array.from({ length: n - 2 }, (_, i) => i < mid.length ? mid[i] : [`${mid[i % mid.length][0]} (다른 장소·각도)`, `${mid[i % mid.length][1]}, from a different angle and location than before`]), base[base.length - 1]]
+  const per = length / shots.length
+  const fmt = s => `${Math.round(s)}초`
+  const style_ = `${STYLE}. ${c.light}. Mood: ${c.mood}. ${c.pace}. Aspect ratio ${p.ratio}${p.vertical ? ', vertical framing with subjects centered' : ', horizontal widescreen framing'}. ${NEG}.`
+  const dance = style === 'dance'
+  const lines = [
+    `[영상 기획 · ${p.label} · ${p.ratio} (${p.size}) · ${length < 60 ? length + "초" : length / 60 + "분"} · ${st.label}]`,
+    `학과: ${dept} (Department of ${en}) / 독자: ${c.who}`,
+    `구성: ${st.how} 컷 ${shots.length}개, 컷당 약 ${Math.round(per)}초`,
+    '',
+    `공통 스타일(모든 컷 끝에 붙이기)`,
+    style_,
+    dance ? `Choreography: ${challenge.desc ? challenge.desc : 'a currently trending short-form dance challenge'}. Keep movements clean and readable, full body visible, synchronized group.` : '',
+    '',
+    ...shots.flatMap(([title, prompt], i) => [
+      `컷 ${i + 1} (${fmt(i * per)}~${fmt((i + 1) * per)}) · ${title}`,
+      `${prompt}. ${i === 0 ? 'Strong opening frame that works as a thumbnail. ' : ''}${i === shots.length - 1 ? 'Hold the last second still. ' : ''}`,
+      '',
+    ]),
+    `[${p.label} 업로드 메모]`,
+    `· 자막 안전 영역: ${p.safe}`,
+    `· ${p.tip}`,
+    `· AI 영상 모델은 한 번에 5~15초가 가장 안정적입니다. 컷별로 생성해 편집 앱(캡컷, 프리미어 등)에서 이어 붙이고, 같은 인물을 유지하려면 첫 컷 이미지를 다음 컷의 참조 이미지로 넣습니다.`,
+  ]
+  if (dance) {
+    lines.push(
+      '',
+      '[챌린지 따라 하기]',
+      challenge.url ? `· 참고 영상: ${challenge.url}` : '· 참고 영상 링크를 넣으면 여기에 함께 적힙니다.',
+      challenge.song ? `· 음원: ${challenge.song}. 영상에 음원을 직접 넣지 말고 업로드할 때 플랫폼 음원 목록에서 붙입니다(저작권).` : '· 음원은 영상에 직접 넣지 말고 업로드할 때 플랫폼 음원 목록에서 붙입니다(저작권).',
+      '· 안무를 정확히 맞추려면: 참고 영상을 내려받아 힉스필드 「Genjutsu(동작 따라 하기)」에 참조 영상으로 넣고, 학생 이미지(실제 사진 또는 위 컷 1 이미지)를 함께 넣으면 그 동작을 그대로 따라 합니다.',
+      '· 실제 학생이 춤추는 영상이 가장 반응이 좋습니다. AI 영상은 촬영 전 콘티(동선·장소 확인)로 먼저 써 보는 것을 권합니다.',
+    )
+  }
+  if (style === 'interview') lines.push('', '· 인터뷰 장면은 AI로 입 모양을 만들면 어색하기 쉽습니다. 실제 재학생 인터뷰를 찍고, AI 영상은 B-roll(실습 장면)에만 쓰는 것을 권합니다.')
+  return lines.filter(x => x !== '').join('\n').replace(/\n(컷 \d|\[|공통|·)/g, '\n\n$1').replace(/\n\n·/g, '\n·')
 }
