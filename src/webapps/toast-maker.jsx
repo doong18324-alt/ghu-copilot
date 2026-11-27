@@ -68,9 +68,30 @@ function makeFive(occ, keyword) {
   return { list: list.slice(0, 5), missing }
 }
 
+// 건배 제의 전체 멘트(약 20~30초): 인사 → 감사 → 오늘의 의미 → 구호 안내 → 구호
+const OPEN = {
+  staff: ['반갑습니다.', '오늘 이렇게 한자리에 모이니 참 든든합니다.'],
+  mt: ['다들 반가워요!', '오늘 이 자리에 와 줘서 고마워요.'],
+  executive: ['귀한 자리에 함께해 주셔서 감사합니다.', '바쁘신 가운데 자리를 빛내 주셔서 감사드립니다.'],
+  welcome: ['여러분, 진심으로 환영합니다.', '새 식구를 맞이하는 오늘이 참 기쁩니다.'],
+  project: ['정말 수고 많으셨습니다.', '긴 여정을 함께 달려온 여러분, 반갑습니다.'],
+}
+function speechOf(t, occ, who, reason) {
+  const formal = occ === 'executive' || occ === 'staff' || occ === 'project'
+  const me = who.trim() ? `${who.trim()}${formal ? '입니다' : '이에요'}.` : ''
+  const open = OPEN[occ][Math.abs(t.title.length) % 2]
+  const why = reason.trim()
+    ? (formal ? `${reason.trim().replace(/[.。]$/, '')}까지, 애써 주신 모든 분께 감사드립니다.` : `${reason.trim().replace(/[.。]$/, '')}까지, 다들 정말 고생 많았어요.`)
+    : (formal ? '올 한 해 서로 믿고 함께해 주셔서 감사합니다.' : '여기까지 함께 와 줘서 고마워요.')
+  const how = formal ? '제가 선창하면 함께 외쳐 주십시오.' : '제가 먼저 외치면 다 같이 따라 해 주세요!'
+  return [open, me, why, t.lead, how, `“${t.chant}”`].filter(Boolean).join(' ')
+}
+
 export default function ToastMaker({ app }) {
   const [occ, setOcc] = useState('staff')
   const [kw, setKw] = useState('')
+  const [who, setWho] = useState('')
+  const [reason, setReason] = useState('')
   const [seed, setSeed] = useState(0)
   const meta = OCCASIONS.find(o => o[0] === occ)
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -91,6 +112,10 @@ export default function ToastMaker({ app }) {
           <span className="small muted">추천 키워드</span>
           {meta[3].map(k => <button key={k} type="button" className="chip" onClick={() => setKw(k)}>{k}</button>)}
         </div>
+        <div className="wa-form">
+          <Field id="tm-who" label="건배 제의하는 분 (선택)" hint="예: 기획처장 김○○"><TextInput id="tm-who" value={who} onChange={setWho} placeholder="직함과 이름" /></Field>
+          <Field id="tm-why" label="오늘 함께 축하할 일 (선택)" hint="예: 국가고시 전원 합격, 사업 평가 마무리"><TextInput id="tm-why" value={reason} onChange={setReason} placeholder="한 줄로" /></Field>
+        </div>
         {missing.length > 0 && <Notice>‘{missing.join(', ')}’로 시작하는 자연스러운 문장이 사전에 없어 삼행시 대신 구호로 만들었습니다. AI가 연결되면 아래에서 맞춤 삼행시를 받을 수 있습니다.</Notice>}
         <div className="row"><button type="button" className="btn primary" onClick={() => setSeed(s => s + 1)}>다른 조합 보기</button></div>
       </section>
@@ -103,14 +128,15 @@ export default function ToastMaker({ app }) {
             <pre className="prompt-text">{t.lead}</pre>
             <p className="small" style={{ margin: 0 }}><b>다 같이</b> {t.chant}</p>
             <p className="small muted" style={{ margin: 0 }}>{t.tip}</p>
-            <div className="row"><CopyButton text={text(t)} /></div>
+            <details className="small"><summary style={{ cursor: 'pointer', fontWeight: 700 }}>건배 제의 전체 멘트 (약 30초)</summary><p style={{ margin: '6px 0 0', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>{speechOf(t, occ, who, reason)}</p></details>
+            <div className="row"><CopyButton text={text(t)} label="건배사 복사" /><CopyButton text={speechOf(t, occ, who, reason)} label="전체 멘트 복사" /></div>
           </article>
         ))}
       </div>
 
       <AiRefine appId="toast-maker" label="지후 AI 맞춤 건배사 받기"
         note="모임 성격과 키워드로 새 삼행시와 구호를 3개 더 만듭니다. 과음 권유나 특정인을 놀리는 표현은 넣지 않습니다."
-        prompt={`모임: ${meta[1]} (${meta[2]})\n키워드: ${kw || '없음'}\n과음 권유 없이, 키워드 글자로 실제 시작하는 자연스러운 삼행시 1개와 선창·후창 구호 2개를 만들어 주세요.`} />
+        prompt={`역할: 대학 행사 사회자입니다.\n모임: ${meta[1]} (${meta[2]})\n키워드: ${kw || '없음'}\n건배 제의자: ${who || '미정'}\n축하할 일: ${reason || '없음'}\n요청: ① 키워드 글자로 실제 시작하는 자연스러운 삼행시 1개 ② 선창·후창 구호 2개 ③ 그중 하나로 30초 건배 제의 전체 멘트(인사→감사→의미→구호 안내→구호).\n지킬 것: 과음 권유, 특정인 놀림, 비속어, 성별·나이 고정관념 표현 쓰지 않기.`} />
     </>
   )
 }

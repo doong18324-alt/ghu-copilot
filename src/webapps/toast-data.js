@@ -70,7 +70,6 @@ export const TOASTS = {
    "title": "박보검",
    "occasions": [
     "staff",
-    "executive",
     "project"
    ],
    "lead": "오늘 이 자리의 주인공들을 위해 외칩니다!\n(박)수를 (보)냅니다, 올 한 해 (검)나 수고한 당신께!",

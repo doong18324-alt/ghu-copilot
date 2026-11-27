@@ -183,7 +183,7 @@ const HEROES = {
   teen: ['a Korean college student who looks 20, short black hair, bright eyes, slim build', 'a Korean college student who looks 20, long black hair in a ponytail, natural makeup'],
 }
 
-export function buildVideoPlan({ dept, aud, platform = 'reels', length = 30, style = 'story', challenge = {} }) {
+export function buildVideoPlan({ dept, aud, adult, platform = 'reels', length = 30, style = 'story', challenge = {}, info = {}, tags = '' }) {
   const v = VISUALS[dept] || VISUALS['물리치료학과']
   const en = EN[dept] || 'Health Sciences'
   const c = CAST[aud] || CAST.teen
@@ -233,6 +233,148 @@ export function buildVideoPlan({ dept, aud, platform = 'reels', length = 30, sty
       '· 실제 학생이 춤추는 영상이 가장 반응이 좋습니다. AI 영상은 촬영 전 콘티(동선·장소 확인)로 먼저 써 보는 것을 권합니다.',
     )
   }
+  // 홍보 자막과 엔딩 카드(앱에 입력한 학과 정보로 채움)
+  const caps = buildCaptions({ dept, aud, adult, info })
+  const track = captionTrack({ length, shots, caps })
+  lines.push(
+    '',
+    '[홍보 자막 · 편집 단계에서 영상 위에 얹기]',
+    '· AI 영상 모델은 한글을 자주 깨뜨리므로 영상은 글자 없이 만들고, 아래 자막과 엔딩 카드를 편집 앱에서 얹습니다. 「자막 파일(SRT) 내려받기」를 캡컷·프리미어에 불러오면 시간이 맞춰 들어갑니다.',
+    ...track.cues.slice(0, -1).map(c => `${c.from.toFixed(1)}~${c.to.toFixed(1)}초  ${c.text.replace(/\n/g, ' / ')}`),
+    '',
+    `[엔딩 카드 · 마지막 ${Math.round(track.endLen)}초]`,
+    ...caps.end,
+    '· 엔딩 카드는 화면 가운데에 남색 반투명 상자로 올리고, 위 1/8과 아래 1/5(플랫폼 버튼 자리)은 비웁니다.',
+    '',
+    buildPostGuide({ dept, aud, adult, platform, info, tags }),
+  )
   if (style === 'interview') lines.push('', '· 인터뷰 장면은 AI로 입 모양을 만들면 어색하기 쉽습니다. 실제 재학생 인터뷰를 찍고, AI 영상은 B-roll(실습 장면)에만 쓰는 것을 권합니다.')
   return lines.filter(x => x !== '').join('\n').replace(/\n(컷 \d|\[|공통|·)/g, '\n\n$1').replace(/\n\n·/g, '\n·')
+}
+
+/* ── 자막·엔딩 카드·업로드 문구: 앱에 입력한 홍보 내용을 영상과 게시글에 넣습니다 ── */
+const splitList = s => String(s || '').split(/[,，、]/).map(x => x.trim()).filter(Boolean)
+const hasBatchim = w => { const c = w.charCodeAt(w.length - 1); return c >= 0xac00 && c <= 0xd7a3 && (c - 0xac00) % 28 !== 0 }
+const ro = w => (w && hasBatchim(w) && (w.charCodeAt(w.length - 1) - 0xac00) % 28 !== 8 ? `${w}으로` : `${w}로`)
+const wrap = (t, n = 17) => {
+  if (t.length <= n) return [t]
+  const words = t.split(' '); const a = []; let cur = ''
+  for (const w of words) { if ((cur + ' ' + w).trim().length > n && cur) { a.push(cur); cur = w } else cur = (cur + ' ' + w).trim() }
+  if (cur) a.push(cur)
+  return a.slice(0, 2)
+}
+
+export function buildCaptions({ dept, aud, adult, info = {} }) {
+  const lic = splitList(info.licenses).slice(0, 2).join('·') || '[대표 자격]'
+  const car = splitList(info.careers).slice(0, 2).join('·') || '[졸업 후 진로]'
+  let str = (splitList(info.strength)[0] || '[학과 강점]').replace(/[.。]$/, '')
+  // 자막은 두 줄 안에: 길면 '까지'·'부터'·'에서' 같은 자연스러운 끊김에서 자릅니다.
+  if (str.length > 30) { const m = str.match(/^(.{8,30}?(까지|에서|부터|과정|교육|실습))/); if (m) str = m[1] }
+  const adultWay = adult ? '퇴근 후 야간·온라인 수업' : null
+  const hook = { adult: ['일만 하던 저녁,', '다음 10년이 고민이라면'], teen: ['어떤 과에 갈지', '아직 고민 중이라면'], parent: ['자녀의 전공,', '졸업 후까지 보셨나요'], mix: ['배우는 것도, 졸업 후 길도', '분명한 학과'] }[aud] || ['어떤 과에 갈지', '아직 고민 중이라면']
+  const lines = [
+    hook,
+    aud === 'adult' ? (adultWay ? [adultWay, '일하면서 다닐 수 있습니다'] : ['일과 공부,', '함께 할 수 있을까요']) : [`${dept}에서`, '배우는 것들'],
+    wrap(str),
+    [lic, '취득 준비'],
+    ['졸업 후', ro(car)],
+  ]
+  const end = [
+    '광주보건대학교',
+    dept,
+    aud === 'adult' ? '성인학습자 모집' : '2027학년도 신입생 모집',
+    aud === 'adult' ? `25세 이상 누구나${adult ? ' · 야간·온라인 수업' : ''}` : lic,
+    info.period || '[모집 시기]',
+    `문의 ${info.contact || '[연락처]'}`,
+  ]
+  return { lines, end }
+}
+
+const ts = s => { const ms = Math.round(s * 1000); const h = String(Math.floor(ms / 3600000)).padStart(2, '0'); const m = String(Math.floor(ms / 60000) % 60).padStart(2, '0'); const sec = String(Math.floor(ms / 1000) % 60).padStart(2, '0'); return `${h}:${m}:${sec},${String(ms % 1000).padStart(3, '0')}` }
+
+// 컷 수와 길이에 맞춰 자막을 배치하고 SRT 파일 내용을 만듭니다. 마지막 약 5초는 엔딩 카드입니다.
+export function captionTrack({ length, shots, caps }) {
+  const endLen = Math.min(5, Math.max(3, length * 0.17))
+  const body = length - endLen
+  const n = caps.lines.length
+  const seg = body / n
+  const cues = caps.lines.map((l, i) => ({ from: i * seg + 0.3, to: (i + 1) * seg - 0.2, text: l.join('\n') }))
+  cues.push({ from: body, to: length, text: caps.end.join('\n') })
+  const srt = cues.map((c, i) => `${i + 1}\n${ts(c.from)} --> ${ts(c.to)}\n${c.text}\n`).join('\n')
+  return { cues, srt, endLen }
+}
+
+export function buildPostGuide({ dept, aud, adult, platform, info = {}, tags = '' }) {
+  const caps = buildCaptions({ dept, aud, adult, info })
+  const lic = splitList(info.licenses).slice(0, 3).join(', ')
+  const car = splitList(info.careers).slice(0, 3).join(', ')
+  const str = splitList(info.strength).slice(0, 2).join(', ')
+  const hook = caps.lines[0].join(' ')
+  const facts = [
+    aud === 'adult' && adult ? '🕖 퇴근 후 주 2~3회 야간·온라인 수업' : null,
+    str ? `📚 ${str}` : null,
+    lic ? `🎓 ${lic} 자격 준비` : null,
+    car ? `💼 졸업 후 ${car}` : null,
+  ].filter(Boolean)
+  const cta = [`📌 ${info.period || '[모집 시기]'}`, `☎ ${info.contact || '[문의처]'}`, '👉 모집요강은 프로필 링크에서 확인하세요']
+  const tagLine = (tags || `#광주보건대 #${dept.replace(/\s/g, '')}`).split(' ').filter((x, i, a) => a.indexOf(x) === i).slice(0, 5).join(' ')
+  const P = {
+    reels: [
+      '[인스타 릴스 올리는 법]',
+      `커버 문구(커버 이미지에 얹을 글): ${dept} | ${aud === 'adult' ? '일하면서 다시 배우는 길' : '졸업 후가 보이는 전공'}`,
+      '',
+      '캡션(그대로 붙여 넣기):',
+      hook,
+      '',
+      ...facts,
+      '',
+      ...cta,
+      '',
+      tagLine,
+      '',
+      '올리기 전 확인:',
+      '· 커버: 영상에서 엔딩 카드 직전 장면을 커버로 고르고, 피드에서는 4:5로 잘리니 얼굴과 글자가 가운데 오게 합니다.',
+      '· 음악: 앱의 음원 목록에서 붙이고, 원본 소리는 낮춥니다(자막이 이미 영상에 있으므로 자동 자막은 꺼도 됩니다).',
+      '· 위치 태그: 광주보건대학교 / 공동 게시(Collab)로 학교 공식 계정을 초대하면 두 계정 팔로워에게 함께 보입니다.',
+      '· 첫 댓글: 모집요강·원서접수 링크와 문의 전화를 적고 고정합니다.',
+      '· 해시태그는 3~5개가 적당합니다. 너무 많으면 광고처럼 보입니다.',
+    ],
+    shorts: [
+      '[유튜브 쇼츠 올리는 법]',
+      `제목(100자 이내): ${dept} | ${hook} #Shorts`,
+      '',
+      '설명란:',
+      ...facts, '', ...cta.slice(0, 2), '모집요강: [입학안내 주소]', '', tagLine,
+      '',
+      '올리기 전 확인:',
+      '· 음악은 유튜브 오디오 보관함·쇼츠 음원에서 고릅니다.',
+      '· 고정 댓글에 원서접수 링크를 남깁니다. 관련 긴 영상(학과 소개)이 있으면 "관련 동영상"으로 연결합니다.',
+    ],
+    youtube: [
+      '[유튜브 일반 영상 올리는 법]',
+      `제목: ${dept} 소개 | ${hook}`,
+      `썸네일 문구: ${dept} · ${aud === 'adult' ? '일하면서 다니는 대학' : '졸업 후 진로까지'}`,
+      '',
+      '설명란:',
+      hook, '', ...facts, '', ...cta.slice(0, 2), '모집요강: [입학안내 주소]',
+      '',
+      '00:00 시작', '[분:초] 실습 장면', '[분:초] 자격과 진로', '[분:초] 모집 안내',
+      '', tagLine,
+      '',
+      '· 마지막 5~20초는 최종 화면(구독, 다른 영상) 요소를 올립니다.',
+    ],
+    feed: [
+      '[인스타 피드 올리는 법]',
+      '캡션:', hook, '', ...facts, '', ...cta, '', tagLine,
+      '',
+      '· 카드뉴스 5장과 이 영상을 한 게시물(캐러셀)로 묶으면 넘겨 보며 끝까지 보게 됩니다.',
+    ],
+    tiktok: [
+      '[틱톡 올리는 법]',
+      `캡션: ${hook} ${tagLine}`,
+      '',
+      '· 음원은 앱 안 상업용 음원에서 고르고, 고정 댓글에 모집 일정과 문의처를 남깁니다.',
+    ],
+  }
+  return P[platform].join('\n')
 }

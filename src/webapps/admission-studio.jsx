@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { AppHeader, Field, TextInput, TextArea, ChipGroup, ResultDoc, AiRefine, Notice } from './kit.jsx'
 import { josa } from '../lib/korean.js'
-import { buildPrompts, buildVideoPlan, PLATFORMS, STYLES } from './admission-prompts.js'
+import { buildPrompts, buildVideoPlan, buildCaptions, captionTrack, PLATFORMS, STYLES } from './admission-prompts.js'
 import { DEPTS, deptByName, deptUrl, ADULT_PERKS, ADMISSION_TEL, ADULT_CENTER_TEL, ADULT_URL, PERIODS } from './admission-data.js'
 
 /* 입시 홍보 카드뉴스·숏폼 대본
@@ -185,7 +185,8 @@ export default function AdmissionStudio({ app }) {
     if (k === 'platform' && !PLATFORMS[val].lengths.includes(n.length)) n.length = PLATFORMS[val].lengths[1] || PLATFORMS[val].lengths[0]
     return n
   })
-  const videoText = useMemo(() => buildVideoPlan({ dept: v.dept, aud, platform: vp.platform, length: Number(vp.length), style: vp.style, challenge: { url: vp.url.trim(), song: vp.song.trim(), desc: vp.desc.trim() } }), [v.dept, aud, vp])
+  const videoText = useMemo(() => buildVideoPlan({ dept: v.dept, aud, adult: !!deptByName(v.dept)?.adult, platform: vp.platform, length: Number(vp.length), style: vp.style, challenge: { url: vp.url.trim(), song: vp.song.trim(), desc: vp.desc.trim() }, info: { licenses: v.licenses, careers: v.careers, strength: v.strength, period: v.period.trim(), contact: v.contact.trim() }, tags: tags(v.dept, aud) }), [v, aud, vp])
+  const srt = useMemo(() => captionTrack({ length: Number(vp.length), shots: [], caps: buildCaptions({ dept: v.dept, aud, adult: !!deptByName(v.dept)?.adult, info: { licenses: v.licenses, careers: v.careers, strength: v.strength, period: v.period.trim(), contact: v.contact.trim() } }) }).srt, [v, aud, vp])
   const set = k => val => setV(s => ({ ...s, [k]: val }))
   const d = deptByName(v.dept) || {}
 
@@ -296,6 +297,10 @@ export default function AdmissionStudio({ app }) {
                   </Field>
                 </div>
               )}
+              <div className="row">
+                <button type="button" className="btn" onClick={() => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['\uFEFF' + srt], { type: 'text/plain;charset=utf-8' })); a.download = `${v.dept}_${PLATFORMS[vp.platform].label}_${vp.length}초_자막.srt`; a.click() }}>자막 파일(SRT) 내려받기</button>
+                <span className="small muted">캡컷·프리미어에서 불러오면 홍보 자막과 엔딩 카드 글이 시간에 맞춰 들어갑니다.</span>
+              </div>
               {vp.style === 'dance' && <span className="small muted">이 화면은 링크 속 영상을 직접 열어 보지 못합니다. 곡과 동작을 적어 주시면 컷 구성에 반영하고, 정확한 안무는 아래 안내처럼 힉스필드 「Genjutsu」에 그 영상을 참조로 넣어 맞춥니다.</span>}
             </section>
           )}
