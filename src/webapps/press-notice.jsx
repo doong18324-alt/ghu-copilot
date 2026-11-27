@@ -155,7 +155,7 @@ function build(v, tone) {
   return { headlines, pressBody, notice, sms, sns }
 }
 
-export default function PressNotice({ app }) {
+function PressNotice({ app, switcher }) {
   const [v, setV] = useState(EMPTY)
   const [tone, setTone] = useState('press')
   const [made, setMade] = useState(null)
@@ -195,6 +195,7 @@ export default function PressNotice({ app }) {
       <AppHeader app={app}>
         <span className="small muted">글 종류를 고르고 핵심 정보를 적으면 보도자료, 교내 공지, 알림 문자, SNS 게시글을 함께 만듭니다. 결과 칸에서 바로 고칠 수 있습니다.</span>
       </AppHeader>
+      {switcher}
 
       <section className="card stack">
         <div className="card-head"><h2>1. 글 종류와 핵심 정보</h2><button type="button" className="btn app-open" onClick={sample}>예시 채우기</button></div>
@@ -240,6 +241,175 @@ export default function PressNotice({ app }) {
           <AiRefine appId="press-notice" prompt={aiPrompt} />
         </>
       )}
+    </>
+  )
+}
+
+/* ── 행정 문서 변환: 회의록 → 실행과제, 행사 기록 → 결과보고서 ── */
+const MODES = [['press', '보도자료·공지'], ['meeting', '회의록 → 실행과제'], ['report', '행사 기록 → 결과보고서']]
+
+export default function AdminDocs({ app }) {
+  const [mode, setMode] = useState('press')
+  const switcher = <section className="card"><ChipGroup label="만들 문서" options={MODES} value={mode} onChange={setMode} /></section>
+  if (mode === 'press') return <PressNotice app={app} switcher={switcher} />
+  return (
+    <>
+      <AppHeader app={app}>
+        <span className="small muted">{mode === 'meeting' ? '회의 메모나 녹취 텍스트를 붙여 넣으면 안건별 논의, 결정 사항, 담당·기한이 있는 실행과제 표로 정리합니다.' : '행사 운영 결과를 넣으면 정량·정성 성과와 환류 계획이 있는 개조식 결과보고서를 만듭니다.'}</span>
+      </AppHeader>
+      {switcher}
+      {mode === 'meeting' ? <MeetingTool /> : <ReportTool />}
+    </>
+  )
+}
+
+const DECIDE = /(의결|결정|확정|승인|합의|하기로\s?함|하기로\s?했|가결)/
+const TODO = /(까지|담당|하기로|요청|검토|준비|제출|공지|보고|작성|확인|추진|안내|송부|회신)/
+const WHO_RE = /([가-힣A-Za-z]{1,10}(?:팀|과|처|실|부|센터|본부|단|교수|팀장|과장|처장|실장|센터장|담당|위원장|간사))/
+const WHEN_RE = /(\d{1,2}\s*월\s*(?:초|중순|말)|\d{1,2}\s*[./월]\s*\d{1,2}\s*일?(?:\s*\([월화수목금토일]\))?|이번\s?주|다음\s?주|금주|차주|이번\s?달|다음\s?달|[월화수목금]요일|학기\s?초|학기\s?말)/
+
+const MEETING_SAMPLES = [
+  `[안건 1] 2027학년도 신입생 AI 기초교육
+- 2월 23~24일 대강당에서 운영하기로 결정함
+- 교육 내용은 AI대학혁신본부가 1월 15일까지 초안 작성
+- 학생지원팀은 1월 말까지 신입생 안내 문자 발송 준비
+[안건 2] 교내 LLM 도입
+- 보안 검토가 필요하다는 의견이 있었음
+- 전산팀이 다음 주까지 개인정보 처리 기준 검토 후 보고
+- 도입 범위는 다음 회의에서 다시 논의`,
+  `[안건 1] 강의평가 결과 환류
+- 학과별 CQI 보고서를 12월 20일까지 교무처에 제출하기로 함
+- 교수학습지원센터가 작성 양식을 이번 주 안에 공지
+[안건 2] 겨울방학 비교과 프로그램
+- 자격증 과정 2개 개설 승인
+- 모집 공고는 학생지원팀 담당
+- 예산 배분은 기획처와 협의 필요`,
+]
+
+function MeetingTool() {
+  const [title, setTitle] = useState('')
+  const [when, setWhen] = useState('')
+  const [who, setWho] = useState('')
+  const [text, setText] = useState('')
+  const [made, setMade] = useState(false)
+  const [si, setSi] = useState(-1)
+  const res = useMemo(() => {
+    const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean)
+    const agenda = []
+    let cur = { name: '기타', items: [] }
+    for (const l of lines) {
+      const m = l.match(/^\[?\s*안건\s*\d*\s*\]?\s*[:.]?\s*(.*)$/) || l.match(/^#+\s*(.*)$/)
+      if (m && /안건|^#/.test(l)) { if (cur.items.length || cur.name !== '기타') agenda.push(cur); cur = { name: (m[1] || l).replace(/^\]\s*/, '').trim() || l, items: [] }; continue }
+      cur.items.push(l.replace(/^[-·•*]\s*/, ''))
+    }
+    if (cur.items.length || cur.name !== '기타') agenda.push(cur)
+    const decisions = [], todos = []
+    for (const a of agenda) for (const it of a.items) {
+      if (DECIDE.test(it)) decisions.push(`${a.name}: ${it}`)
+      if (TODO.test(it) && !/다시 논의|의견이 있었/.test(it) && !(DECIDE.test(it) && !/담당|까지|제출|작성|준비|보고/.test(it))) todos.push({ what: it.replace(/\s*(함|임)\.?$/, ''), who: it.match(WHO_RE)?.[1] || '[미정]', when: it.match(WHEN_RE)?.[1] || '[미정]', from: a.name })
+    }
+    const next = agenda.flatMap(a => a.items.filter(i => /다음\s?회의|다시\s?논의|추후|보류/.test(i)).map(i => `${a.name}: ${i}`))
+    return { agenda, decisions, todos, next }
+  }, [text])
+  const doc = !made ? '' : [
+    `[회의록] ${title || '[회의명]'}`,
+    `· 일시: ${when || '[일시]'}`, `· 참석: ${who || '[참석자(직위)]'}`, '',
+    '1. 안건별 논의', ...res.agenda.flatMap((a, i) => [`  ${i + 1}) ${a.name}`, ...a.items.map(x => `    - ${x}`)]), '',
+    '2. 결정 사항', ...(res.decisions.length ? res.decisions.map(x => `  · ${x}`) : ['  · 결정 사항으로 보이는 문장을 찾지 못함 [확인 필요]']), '',
+    '3. 실행과제', ...(res.todos.length ? res.todos.map((t, i) => `  ${i + 1}. ${t.what} | 담당: ${t.who} | 기한: ${t.when}`) : ['  · 실행과제로 보이는 문장을 찾지 못함']), '',
+    '4. 다음 회의 안건', ...(res.next.length ? res.next.map(x => `  · ${x}`) : ['  · 없음']),
+  ].join('\n')
+  const notice = !made ? '' : `[${title || '회의'} 후속 조치 안내]\n${when ? `${when} 회의 결과, ` : ''}아래 실행과제를 공유드립니다.\n${res.todos.map((t, i) => `${i + 1}. ${t.what} (담당 ${t.who}, 기한 ${t.when})`).join('\n')}\n담당과 기한이 [미정]인 항목은 회신 부탁드립니다.`
+  const aiPrompt = !made ? '' : `역할: 대학 위원회 간사입니다.\n지킬 것: 회의에서 나오지 않은 결정·담당·기한을 만들지 않기, [미정]은 그대로, 개조식(~함, ~임).\n출력: ① 다듬은 회의록 ② 실행과제 표(번호/할 일/담당/기한) ③ 참석자에게 보낼 후속 메일\n\n${doc}`
+  return (
+    <>
+      <section className="card">
+        <div className="grid">
+          <Field id="mt-t" label="회의명"><TextInput id="mt-t" value={title} onChange={setTitle} placeholder="예: 교무위원회" /></Field>
+          <Field id="mt-w" label="일시"><TextInput id="mt-w" value={when} onChange={setWhen} placeholder="예: 2026. 11. 27.(금) 14:00" /></Field>
+        </div>
+        <Field id="mt-p" label="참석자" hint="이름 대신 직위로 써도 됩니다"><TextInput id="mt-p" value={who} onChange={setWho} /></Field>
+        <Field id="mt-x" label="회의 메모·녹취" hint="[안건 1]처럼 안건을 구분하면 더 잘 나눕니다"><TextArea id="mt-x" rows={10} value={text} onChange={setText} /></Field>
+        <div className="row">
+          <button type="button" className="btn primary" disabled={!text.trim()} onClick={() => setMade(true)}>회의록 정리하기</button>
+          <button type="button" className="btn" onClick={() => { let i = (si + 1) % MEETING_SAMPLES.length; setSi(i); setText(MEETING_SAMPLES[i]); setTitle(i ? '교무위원회' : 'AI대학혁신본부 운영회의'); setWhen('2026. 11. 27.(금) 14:00'); setWho('본부장, 각 팀장'); setMade(false) }}>예시 채우기</button>
+        </div>
+      </section>
+      {made && <>
+        {res.todos.some(t => t.who === '[미정]' || t.when === '[미정]') && <Notice>담당이나 기한이 회의 메모에 없는 실행과제는 [미정]으로 남겼습니다.</Notice>}
+        <ResultDoc title="회의록" text={doc} fileName={`${title || '회의'}_회의록.txt`} />
+        <ResultDoc title="후속 조치 안내(메일·메신저)" text={notice} fileName="후속조치_안내.txt" />
+        <AiRefine appId="press-notice" label="지후 AI로 회의록 다듬기" note="회의에 없던 결정이나 담당을 만들지 않고 문장만 다듬습니다." prompt={aiPrompt} />
+      </>}
+    </>
+  )
+}
+
+const POS_RE = /좋|유익|만족|도움|재밌|재미|감사|최고|알차|유용/
+const NEG_RE = /아쉽|부족|어렵|길|짧|불편|많|늦|개선|했으면|좋겠|바랍/
+const REPORT_SAMPLES = [
+  { name: '2026 AI 활용 비교과 특강', when: '2026. 11. 20.(목) 15:00~17:00', where: '본관 대강당', who: '재학생', plan: '60', came: '54', sat: '4.6', resp: '48', budgetPlan: '1200000', budgetUsed: '1080000', comments: '실습이 있어서 유익했어요\n프롬프트 작성법이 도움이 됐습니다\n시간이 짧아서 아쉬웠어요\n자료를 미리 받았으면 좋겠습니다' },
+  { name: '지역 어르신 건강체력 측정의 날', when: '2026. 10. 15.(수) 10:00~16:00', where: '스마트케어빌리지', who: '지역 어르신', plan: '80', came: '93', sat: '4.8', resp: '70', budgetPlan: '', budgetUsed: '', comments: '결과를 바로 알려 줘서 좋았어요\n학생들이 친절했습니다\n기다리는 시간이 길었어요' },
+]
+
+function ReportTool() {
+  const E = { name: '', when: '', where: '', who: '', plan: '', came: '', sat: '', resp: '', budgetPlan: '', budgetUsed: '', comments: '' }
+  const [v, setV] = useState(E)
+  const [made, setMade] = useState(false)
+  const [si, setSi] = useState(-1)
+  const set = k => x => setV(s => ({ ...s, [k]: x }))
+  const num = x => (String(x).trim() === '' ? null : Number(String(x).replace(/[^\d.]/g, '')))
+  const plan = num(v.plan), came = num(v.came), sat = num(v.sat), resp = num(v.resp), bp = num(v.budgetPlan), bu = num(v.budgetUsed)
+  const cm = v.comments.split(/\r?\n/).map(x => x.trim()).filter(Boolean)
+  const pos = cm.filter(c => POS_RE.test(c) && !/아쉽|좋겠/.test(c)), neg = cm.filter(c => NEG_RE.test(c) && !pos.includes(c))
+  const doc = !made ? '' : [
+    `[결과보고] ${v.name || '[사업명]'}`, '',
+    '1. 추진 개요',
+    `  가. 일시: ${v.when || '[일시]'}`, `  나. 장소: ${v.where || '[장소]'}`, `  다. 대상: ${v.who || '[대상]'}`, '',
+    '2. 운영 실적(정량)',
+    `  가. 참여: 계획 ${plan ?? '[ ]'}명 대비 ${came ?? '[ ]'}명 참여${plan && came != null ? `(달성률 ${Math.round((came / plan) * 1000) / 10}%)` : ''}`,
+    `  나. 만족도: ${sat != null ? `5점 만점 ${sat}점` : '[ ]'}${resp != null ? `(응답 ${resp}명${came ? `, 응답률 ${Math.round((resp / came) * 1000) / 10}%` : ''})` : ''}`,
+    ...(bp != null || bu != null ? [`  다. 예산: 계획 ${bp != null ? bp.toLocaleString() : '[ ]'}원 대비 ${bu != null ? bu.toLocaleString() : '[ ]'}원 집행${bp && bu != null ? `(집행률 ${Math.round((bu / bp) * 1000) / 10}%)` : ''}`] : []),
+    '',
+    '3. 운영 성과(정성)',
+    ...(pos.length ? pos.map(c => `  · 참여자 의견: "${c}"`) : ['  · [정성 성과 입력]']),
+    '',
+    '4. 개선 사항 및 환류 계획',
+    ...(neg.length ? neg.map(c => `  · "${c}" → [다음 운영 시 개선 방법]`) : ['  · 특이 개선 요청 없음']),
+    ...(plan && came != null && came / plan < 0.8 ? ['  · 참여율이 계획의 80%에 못 미침 → 홍보 시기와 경로 점검'] : []),
+    ...(plan && came != null && came / plan > 1.1 ? ['  · 참여 인원이 계획을 넘음 → 다음 운영 시 정원·공간 확대 검토'] : []),
+    '',
+    '붙임: 참석자 명단, 만족도 설문 결과, 사진 각 1부.',
+  ].join('\n')
+  const aiPrompt = !made ? '' : `역할: 대학 사업 성과관리 담당자입니다.\n지킬 것: 숫자와 비율은 바꾸지 않기, 의견 원문에 없는 성과를 만들지 않기, [ ] 칸은 그대로, 개조식(~함, ~임).\n출력: ① 다듬은 결과보고서 ② 개선 사항별 구체적 환류 방법 ③ 보도자료용 한 문단\n\n${doc}`
+  return (
+    <>
+      <section className="card">
+        <Field id="rp-n" label="사업·행사명"><TextInput id="rp-n" value={v.name} onChange={set('name')} /></Field>
+        <div className="grid">
+          <Field id="rp-w" label="일시"><TextInput id="rp-w" value={v.when} onChange={set('when')} /></Field>
+          <Field id="rp-p" label="장소"><TextInput id="rp-p" value={v.where} onChange={set('where')} /></Field>
+          <Field id="rp-t" label="대상"><TextInput id="rp-t" value={v.who} onChange={set('who')} /></Field>
+        </div>
+        <div className="grid">
+          <Field id="rp-pl" label="계획 인원"><TextInput id="rp-pl" inputMode="numeric" value={v.plan} onChange={set('plan')} /></Field>
+          <Field id="rp-c" label="참여 인원"><TextInput id="rp-c" inputMode="numeric" value={v.came} onChange={set('came')} /></Field>
+          <Field id="rp-s" label="만족도(5점 만점)"><TextInput id="rp-s" inputMode="decimal" value={v.sat} onChange={set('sat')} /></Field>
+          <Field id="rp-r" label="설문 응답 수"><TextInput id="rp-r" inputMode="numeric" value={v.resp} onChange={set('resp')} /></Field>
+          <Field id="rp-bp" label="예산 계획(원, 선택)"><TextInput id="rp-bp" inputMode="numeric" value={v.budgetPlan} onChange={set('budgetPlan')} /></Field>
+          <Field id="rp-bu" label="집행액(원, 선택)"><TextInput id="rp-bu" inputMode="numeric" value={v.budgetUsed} onChange={set('budgetUsed')} /></Field>
+        </div>
+        <Field id="rp-cm" label="주관식 의견" hint="한 줄에 하나"><TextArea id="rp-cm" rows={5} value={v.comments} onChange={set('comments')} /></Field>
+        <div className="row">
+          <button type="button" className="btn primary" onClick={() => setMade(true)}>결과보고서 만들기</button>
+          <button type="button" className="btn" onClick={() => { let i = (si + 1) % REPORT_SAMPLES.length; setSi(i); setV({ ...E, ...REPORT_SAMPLES[i] }); setMade(false) }}>예시 채우기</button>
+          <span className="small muted">예시는 가상 수치입니다.</span>
+        </div>
+      </section>
+      {made && <>
+        <ResultDoc title="결과보고서" text={doc} fileName={`${v.name || '행사'}_결과보고.txt`} />
+        <AiRefine appId="press-notice" label="지후 AI로 결과보고서 다듬기" note="숫자는 그대로 두고 문장과 환류 방법을 다듬습니다." prompt={aiPrompt} />
+      </>}
     </>
   )
 }
