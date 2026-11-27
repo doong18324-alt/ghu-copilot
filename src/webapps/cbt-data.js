@@ -3,6 +3,8 @@
    - 기출 원문은 담지 않습니다. 정답과 해설은 AI가 쓴 초안이므로 학과 교수 검토 후 사용합니다.
    - 문항 형식: [과목id, 문제, [보기 5개], 정답번호(1~5), 해설] */
 
+import { MORE } from './cbt/index.js'
+
 export const KUKSIWON_URL = 'https://www.kuksiwon.or.kr/CollectOfQuestions/brd/m_116/list.do'
 
 export const JOBS = [
@@ -172,5 +174,22 @@ export const JOBS = [
     ],
   },
 ]
+
+// 추가 묶음(직종별 파일)을 합칩니다.
+for (const j of JOBS) j.items.push(...(MORE[j.id] || []))
+
+// 정답 위치가 한 번호에 몰리지 않도록, 순서가 의미 없는 보기는 문항마다 정해진 자리로 정답을 옮깁니다.
+// (숫자·각도처럼 크기 순서가 있는 보기는 그대로 둡니다.)
+const ordered = opts => opts.every(o => /^[+\-−]?\s*[\d.,]+/.test(o.trim()))
+const hash = t => [...t].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7)
+for (const j of JOBS) {
+  j.items = j.items.map(([s, q, o, a, e]) => {
+    if (ordered(o)) return [s, q, o, a, e]
+    const t = hash(q) % 5
+    const opts = [...o]
+    ;[opts[a - 1], opts[t]] = [opts[t], opts[a - 1]]
+    return [s, q, opts, t + 1, e]
+  })
+}
 
 export const jobById = id => JOBS.find(j => j.id === id)
