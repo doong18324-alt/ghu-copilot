@@ -53,6 +53,15 @@ export const WEBAPPS = [
     caution: '학생 이름 대신 번호를 쓰세요. 피드백은 보낸 뒤가 아니라 보내기 전에 한 번 읽어 확인하세요.',
   },
   {
+    id: 'reflection-journal', mono: '성찰', tone: 'green', version: 'V1', isNew: true,
+    title: '임상실습 성찰일지 코치',
+    summary: 'Gibbs 6단계 질문에 답하면 성찰일지 초안을 만들고, 환자·보호자 정보는 자동으로 가립니다. 다 쓴 실습은 이력서에 한 줄로 넣을 수 있습니다.',
+    roles: ['student'], category: '학습·국가고시',
+    tags: ['성찰일지', '실습일지', '임상실습', 'Gibbs', '실습', '반성일지', '이력서'],
+    features: ['단계별 질문과 예시', '이름·등록번호·연락처 자동 가림', '실습지도자 확인란', '이력서 「활동·경험」 연결'],
+    caution: '자동 가림은 정해진 모양만 찾습니다. 제출 전 환자를 알아볼 수 있는 내용이 없는지 다시 읽어 보세요.',
+  },
+  {
     id: 'easy-explainer', mono: '쉽게', tone: 'amber', version: 'V2',
     title: '어려운 개념 쉽게 풀기·미니 퀴즈',
     summary: '전공 문장이나 기사를 붙여 넣으면 어려운 문장과 용어를 짚어 주고 퀴즈를 냅니다. AI 연결 후에는 눈높이 설명과 비유까지 만듭니다.',
@@ -178,7 +187,7 @@ export const WEBAPPS = [
 
 export const appUrl = a => `./webapps/${a.id}.html`
 // 바이탈 디자인으로 다시 만든 앱(src/webapps/index.js에 등록)은 이 목록에 있습니다.
-export const NATIVE_IDS = ['press-notice', 'toast-maker', 'mind-rest', 'advising-guide', 'rules-chatbot', 'complaint-script', 'easy-explainer', 'license-cbt', 'admission-studio', 'career-clinic', 'home-massage', 'diet-planner', 'pet-signal', 'voucher-checker', 'future-strategy', 'privacy-shield', 'item-analysis', 'grading-helper']
+export const NATIVE_IDS = ['press-notice', 'toast-maker', 'mind-rest', 'advising-guide', 'rules-chatbot', 'complaint-script', 'easy-explainer', 'license-cbt', 'admission-studio', 'career-clinic', 'home-massage', 'diet-planner', 'pet-signal', 'voucher-checker', 'future-strategy', 'privacy-shield', 'item-analysis', 'grading-helper', 'reflection-journal']
 export const appById = id => WEBAPPS.find(a => a.id === id)
 
 // 띄어쓰기·대소문자와 관계없이 제목, 설명, 태그, 기능에서 찾습니다.
