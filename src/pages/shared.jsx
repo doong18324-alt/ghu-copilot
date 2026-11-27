@@ -449,8 +449,7 @@ export function Cover({ item, className = '' }) {
 
 // 실제 실적. 코드에 들어 있어 모든 방문자에게 보입니다(서버 연결 전까지는 이 방식으로만 공개 게시가 됩니다).
 const PROF = { role: 'faculty', author: '김현중', dept: '시니어운동처방학과', email: 'hjkim@ghu.ac.kr' }
-const IOS_NOTE = '생성형 AI와 대화하며 코드를 작성하는 방식으로 제작한 아이폰 앱입니다.'
-const APP_NOTE = '생성형 AI와 대화하며 코드를 작성하는 방식으로 제작했고, 설치 없이 웹 브라우저에서 사용합니다.'
+const APP_NOTE = '설치 없이 웹 브라우저에서 사용합니다.'
 export const FEATURED = [
   { ...PROF, id: 'real-vital-oncare', type: 'AI 앱·에이전트 개발', date: '2026-11-27', photo: shotOncare, caption: 'GHU 바이탈 온케어 서비스 구성도',
     title: 'GHU 바이탈 온케어(Vital OnCare): 휴대폰 하나로 하는 다학제 지역사회 전신 건강관리',
@@ -463,7 +462,7 @@ export const FEATURED = [
   { ...PROF, id: 'real-body-aligner', type: 'AI 앱·에이전트 개발', date: '2026-04-13', photo: shotBody, caption: 'BodyAligner 첫 화면',
     title: 'BodyAligner: 아이폰 ARKit 기반 체형분석과 운동처방 앱',
     summary: '앞면·옆면·뒷면을 촬영하면 26개 변수로 체형을 분석하고 ACSM 기준 운동처방까지 제시합니다.',
-    desc: 'Apple ARKit 기반 아이폰 체형분석 앱입니다.\n앞면·옆면·뒷면 3방향을 촬영하면 자동으로 분석해 대칭성, 관절 각도, 체형 크기 등 26개 변수를 산출합니다. 위험요소 경고와 함께 임상 해석을 보여 주고, ACSM 기준 운동처방을 제시합니다. 결과는 3쪽 분량의 컬러 PDF 보고서로 내보낼 수 있습니다.\n' + IOS_NOTE },
+    desc: 'Apple ARKit 기반 아이폰 체형분석 앱입니다.\n앞면·옆면·뒷면 3방향을 촬영하면 자동으로 분석해 대칭성, 관절 각도, 체형 크기 등 26개 변수를 산출합니다. 위험요소 경고와 함께 임상 해석을 보여 주고, ACSM 기준 운동처방을 제시합니다. 결과는 3쪽 분량의 컬러 PDF 보고서로 내보낼 수 있습니다.' },
   { ...PROF, id: 'real-nrf-bps', type: 'AI 활용 연구', date: '2026-09-01', photo: shotBps, caption: '만성통증 표현형 연구 개념 이미지',
     title: '한국연구재단 기본연구 선정: AI 기반 만성통증 표현형 정밀 중재 시스템',
     summary: '멀티모달 생체신호와 AI로 만성통증을 유형별로 나누고 맞춤 중재를 찾는 5개년 연구입니다.',
@@ -471,15 +470,15 @@ export const FEATURED = [
   { ...PROF, id: 'real-gait-analyzer', type: 'AI 앱·에이전트 개발', date: '2026-04-13', photo: shotGait, caption: 'GaitAnalyzer 첫 화면',
     title: 'GaitAnalyzer: 아이폰 ARKit·LiDAR 기반 보행분석 앱',
     summary: '6m 보행을 촬영하면 시공간 보행 변수를 산출하고 100점 만점 점수와 운동처방을 제시합니다.',
-    desc: 'Apple ARKit과 LiDAR를 활용한 아이폰 보행분석 앱(v2.0)입니다.\n6m 보행 검사에서 LiDAR로 거리를 재고 키를 기준으로 보정(캘리브레이션)한 뒤, 보행속도, 분속수, 활보장, 입각기·유각기 등 시공간 보행 변수를 산출합니다. 결과는 100점 만점 점수와 임상 해석, 위험요소 경고, ACSM 기준 운동처방으로 정리되며, 점수·변수·운동처방을 담은 3쪽 컬러 PDF 보고서로 내보낼 수 있습니다.\n' + IOS_NOTE },
+    desc: 'Apple ARKit과 LiDAR를 활용한 아이폰 보행분석 앱(v2.0)입니다.\n6m 보행 검사에서 LiDAR로 거리를 재고 키를 기준으로 보정(캘리브레이션)한 뒤, 보행속도, 분속수, 활보장, 입각기·유각기 등 시공간 보행 변수를 산출합니다. 결과는 100점 만점 점수와 임상 해석, 위험요소 경고, ACSM 기준 운동처방으로 정리되며, 점수·변수·운동처방을 담은 3쪽 컬러 PDF 보고서로 내보낼 수 있습니다.' },
   { ...PROF, id: 'real-balloon', type: 'AI 앱·에이전트 개발', date: '2026-04-07', photo: shotBalloon, caption: 'AI 맞춤형 운동 트레이너 첫 화면',
     title: 'AI 맞춤형 운동 트레이너: 풍선 터트리기 운동 게임',
     summary: 'ACSM 평가로 맞춤 프로그램을 만들고, 화면 속 풍선을 터트리며 운동합니다.',
-    desc: 'AI스포츠테크연구센터에서 만든 운동 앱입니다.\nACSM 평가, 맞춤 프로그램, 카메라 앞에서 움직여 풍선을 터트리는 운동, PDF 리포트 순서로 진행하며 식이 제안도 함께 제공합니다.\n' + IOS_NOTE },
+    desc: 'AI스포츠테크연구센터에서 만든 운동 앱입니다.\nACSM 평가, 맞춤 프로그램, 카메라 앞에서 움직여 풍선을 터트리는 운동, PDF 리포트 순서로 진행하며 식이 제안도 함께 제공합니다.' },
   { ...PROF, id: 'real-fcs', type: 'AI 앱·에이전트 개발', date: '2026-03-22', photo: shotFcs, caption: 'FCS 노쇠중심스펙트럼 평가 첫 화면',
     title: 'FCS 노쇠중심스펙트럼 평가 도구',
     summary: '노쇠를 생물·심리·사회·기능 영역으로 나누어 16단계로 평가하는 앱입니다.',
-    desc: 'BPS-FN 모델에 따른 노쇠중심스펙트럼(Frailty-Centered Spectrum) 평가 앱입니다.\nK-FRAIL, MNA-SF, GDS-SF, K-MMSE, LSNS-6, 수정 바델지수, IADL 등의 평가를 차례로 입력하면 결과를 정리해 보여 줍니다.\n' + IOS_NOTE },
+    desc: 'BPS-FN 모델에 따른 노쇠중심스펙트럼(Frailty-Centered Spectrum) 평가 앱입니다.\nK-FRAIL, MNA-SF, GDS-SF, K-MMSE, LSNS-6, 수정 바델지수, IADL 등의 평가를 차례로 입력하면 결과를 정리해 보여 줍니다.' },
   { ...PROF, id: 'real-ppe', type: 'AI 수업 혁신', date: '2026-03-08', photo: shotPpe, caption: '스포츠 참가 전 평가 개념 이미지',
     title: '스포츠 참가 전 평가(PPE) 교육용 웹 도구',
     summary: '병력부터 판정까지 7단계 평가 흐름을 수업에서 직접 실습합니다.',
