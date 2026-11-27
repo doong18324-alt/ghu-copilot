@@ -56,7 +56,7 @@ export const WEBAPPS = [
   {
     id: 'license-cbt', mono: '국시', tone: 'blue', version: 'V3', stored: true,
     title: '보건의료 국가고시 CBT 모의고사·오답노트',
-    summary: '10개 면허 직종 300여 문항으로 과목별 모의고사를 풀고, 틀린 문제는 오답노트로, 시험일까지는 D-day 계획으로 관리합니다.',
+    summary: '10개 면허 직종 500여 문항으로 과목별 모의고사를 풀고, 틀린 문제는 오답노트로, 시험일까지는 D-day 계획으로 관리합니다.',
     roles: ['student', 'faculty'], category: '학습·국가고시',
     tags: ['국시', '국가고시', 'CBT', '모의고사', '오답노트', '문제은행', '간호', '물리치료', '방사선', '임상병리', '치위생', '응급구조', '치기공', '안경', '보건의료정보', '영양'],
     features: ['직종·과목·문항 수(드롭다운)를 골라 바로 풀기', '과목별 정답률과 D-day 공부 계획', '문제지·정답해설 내려받기(인쇄용 HTML, 텍스트, CSV)', '틀린 문제 자동 오답노트와 다시 풀기', '학과 자체 문항 CSV 업로드'],
@@ -230,6 +230,10 @@ export const WEBAPPS = [
     caution: '응급 증상이 있으면 바로 동물병원에 가세요.',
   },
 ]
+
+// 앱 아이콘: src/assets/apps/icons/<앱 id>.jpg 가 있으면 자동으로 붙습니다.
+const ICONS = import.meta.glob('../assets/apps/icons/*.jpg', { eager: true, import: 'default' })
+for (const a of WEBAPPS) { const f = ICONS[`../assets/apps/icons/${a.id}.jpg`]; if (f && !a.icon) a.icon = f }
 
 export const appUrl = a => `./webapps/${a.id}.html`
 // 바이탈 디자인으로 다시 만든 앱(src/webapps/index.js에 등록)은 이 목록에 있습니다.

@@ -1,8 +1,10 @@
 // 직종별 추가 문항 묶음. 3차분은 <직종>3.js 파일로 이어 붙입니다.
 import pt from './pt.js'
 import pt3 from './pt3.js'
+import pt4 from './pt4.js'
 import rn from './rn.js'
 import rn3 from './rn3.js'
+import rn4 from './rn4.js'
 import rt from './rt.js'
 import rt3 from './rt3.js'
 import mt from './mt.js'
@@ -21,8 +23,8 @@ import rd from './rd.js'
 import rd3 from './rd3.js'
 
 export const MORE = {
-  pt: [...pt, ...pt3],
-  rn: [...rn, ...rn3],
+  pt: [...pt, ...pt3, ...pt4],
+  rn: [...rn, ...rn3, ...rn4],
   rt: [...rt, ...rt3],
   mt: [...mt, ...mt3],
   dh: [...dh, ...dh3],
