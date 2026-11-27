@@ -23,12 +23,29 @@ const EMPTY = { dept: '시니어운동처방학과', licenses: '', strength: '',
 const pick = a => a[Math.floor(Math.random() * a.length)]
 const pickN = (a, n) => [...a].sort(() => Math.random() - 0.5).slice(0, n)
 
-// 예시 채우기: 누를 때마다 학과·독자·강점 조합·모집 시기가 바뀝니다. 수치(취업률 등)는 지어내지 않고 비워 둡니다.
-function sample(prevDept) {
-  const d = pick(DEPTS.filter(x => x.name !== prevDept))
+// 예시 채우기: 고른 학과는 그대로 두고, 그 학과의 공개 정보 안에서 강점·진로·성과·독자·모집 시기 조합을 바꿉니다.
+// 홈페이지에 없는 사실이나 수치(취업률 등)는 지어내지 않습니다.
+function sample(deptName, prevStrength) {
+  const d = deptByName(deptName) || DEPTS[0]
+  const lic = list(d.licenses)
+  const car = list(d.careers)
+  const pool = [
+    ...(d.strengths || []),
+    ...lic.map(x => `${x} 취득 준비`),
+    ...car.slice(0, 4).map(x => `졸업 후 ${x} 진출`),
+  ]
+  let strength = ''
+  for (let i = 0; i < 5 && (!strength || strength === prevStrength); i++) {
+    strength = [pick(d.strengths || pool), ...pickN(pool, 2)].filter((x, k, arr) => arr.indexOf(x) === k).slice(0, 2 + Math.floor(Math.random() * 2)).join(', ')
+  }
+  const careers = pickN(car, Math.min(car.length, 3 + Math.floor(Math.random() * 3))).join(', ')
+  const outcome = pick([
+    ...(d.outcomes || []),
+    `[대학알리미 공시 취업률과 기준연도], 주요 진출 분야: ${pickN(car, 2).join(', ')}`,
+    `졸업생 진출 분야: ${pickN(car, 3).join(', ')}`,
+  ])
   const aud = d.adult === 'only' ? 'adult' : pick(d.adult === 'sat' ? ['adult', 'teen', 'parent', 'mix'] : ['teen', 'parent', 'mix'])
-  const strength = pickN(d.strengths || [], Math.min(2, (d.strengths || []).length)).join(', ')
-  return { aud, v: { ...EMPTY, dept: d.name, ...fill(d.name), strength, period: pick(PERIODS), outcome: '' } }
+  return { aud, v: { ...EMPTY, dept: d.name, ...fill(d.name), careers, strength, outcome, period: pick(PERIODS) } }
 }
 
 function fill(dept) {
@@ -177,7 +194,7 @@ export default function AdmissionStudio({ app }) {
   const d = deptByName(v.dept) || {}
 
   function example() {
-    const { aud: a, v: nv } = sample(v.dept)
+    const { aud: a, v: nv } = sample(v.dept, v.strength)
     setV(nv); setAud(a); setTexts(build(nv, a)); setOut('card')
   }
 
@@ -241,7 +258,7 @@ export default function AdmissionStudio({ app }) {
         <div className="row">
           <button type="button" className="btn primary" onClick={run}>홍보 초안 만들기</button>
           <button type="button" className="btn" onClick={example}>예시 채우기</button>
-          <span className="small muted">누를 때마다 다른 학과·독자·강점으로 채웁니다. 취업률 같은 수치는 비워 둡니다.</span>
+          <span className="small muted">고른 학과의 공개 정보로 채우며, 누를 때마다 강점·진로·성과·독자·모집 시기 조합이 바뀝니다. 취업률 같은 수치는 자리표시로 둡니다.</span>
         </div>
         <span className="small muted">학과 정보 출처: <a href={deptUrl(d)} target="_blank" rel="noreferrer">광주보건대 홈페이지 {v.dept} 학과안내</a>, <a href={ADULT_URL} target="_blank" rel="noreferrer">입학안내 「성인학습자 소개」</a>(2026년 11월 27일 확인). 장학·수업 방식·모집 인원은 해마다 바뀌므로 모집요강으로 다시 확인하세요.</span>
       </section>
