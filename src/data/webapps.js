@@ -139,19 +139,19 @@ export const WEBAPPS = [
     caution: '통증이 심하거나 오래가면 의료기관 진료를 먼저 받으세요.',
   },
   {
-    id: 'pet-signal', mono: '반려', tone: 'amber', version: 'V1',
+    id: 'pet-signal', mono: '반려', tone: 'amber', version: 'V2',
     title: '반려동물 행동 통역사',
     summary: '강아지·고양이의 행동과 증상을 고르면 이유와 대처법, 병원 방문이 필요한 정도를 안내합니다.',
     roles: ['student', 'faculty', 'staff'], category: '건강·생활',
     tags: ['반려동물', '강아지', '고양이', '행동', '증상', '응급'],
-    features: ['종·연령 선택', '응급도 신호등', '대처법 안내'],
+    features: ['강아지·고양이, 나이별 안내', '행동 7가지의 원인과 해 주세요·하지 마세요', '응급도 신호등(배뇨 곤란·중독 의심 자동 감지)', '수의사 상담용 메모'],
     caution: '응급 증상이 있으면 바로 동물병원에 가세요.',
   },
 ]
 
 export const appUrl = a => `./webapps/${a.id}.html`
 // 바이탈 디자인으로 다시 만든 앱(src/webapps/index.js에 등록)은 이 목록에 있습니다.
-export const NATIVE_IDS = ['press-notice', 'toast-maker', 'mind-rest', 'advising-guide', 'rules-chatbot', 'complaint-script', 'easy-explainer', 'license-cbt', 'admission-studio', 'career-clinic', 'home-massage', 'diet-planner']
+export const NATIVE_IDS = ['press-notice', 'toast-maker', 'mind-rest', 'advising-guide', 'rules-chatbot', 'complaint-script', 'easy-explainer', 'license-cbt', 'admission-studio', 'career-clinic', 'home-massage', 'diet-planner', 'pet-signal']
 export const appById = id => WEBAPPS.find(a => a.id === id)
 
 // 띄어쓰기·대소문자와 관계없이 제목, 설명, 태그, 기능에서 찾습니다.

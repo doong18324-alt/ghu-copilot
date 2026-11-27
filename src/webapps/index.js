@@ -14,4 +14,5 @@ export const NATIVE = {
   'career-clinic': lazy(() => import('./career-clinic.jsx')),
   'home-massage': lazy(() => import('./home-massage.jsx')),
   'diet-planner': lazy(() => import('./diet-planner.jsx')),
+  'pet-signal': lazy(() => import('./pet-signal.jsx')),
 }
