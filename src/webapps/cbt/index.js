@@ -4,6 +4,7 @@ import pt3 from './pt3.js'
 import pt4 from './pt4.js'
 import pt5 from './pt5.js'
 import pt6 from './pt6.js'
+import pt7 from './pt7.js'
 import rn from './rn.js'
 import rn3 from './rn3.js'
 import rn4 from './rn4.js'
@@ -51,7 +52,7 @@ import rd5 from './rd5.js'
 import rd6 from './rd6.js'
 
 export const MORE = {
-  pt: [...pt, ...pt3, ...pt4, ...pt5, ...pt6],
+  pt: [...pt, ...pt3, ...pt4, ...pt5, ...pt6, ...pt7],
   rn: [...rn, ...rn3, ...rn4, ...rn5, ...rn6],
   rt: [...rt, ...rt3, ...rt4, ...rt5, ...rt6],
   mt: [...mt, ...mt3, ...mt4, ...mt5, ...mt6],
