@@ -45,6 +45,11 @@ a:hover { color: var(--blue-dark); }
 h1, h2, h3 { margin: 0; letter-spacing: -.025em; font-weight: 800; line-height: 1.25; }
 button, input, select, textarea { font-family: inherit; font-size: 15px; color: var(--ink); letter-spacing: inherit; }
 input[type='checkbox'], input[type='radio'] { accent-color: var(--navy); }
+/* 화면에 그대로 보이는 파일 선택칸도 버튼 모양으로 맞춥니다 */
+input[type='file'] { font-size: 14px; color: var(--muted); max-width: 100%; }
+input[type='file']::file-selector-button { font: inherit; font-weight: 600; color: var(--ink); background: var(--fill); border: 0; border-radius: 980px; padding: 9px 16px; margin-right: 12px; cursor: pointer; }
+input[type='file']::file-selector-button:hover { background: rgba(0, 0, 0, .1); }
+.input[type='file'] { min-height: auto; padding: 8px; }
 ::selection { background: rgba(0, 113, 227, .2); }
 :focus-visible { outline: none; box-shadow: var(--ring); }
 
@@ -226,7 +231,8 @@ a.btn { display: inline-flex; align-items: center; justify-content: center; text
 .feature b { display: block; font-size: 17px; font-weight: 800; letter-spacing: -.02em; margin-bottom: 3px; }
 .feature span { font-size: 14px; color: var(--muted); line-height: 1.45; display: block; }
 
-.table-wrap { overflow-x: auto; }
+.table-wrap { overflow-x: auto; position: relative; }
+label.btn { position: relative; }
 table { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 560px; }
 th { text-align: left; font-weight: 600; color: var(--faint); font-size: 12px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
 td { padding: 14px 12px; border-bottom: 1px solid var(--line); }

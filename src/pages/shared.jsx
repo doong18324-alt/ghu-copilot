@@ -574,7 +574,7 @@ function AchievementBoard({ role }) {
             <div className="cover-pick">
               {form.photo ? <img src={form.photo} alt="올린 대표 사진 미리보기" /> : <div className="cover-empty">사진을 올리면 기사 맨 위에 들어갑니다</div>}
               <div className="stack" style={{ gap: 8 }}>
-                <input id="a-photo" type="file" accept="image/*" className="input" onChange={onPhoto} />
+                <div><label className="btn soft" style={{ display: 'inline-flex', alignItems: 'center', cursor: 'pointer' }}>{form.photo ? '사진 바꾸기' : '사진 선택'}<input id="a-photo" type="file" accept="image/*" hidden onChange={onPhoto} /></label></div>
                 {form.photo && <div><button type="button" className="btn" style={{ minHeight: 36, padding: '0 14px' }} onClick={() => setForm({ ...form, photo: '', caption: '' })}>사진 빼기</button></div>}
                 <span className="muted small">활동 장면, 결과물 화면, 발표 모습 등. 가로 16:9로 자동 맞춤됩니다.</span>
               </div>
