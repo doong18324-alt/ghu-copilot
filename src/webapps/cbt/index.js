@@ -16,11 +16,13 @@ import rt3 from './rt3.js'
 import rt4 from './rt4.js'
 import rt5 from './rt5.js'
 import rt6 from './rt6.js'
+import rt7 from './rt7.js'
 import mt from './mt.js'
 import mt3 from './mt3.js'
 import mt4 from './mt4.js'
 import mt5 from './mt5.js'
 import mt6 from './mt6.js'
+import mt7 from './mt7.js'
 import dh from './dh.js'
 import dh3 from './dh3.js'
 import dh4 from './dh4.js'
@@ -55,8 +57,8 @@ import rd6 from './rd6.js'
 export const MORE = {
   pt: [...pt, ...pt3, ...pt4, ...pt5, ...pt6, ...pt7],
   rn: [...rn, ...rn3, ...rn4, ...rn5, ...rn6, ...rn7],
-  rt: [...rt, ...rt3, ...rt4, ...rt5, ...rt6],
-  mt: [...mt, ...mt3, ...mt4, ...mt5, ...mt6],
+  rt: [...rt, ...rt3, ...rt4, ...rt5, ...rt6, ...rt7],
+  mt: [...mt, ...mt3, ...mt4, ...mt5, ...mt6, ...mt7],
   dh: [...dh, ...dh3, ...dh4, ...dh5, ...dh6],
   emt: [...emt, ...emt3, ...emt4, ...emt5, ...emt6],
   dt: [...dt, ...dt3, ...dt4, ...dt5, ...dt6],
