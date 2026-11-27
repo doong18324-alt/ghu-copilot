@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { AppHeader, Field, TextInput, TextArea, ChipGroup, ResultDoc, AiRefine, Notice } from './kit.jsx'
 import { josa } from '../lib/korean.js'
-import { DEPTS, deptByName, ADULT_PERKS, ADMISSION_TEL, ADULT_CENTER_TEL, SOURCE_URL } from './admission-data.js'
+import { DEPTS, deptByName, deptUrl, ADULT_PERKS, ADMISSION_TEL, ADULT_CENTER_TEL, ADULT_URL, PERIODS } from './admission-data.js'
 
 /* 입시 홍보 카드뉴스·숏폼 대본
    기존 앱(V1)은 독자가 수험생·학부모뿐이었고, 학과를 직접 타이핑해야 했으며, 입력과 상관없이
@@ -19,6 +19,17 @@ const AUDIENCES = [
 const OUTPUTS = [['card', '카드뉴스 5장'], ['short', '숏폼 대본'], ['msg', '안내 문자·게시글'], ['prompt', '이미지·영상 AI 프롬프트']]
 
 const EMPTY = { dept: '시니어운동처방학과', licenses: '', strength: '', outcome: '', careers: '', period: '', contact: '' }
+
+const pick = a => a[Math.floor(Math.random() * a.length)]
+const pickN = (a, n) => [...a].sort(() => Math.random() - 0.5).slice(0, n)
+
+// 예시 채우기: 누를 때마다 학과·독자·강점 조합·모집 시기가 바뀝니다. 수치(취업률 등)는 지어내지 않고 비워 둡니다.
+function sample(prevDept) {
+  const d = pick(DEPTS.filter(x => x.name !== prevDept))
+  const aud = d.adult === 'only' ? 'adult' : pick(d.adult === 'sat' ? ['adult', 'teen', 'parent', 'mix'] : ['teen', 'parent', 'mix'])
+  const strength = pickN(d.strengths || [], Math.min(2, (d.strengths || []).length)).join(', ')
+  return { aud, v: { ...EMPTY, dept: d.name, ...fill(d.name), strength, period: pick(PERIODS), outcome: '' } }
+}
 
 function fill(dept) {
   const d = deptByName(dept) || {}
@@ -165,6 +176,11 @@ export default function AdmissionStudio({ app }) {
   const set = k => val => setV(s => ({ ...s, [k]: val }))
   const d = deptByName(v.dept) || {}
 
+  function example() {
+    const { aud: a, v: nv } = sample(v.dept)
+    setV(nv); setAud(a); setTexts(build(nv, a)); setOut('card')
+  }
+
   function pickDept(name) {
     const nd = deptByName(name) || {}
     setV(s => ({ ...s, dept: name, ...fill(name) }))
@@ -216,14 +232,18 @@ export default function AdmissionStudio({ app }) {
             <TextArea id="ad-career" rows={2} value={v.careers} onChange={set('careers')} placeholder="예: 병원 재활치료실, 스포츠재활센터" />
           </Field>
           <Field id="ad-str" label="학과 강점·실습 환경">
-            <TextArea id="ad-str" rows={3} value={v.strength} onChange={set('strength')} placeholder="예: 지역 노인복지관과 연계한 현장 실습, 졸업생 강사 활동 연계" />
+            <TextArea id="ad-str" rows={3} value={v.strength} onChange={set('strength')} placeholder={d.strengths?.[0] ? `예: ${d.strengths[0]}` : '예: 현장 연계 실습, 졸업생 진로 연계'} />
           </Field>
           <Field id="ad-out" label="졸업 후 성과" hint="수치는 대학알리미 공시값과 기준연도를 함께">
             <TextArea id="ad-out" rows={3} value={v.outcome} onChange={set('outcome')} placeholder="예: 2025년 대학알리미 공시 취업률 ○○%" />
           </Field>
         </div>
-        <div className="row"><button type="button" className="btn primary" onClick={run}>홍보 초안 만들기</button></div>
-        <span className="small muted">학과 정보 출처: <a href={SOURCE_URL} target="_blank" rel="noreferrer">광주보건대 입학안내 「성인학습자 소개」</a>(2026년 11월 확인). 장학·수업 방식·모집 인원은 해마다 바뀌므로 모집요강으로 다시 확인하세요.</span>
+        <div className="row">
+          <button type="button" className="btn primary" onClick={run}>홍보 초안 만들기</button>
+          <button type="button" className="btn" onClick={example}>예시 채우기</button>
+          <span className="small muted">누를 때마다 다른 학과·독자·강점으로 채웁니다. 취업률 같은 수치는 비워 둡니다.</span>
+        </div>
+        <span className="small muted">학과 정보 출처: <a href={deptUrl(d)} target="_blank" rel="noreferrer">광주보건대 홈페이지 {v.dept} 학과안내</a>, <a href={ADULT_URL} target="_blank" rel="noreferrer">입학안내 「성인학습자 소개」</a>(2026년 11월 27일 확인). 장학·수업 방식·모집 인원은 해마다 바뀌므로 모집요강으로 다시 확인하세요.</span>
       </section>
 
       {texts && (
