@@ -2,43 +2,53 @@
 import pt from './pt.js'
 import pt3 from './pt3.js'
 import pt4 from './pt4.js'
+import pt5 from './pt5.js'
 import rn from './rn.js'
 import rn3 from './rn3.js'
 import rn4 from './rn4.js'
+import rn5 from './rn5.js'
 import rt from './rt.js'
 import rt3 from './rt3.js'
 import rt4 from './rt4.js'
+import rt5 from './rt5.js'
 import mt from './mt.js'
 import mt3 from './mt3.js'
 import mt4 from './mt4.js'
+import mt5 from './mt5.js'
 import dh from './dh.js'
 import dh3 from './dh3.js'
 import dh4 from './dh4.js'
+import dh5 from './dh5.js'
 import emt from './emt.js'
 import emt3 from './emt3.js'
 import emt4 from './emt4.js'
+import emt5 from './emt5.js'
 import dt from './dt.js'
 import dt3 from './dt3.js'
 import dt4 from './dt4.js'
+import dt5 from './dt5.js'
 import opt from './opt.js'
 import opt3 from './opt3.js'
 import opt4 from './opt4.js'
+import opt5 from './opt5.js'
 import him from './him.js'
 import him3 from './him3.js'
 import him4 from './him4.js'
+import him5 from './him5.js'
 import rd from './rd.js'
 import rd3 from './rd3.js'
 import rd4 from './rd4.js'
+import rd5 from './rd5.js'
 
 export const MORE = {
-  pt: [...pt, ...pt3, ...pt4],
-  rn: [...rn, ...rn3, ...rn4],
-  rt: [...rt, ...rt3, ...rt4],
-  mt: [...mt, ...mt3, ...mt4],
-  dh: [...dh, ...dh3, ...dh4],
-  emt: [...emt, ...emt3, ...emt4],
-  dt: [...dt, ...dt3, ...dt4],
-  opt: [...opt, ...opt3, ...opt4],
-  him: [...him, ...him3, ...him4],
-  rd: [...rd, ...rd3, ...rd4],
+  pt: [...pt, ...pt3, ...pt4, ...pt5],
+  rn: [...rn, ...rn3, ...rn4, ...rn5],
+  rt: [...rt, ...rt3, ...rt4, ...rt5],
+  mt: [...mt, ...mt3, ...mt4, ...mt5],
+  dh: [...dh, ...dh3, ...dh4, ...dh5],
+  emt: [...emt, ...emt3, ...emt4, ...emt5],
+  dt: [...dt, ...dt3, ...dt4, ...dt5],
+  opt: [...opt, ...opt3, ...opt4, ...opt5],
+  him: [...him, ...him3, ...him4, ...him5],
+  rd: [...rd, ...rd3, ...rd4, ...rd5],
 }
