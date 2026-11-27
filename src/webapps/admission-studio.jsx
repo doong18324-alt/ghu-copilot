@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { AppHeader, Field, TextInput, TextArea, ChipGroup, ResultDoc, AiRefine, Notice } from './kit.jsx'
 import { josa } from '../lib/korean.js'
+import { buildPrompts } from './admission-prompts.js'
 import { DEPTS, deptByName, deptUrl, ADULT_PERKS, ADMISSION_TEL, ADULT_CENTER_TEL, ADULT_URL, PERIODS } from './admission-data.js'
 
 /* 입시 홍보 카드뉴스·숏폼 대본
@@ -16,7 +17,7 @@ const AUDIENCES = [
   ['mix', '수험생과 학부모', '두 독자를 함께'],
 ]
 
-const OUTPUTS = [['card', '카드뉴스 5장'], ['short', '숏폼 대본'], ['msg', '안내 문자·게시글'], ['prompt', '이미지·영상 AI 프롬프트']]
+const OUTPUTS = [['card', '카드뉴스 5장'], ['short', '숏폼 대본'], ['msg', '안내 문자·게시글'], ['prompt', '영상·이미지 AI 프롬프트']]
 
 const EMPTY = { dept: '시니어운동처방학과', licenses: '', strength: '', outcome: '', careers: '', period: '', contact: '' }
 
@@ -162,19 +163,7 @@ function build(v, aud) {
       tags(dept, aud),
     ].join('\n')
 
-  const ko = aud === 'adult' ? 'adult learners in their 30s to 50s attending an evening class after work' : 'Korean college students in a hands-on practice lab'
-  const prompt = [
-    `[포스터 이미지 프롬프트 · 영어로 넣으면 결과가 안정적입니다]`,
-    `Editorial-style admissions poster photo for a Korean health university department (${dept}). ${ko}, natural light, real equipment, candid expressions, clean composition with empty space at the top for a Korean headline. No text, no logos, no watermark.`,
-    '',
-    `[인포그래픽 이미지 프롬프트]`,
-    `Flat vector infographic background for a university department poster, calm navy and sky blue palette, simple icons for license, classroom, career path, generous margins for Korean text overlay. No text.`,
-    '',
-    `[영상 프롬프트 · 5~8초 컷]`,
-    `${aud === 'adult' ? 'Evening campus, an adult learner walks into a lit classroom carrying a laptop bag, slow push-in, warm interior light, realistic.' : 'A student in a practice lab adjusts equipment, slow dolly-in, bright realistic lighting, shallow depth of field.'}`,
-    '',
-    '주의: 실제 학생 얼굴이나 대학 로고를 AI로 만들지 마세요. 실제 사진을 쓸 때는 초상권 동의를 받습니다.',
-  ].join('\n')
+  const prompt = buildPrompts({ dept, aud, adult: d.adult })
 
   return { card, short, msg, prompt }
 }
