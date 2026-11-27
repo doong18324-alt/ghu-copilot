@@ -1,0 +1,2081 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>대학병원·의료기관 취업 자소서 & 면접 클리닉</title>
+  <style>
+    /* ==========================================================================
+       1. CSS 변수 및 디자인 토큰 (메디컬 블루 & 민트 테마)
+       ========================================================================== */
+    :root {
+      --primary-blue: #0284c7;
+      --primary-blue-dark: #0369a1;
+      --primary-blue-light: #e0f2fe;
+      --accent-mint: #0d9488;
+      --accent-mint-bright: #14b8a6;
+      --accent-mint-light: #ccfbf1;
+      
+      --bg-page: #f0f7fa;
+      --bg-card: #ffffff;
+      --bg-subtle: #f8fafc;
+      
+      --text-main: #0f172a;
+      --text-secondary: #334155;
+      --text-muted: #64748b;
+      
+      --border-color: #cbd5e1;
+      --border-light: #e2e8f0;
+      
+      --warn-bg: #fffbeb;
+      --warn-border: #f59e0b;
+      --warn-text: #92400e;
+      
+      --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+      --shadow-md: 0 4px 12px rgba(2, 132, 199, 0.08), 0 2px 4px rgba(15, 23, 42, 0.04);
+      --shadow-lg: 0 10px 25px rgba(2, 132, 199, 0.14);
+      
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+      
+      --transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ==========================================================================
+       2. 기본 리셋 및 타이포그래피
+       ========================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+      color: var(--text-main);
+      background-color: var(--bg-page);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    button, input, select, textarea {
+      font-family: inherit;
+      font-size: inherit;
+      color: inherit;
+    }
+
+    /* ==========================================================================
+       3. 상단 헤더 및 개인정보 보호 경고 배너
+       ========================================================================== */
+    .app-header {
+      background: linear-gradient(135deg, var(--primary-blue-dark) 0%, var(--primary-blue) 55%, var(--accent-mint) 100%);
+      color: #ffffff;
+      padding: 2rem 1.25rem 2.5rem;
+      box-shadow: var(--shadow-md);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .app-header::after {
+      content: "";
+      position: absolute;
+      top: -40%;
+      right: -10%;
+      width: 340px;
+      height: 340px;
+      background: radial-gradient(circle, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0) 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .header-inner {
+      max-width: 1080px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .header-top-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+
+    .header-affiliation {
+      margin-left: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      background: rgba(255, 255, 255, 0.22);
+      backdrop-filter: blur(6px);
+      padding: 0.4rem 0.95rem;
+      border-radius: var(--radius-full);
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -0.01em;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+    }
+
+    .header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(4px);
+      padding: 0.35rem 0.85rem;
+      border-radius: var(--radius-full);
+      font-size: 0.82rem;
+      font-weight: 600;
+      width: fit-content;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+    }
+
+    .header-title {
+      font-size: clamp(1.45rem, 3.2vw, 2.05rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .header-subtitle {
+      font-size: clamp(0.92rem, 1.8vw, 1.05rem);
+      color: rgba(255, 255, 255, 0.92);
+      font-weight: 400;
+    }
+
+    /* 메인 컨테이너 */
+    .main-container {
+      width: 100%;
+      max-width: 1080px;
+      margin: -1.25rem auto 3rem;
+      padding: 0 1.25rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* HIPAA / 의료법 경고 배너 */
+    .privacy-banner {
+      background-color: var(--warn-bg);
+      border: 1px solid #fcd34d;
+      border-left: 5px solid var(--warn-border);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.85rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .privacy-icon {
+      flex-shrink: 0;
+      color: #d97706;
+      margin-top: 0.15rem;
+    }
+
+    .privacy-content {
+      font-size: 0.9rem;
+      color: var(--warn-text);
+      line-height: 1.55;
+    }
+
+    .privacy-content strong {
+      font-weight: 700;
+      color: #78350f;
+    }
+
+    /* ==========================================================================
+       4. 공통 카드 및 섹션 스타일
+       ========================================================================== */
+    .card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border-light);
+      overflow: hidden;
+      transition: var(--transition);
+    }
+
+    .card-header {
+      padding: 1.35rem 1.6rem;
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      background: linear-gradient(to right, #ffffff, #f8fafc);
+    }
+
+    .card-title-group {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .step-badge {
+      background: var(--primary-blue-light);
+      color: var(--primary-blue-dark);
+      font-weight: 800;
+      font-size: 0.8rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: var(--radius-full);
+      letter-spacing: 0.02em;
+    }
+
+    .card-title {
+      font-size: 1.18rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .card-body {
+      padding: 1.6rem;
+    }
+
+    /* ==========================================================================
+       5. 상단 입력 패널 폼 요소
+       ========================================================================== */
+    .btn-sample {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      background-color: var(--accent-mint-light);
+      color: #0f766e;
+      border: 1px solid #99f6e4;
+      padding: 0.55rem 1rem;
+      border-radius: var(--radius-full);
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-sample:hover {
+      background-color: #99f6e4;
+      transform: translateY(-1px);
+      box-shadow: 0 3px 8px rgba(13, 148, 136, 0.18);
+    }
+
+    .btn-sample:active {
+      transform: translateY(0);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 1.35rem;
+    }
+
+    .col-span-12 { grid-column: span 12; }
+    .col-span-6 { grid-column: span 6; }
+    .col-span-5 { grid-column: span 5; }
+    .col-span-7 { grid-column: span 7; }
+
+    @media (max-width: 768px) {
+      .col-span-6, .col-span-5, .col-span-7 {
+        grid-column: span 12;
+      }
+      .card-header, .card-body {
+        padding: 1.2rem;
+      }
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .form-label {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .label-hint {
+      font-size: 0.8rem;
+      font-weight: 400;
+      color: var(--text-muted);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.78rem 1rem;
+      border: 1.5px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      background-color: #ffffff;
+      font-size: 0.95rem;
+      color: var(--text-main);
+      transition: var(--transition);
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary-blue);
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+    }
+
+    select.form-control {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%23334155' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.9rem center;
+      padding-right: 2.5rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    textarea.form-control {
+      min-height: 112px;
+      resize: vertical;
+      line-height: 1.6;
+    }
+
+    /* 직군 핵심 역량 태그 미리보기 배지 */
+    .role-competency-preview {
+      margin-top: 0.35rem;
+      padding: 0.65rem 0.9rem;
+      background: var(--bg-subtle);
+      border-radius: var(--radius-sm);
+      border: 1px dashed var(--border-color);
+      font-size: 0.83rem;
+      color: var(--text-secondary);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .comp-tag {
+      background: #e0f2fe;
+      color: #0369a1;
+      padding: 0.18rem 0.55rem;
+      border-radius: var(--radius-full);
+      font-weight: 600;
+      font-size: 0.78rem;
+    }
+
+    /* 목표 글자 수 토글 버튼 그룹 */
+    .length-toggle-group {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      background: var(--bg-subtle);
+      padding: 0.35rem;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border-color);
+    }
+
+    .length-btn {
+      padding: 0.58rem 0.5rem;
+      border: none;
+      border-radius: 6px;
+      background: transparent;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .length-btn:hover {
+      color: var(--primary-blue-dark);
+      background: rgba(2, 132, 199, 0.06);
+    }
+
+    .length-btn.active {
+      background: var(--primary-blue);
+      color: #ffffff;
+      box-shadow: 0 2px 5px rgba(2, 132, 199, 0.25);
+    }
+
+    /* 자소서 문항 유형 선택 탭 (인터랙티브 라디오 카드) */
+    .prompt-tabs-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.65rem;
+    }
+
+    @media (max-width: 860px) {
+      .prompt-tabs-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .prompt-tabs-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .prompt-tab-label {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      padding: 0.85rem 1rem;
+      border: 1.5px solid var(--border-color);
+      border-radius: var(--radius-md);
+      background: #ffffff;
+      cursor: pointer;
+      transition: var(--transition);
+      user-select: none;
+    }
+
+    .prompt-tab-label input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .prompt-tab-label:hover {
+      border-color: var(--primary-blue);
+      background: #f0f9ff;
+    }
+
+    .prompt-tab-label.selected {
+      border-color: var(--primary-blue);
+      background: linear-gradient(145deg, #f0f9ff 0%, #ecfdf5 100%);
+      box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.15);
+    }
+
+    .tab-num {
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--accent-mint);
+      text-transform: uppercase;
+    }
+
+    .tab-title {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1.35;
+    }
+
+    /* 대형 실행 버튼 */
+    .submit-area {
+      margin-top: 1.65rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .btn-generate {
+      width: 100%;
+      padding: 1.05rem 1.5rem;
+      border: none;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, var(--primary-blue) 0%, var(--accent-mint) 100%);
+      color: #ffffff;
+      font-size: 1.08rem;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      box-shadow: var(--shadow-lg);
+      transition: var(--transition);
+    }
+
+    .btn-generate:hover {
+      background: linear-gradient(135deg, var(--primary-blue-dark) 0%, #0f766e 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(2, 132, 199, 0.25);
+    }
+
+    .btn-generate:active {
+      transform: translateY(0);
+    }
+
+    /* ==========================================================================
+       6. 하단 결과 대시보드 UI
+       ========================================================================== */
+    .dashboard-placeholder {
+      background: #ffffff;
+      border: 2px dashed var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 3.25rem 1.5rem;
+      text-align: center;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .placeholder-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--primary-blue-light);
+      color: var(--primary-blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dashboard-results {
+      display: none;
+      flex-direction: column;
+      gap: 1.75rem;
+      animation: fadeSlideUp 0.45s ease-out forwards;
+    }
+
+    .dashboard-results.visible {
+      display: flex;
+    }
+
+    @keyframes fadeSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* 6-1. 자기소개서 초안 카드 */
+    .headline-box {
+      background: linear-gradient(to right, #f0f9ff, #f0fdfa);
+      border-left: 4px solid var(--primary-blue);
+      padding: 1rem 1.25rem;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      margin-bottom: 1.25rem;
+    }
+
+    .headline-label {
+      display: inline-block;
+      font-size: 0.76rem;
+      font-weight: 800;
+      color: var(--primary-blue-dark);
+      background: #bae6fd;
+      padding: 0.15rem 0.55rem;
+      border-radius: 4px;
+      margin-bottom: 0.4rem;
+    }
+
+    .headline-text {
+      font-size: 1.06rem;
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1.45;
+    }
+
+    .essay-editor-wrapper {
+      position: relative;
+    }
+
+    .essay-content-box {
+      width: 100%;
+      min-height: 230px;
+      padding: 1.25rem;
+      border: 1.5px solid var(--border-color);
+      border-radius: var(--radius-md);
+      background-color: #ffffff;
+      font-size: 0.98rem;
+      line-height: 1.82;
+      color: var(--text-main);
+      white-space: pre-wrap;
+      word-break: keep-all;
+      transition: var(--transition);
+    }
+
+    .essay-content-box:focus {
+      outline: none;
+      border-color: var(--accent-mint);
+      box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.14);
+    }
+
+    .essay-edit-tip {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.45rem;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .essay-footer-bar {
+      margin-top: 1.15rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .char-counter-group {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.88rem;
+    }
+
+    .char-pill {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-color);
+      padding: 0.4rem 0.85rem;
+      border-radius: var(--radius-full);
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .char-pill strong {
+      color: var(--primary-blue-dark);
+      font-weight: 800;
+    }
+
+    .char-pill.over-limit {
+      background: #fef2f2;
+      border-color: #fca5a5;
+      color: #b91c1c;
+    }
+
+    .char-pill.over-limit strong {
+      color: #dc2626;
+    }
+
+    .btn-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.62rem 1.15rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+      border: 1.5px solid transparent;
+    }
+
+    .btn-copy {
+      background: var(--primary-blue);
+      color: #ffffff;
+    }
+
+    .btn-copy:hover {
+      background: var(--primary-blue-dark);
+    }
+
+    .btn-print {
+      background: #ffffff;
+      color: var(--text-secondary);
+      border-color: var(--border-color);
+    }
+
+    .btn-print:hover {
+      background: var(--bg-subtle);
+      border-color: var(--primary-blue);
+      color: var(--primary-blue-dark);
+    }
+
+    /* 6-2. 실전 면접 클리닉 아코디언 카드 */
+    .interview-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-toggle-all {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      padding: 0.45rem 0.85rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-toggle-all:hover {
+      background: var(--primary-blue-light);
+      color: var(--primary-blue-dark);
+      border-color: var(--primary-blue);
+    }
+
+    .interview-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .interview-item {
+      border: 1.5px solid var(--border-light);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: #ffffff;
+      transition: var(--transition);
+    }
+
+    .interview-item.open {
+      border-color: #7dd3fc;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.06);
+    }
+
+    .interview-question-btn {
+      width: 100%;
+      text-align: left;
+      padding: 1.1rem 1.25rem;
+      background: #ffffff;
+      border: none;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .interview-question-btn:hover {
+      background: #f8fafc;
+    }
+
+    .q-header-left {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .q-type-badge {
+      display: inline-block;
+      width: fit-content;
+      font-size: 0.76rem;
+      font-weight: 800;
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-full);
+    }
+
+    .q-type-1 { background: #e0f2fe; color: #0369a1; }
+    .q-type-2 { background: #ccfbf1; color: #0f766e; }
+    .q-type-3 { background: #fef3c7; color: #b45309; }
+
+    .q-text {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1.45;
+    }
+
+    .chevron-icon {
+      flex-shrink: 0;
+      color: var(--text-muted);
+      transition: transform 0.25s ease;
+      margin-top: 0.3rem;
+    }
+
+    .interview-item.open .chevron-icon {
+      transform: rotate(180deg);
+      color: var(--primary-blue);
+    }
+
+    .interview-answer-panel {
+      display: none;
+      padding: 1.15rem 1.25rem 1.35rem;
+      background: var(--bg-subtle);
+      border-top: 1px solid var(--border-light);
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .interview-item.open .interview-answer-panel {
+      display: flex;
+    }
+
+    .guide-block {
+      background: #ffffff;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      padding: 0.95rem 1.1rem;
+    }
+
+    .guide-title {
+      font-size: 0.85rem;
+      font-weight: 800;
+      margin-bottom: 0.45rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .guide-title.intent { color: var(--primary-blue-dark); }
+    .guide-title.answer { color: var(--accent-mint); }
+
+    .guide-desc {
+      font-size: 0.92rem;
+      color: var(--text-secondary);
+      line-height: 1.65;
+    }
+
+    .answer-framework-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 0.4rem;
+    }
+
+    .answer-framework-list li {
+      font-size: 0.91rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      padding-left: 0.85rem;
+      border-left: 3px solid var(--accent-mint-bright);
+    }
+
+    .answer-framework-list li strong {
+      color: var(--text-main);
+    }
+
+    /* 6-3. 자소서 첨삭 셀프 체크리스트 카드 */
+    .checklist-progress-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      min-width: 180px;
+    }
+
+    .progress-bar-bg {
+      flex: 1;
+      height: 8px;
+      background: var(--border-light);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary-blue), var(--accent-mint));
+      border-radius: var(--radius-full);
+      transition: width 0.3s ease;
+    }
+
+    .progress-text {
+      font-size: 0.84rem;
+      font-weight: 800;
+      color: var(--accent-mint);
+      min-width: 38px;
+      text-align: right;
+    }
+
+    .checklist-items {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .check-item-label {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.85rem 1rem;
+      border: 1.5px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: var(--transition);
+      background: #ffffff;
+    }
+
+    .check-item-label:hover {
+      background: #f8fafc;
+      border-color: #bae6fd;
+    }
+
+    .check-item-label.checked {
+      background: #f0fdfa;
+      border-color: #99f6e4;
+    }
+
+    .check-item-label input[type="checkbox"] {
+      width: 19px;
+      height: 19px;
+      margin-top: 0.15rem;
+      accent-color: var(--accent-mint);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .check-item-text {
+      font-size: 0.93rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .check-item-label.checked .check-item-text {
+      color: #0f766e;
+      font-weight: 600;
+    }
+
+    /* ==========================================================================
+       7. 하단 푸터 및 토스트 알림
+       ========================================================================== */
+    .app-footer {
+      background: #ffffff;
+      border-top: 1px solid var(--border-light);
+      padding: 1.5rem 1.25rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .footer-inner {
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+
+    .toast-notification {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #0f172a;
+      color: #ffffff;
+      padding: 0.8rem 1.4rem;
+      border-radius: var(--radius-full);
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.25);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 9999;
+    }
+
+    .toast-notification.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ==========================================================================
+       8. 인쇄 / PDF 저장 전용 미디어 쿼리 (@media print)
+       ========================================================================== */
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+      }
+
+      .app-header {
+        background: #ffffff !important;
+        color: #000000 !important;
+        border-bottom: 2px solid #0284c7;
+        padding: 0.5rem 0 1rem !important;
+        box-shadow: none !important;
+      }
+
+      .header-badge,
+      .privacy-banner,
+      #input-panel-card,
+      #dashboard-placeholder,
+      #checklist-card,
+      .btn-action,
+      .interview-controls,
+      .essay-edit-tip,
+      .chevron-icon,
+      .toast-notification {
+        display: none !important;
+      }
+
+      .main-container {
+        margin: 1rem 0 !important;
+        padding: 0 !important;
+        max-width: 100% !important;
+      }
+
+      .dashboard-results {
+        display: flex !important;
+        gap: 1.5rem !important;
+      }
+
+      .card {
+        box-shadow: none !important;
+        border: 1px solid #94a3b8 !important;
+        break-inside: avoid;
+      }
+
+      .card-header {
+        background: #f1f5f9 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .essay-content-box {
+        border: none !important;
+        padding: 0 !important;
+        font-size: 10.5pt !important;
+      }
+
+      /* 인쇄 시 모든 면접 아코디언 강제 펼침 */
+      .interview-item {
+        break-inside: avoid;
+        border: 1px solid #cbd5e1 !important;
+        margin-bottom: 0.75rem;
+      }
+
+      .interview-answer-panel {
+        display: flex !important;
+        background: #f8fafc !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .app-footer {
+        margin-top: 1.5rem;
+        border-top: 1px solid #cbd5e1;
+        font-size: 8.5pt;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========================================================================
+       상단 헤더 영역
+       ======================================================================== -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="header-top-bar">
+        <div class="header-badge">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+          </svg>
+          <span>HEALTHCARE CAREER CLINIC</span>
+        </div>
+        <div class="header-affiliation" aria-label="주관 기관">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+            <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+          </svg>
+          <span>광주보건대학교 AI대학혁신본부</span>
+        </div>
+      </div>
+      <h1 class="header-title">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="4" ry="4"></rect>
+          <line x1="12" y1="8" x2="12" y2="16"></line>
+          <line x1="8" y1="12" x2="16" y2="12"></line>
+        </svg>
+        대학병원·의료기관 취업 자소서 &amp; 면접 클리닉
+      </h1>
+      <p class="header-subtitle">보건의료계열 졸업예정자를 위한 임상실습 STAR 자소서 및 실전 면접 코칭 솔루션</p>
+    </div>
+  </header>
+
+  <!-- ========================================================================
+       메인 컨텐츠 영역
+       ======================================================================== -->
+  <main class="main-container">
+
+    <!-- 상단 경고 배너: 환자 개인정보 보호법(HIPAA/의료법) 준수 안내 -->
+    <aside class="privacy-banner" role="alert">
+      <div class="privacy-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+          <line x1="12" y1="9" x2="12" y2="13"></line>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+      </div>
+      <div class="privacy-content">
+        <strong>[환자 개인정보 보호법(HIPAA/의료법) 준수 필수 안내]</strong><br />
+        자소서 및 면접 답변 작성 시 실제 환자의 성명·병실 번호·주민등록번호 등 구체적 신상정보는 반드시 익명(예: <em>'고령의 뇌졸중 환자 A씨'</em>, <em>'내과 병동 입원 환자'</em>)으로 처리해야 합니다.
+      </div>
+    </aside>
+
+    <!-- ======================================================================
+         1. 상단 지원자 정보 및 경험 입력 패널
+         ====================================================================== -->
+    <section class="card" id="input-panel-card" aria-labelledby="input-panel-heading">
+      <div class="card-header">
+        <div class="card-title-group">
+          <span class="step-badge">STEP 1</span>
+          <h2 class="card-title" id="input-panel-heading">지원자 정보 및 임상실습 경험 입력</h2>
+        </div>
+        <button type="button" class="btn-sample" id="btn-fill-sample" title="선택된 직군에 맞는 합격 샘플 데이터를 자동으로 채웁니다">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+          </svg>
+          샘플 데이터 자동 채우기
+        </button>
+      </div>
+
+      <div class="card-body">
+        <form id="clinic-form" novalidate>
+          <div class="form-grid">
+
+            <!-- 지원 직군 선택 드롭다운 -->
+            <div class="form-group col-span-6">
+              <label for="job-role" class="form-label">
+                <span>지원 직군 선택</span>
+                <span class="label-hint">직군별 전문 역량 엔진 연동</span>
+              </label>
+              <select id="job-role" class="form-control">
+                <option value="nurse">간호사</option>
+                <option value="pt">물리치료사</option>
+                <option value="mt">임상병리사</option>
+                <option value="rt">방사선사</option>
+                <option value="dh">치과위생사</option>
+                <option value="dt">치기공사</option>
+                <option value="emt">응급구조사</option>
+                <option value="ha">보건행정·원무</option>
+              </select>
+              <div class="role-competency-preview" id="role-competency-preview">
+                <!-- JS로 직군 핵심역량 배지 렌더링 -->
+              </div>
+            </div>
+
+            <!-- 목표 글자 수 선택 버튼 -->
+            <div class="form-group col-span-6">
+              <label class="form-label">
+                <span>목표 글자 수 선택</span>
+                <span class="label-hint">공백 포함 기준 분량 최적화</span>
+              </label>
+              <div class="length-toggle-group" role="group" aria-label="목표 글자 수 선택">
+                <button type="button" class="length-btn" data-length="500">500자 이내</button>
+                <button type="button" class="length-btn active" data-length="700">700자 이내</button>
+                <button type="button" class="length-btn" data-length="1000">1,000자 이내</button>
+              </div>
+              <div class="role-competency-preview" style="border-style: solid; border-color: #e2e8f0;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="16" x2="12" y2="12"></line>
+                  <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+                <span id="length-guide-text">약 600~690자 내외(목표의 85~98%)의 균형 잡힌 STAR 문단으로 생성됩니다.</span>
+              </div>
+            </div>
+
+            <!-- 자소서 문항 유형 선택 탭 -->
+            <div class="form-group col-span-12">
+              <label class="form-label">
+                <span>자소서 문항 유형 선택</span>
+                <span class="label-hint">문항 의도에 맞춘 논리 구조 자동 설계</span>
+              </label>
+              <div class="prompt-tabs-grid" id="prompt-tabs">
+                <label class="prompt-tab-label selected">
+                  <input type="radio" name="promptType" value="motivation" checked />
+                  <span class="tab-num">TYPE 01</span>
+                  <span class="tab-title">지원동기 및 입사 후 포부</span>
+                </label>
+                <label class="prompt-tab-label">
+                  <input type="radio" name="promptType" value="competency" />
+                  <span class="tab-num">TYPE 02</span>
+                  <span class="tab-title">임상실습 및 직무역량 사례(STAR)</span>
+                </label>
+                <label class="prompt-tab-label">
+                  <input type="radio" name="promptType" value="collaboration" />
+                  <span class="tab-num">TYPE 03</span>
+                  <span class="tab-title">협업·소통 및 갈등해결 경험</span>
+                </label>
+                <label class="prompt-tab-label">
+                  <input type="radio" name="promptType" value="ethics" />
+                  <span class="tab-num">TYPE 04</span>
+                  <span class="tab-title">보건의료인으로서의 직업윤리·사명감</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- 지원 병원명 -->
+            <div class="form-group col-span-5">
+              <label for="hospital-name" class="form-label">
+                <span>지원 병원명</span>
+              </label>
+              <input type="text" id="hospital-name" class="form-control" placeholder="예) 전남대학교병원" />
+            </div>
+
+            <!-- 핵심 인재상(키워드) -->
+            <div class="form-group col-span-7">
+              <label for="hospital-values" class="form-label">
+                <span>병원 핵심 인재상(키워드)</span>
+                <span class="label-hint">쉼표(,)로 구분하여 입력</span>
+              </label>
+              <input type="text" id="hospital-values" class="form-control" placeholder="예) 환자중심, 생명존중, 창의적 전문인" />
+            </div>
+
+            <!-- 임상실습 및 봉사활동 핵심 경험 -->
+            <div class="form-group col-span-12">
+              <label for="clinical-exp" class="form-label">
+                <span>임상실습 및 봉사활동 핵심 경험</span>
+                <span class="label-hint">상황·행동·결과가 드러나도록 구체적으로 작성 (환자 신상 익명 처리)</span>
+              </label>
+              <textarea id="clinical-exp" class="form-control" placeholder="예) 내과 병동 실습 중 고령 낙상 고위험군 환자의 보행 보조 및 눈높이 복약 안내로 환자 불안 해소"></textarea>
+            </div>
+
+            <!-- 본인의 강점 키워드 2~3가지 -->
+            <div class="form-group col-span-12">
+              <label for="strength-keywords" class="form-label">
+                <span>본인의 강점 키워드 2~3가지</span>
+                <span class="label-hint">쉼표(,)로 구분</span>
+              </label>
+              <input type="text" id="strength-keywords" class="form-control" placeholder="예) 세심한 관찰력, 위기 대처 능력, 다학제 간 원활한 소통" />
+            </div>
+
+          </div>
+
+          <!-- 하단 대형 실행 버튼 -->
+          <div class="submit-area">
+            <button type="submit" class="btn-generate" id="btn-generate">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+              합격 자소서 초안 &amp; 실전 면접 질문 생성하기
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         3. 하단 취업 클리닉 결과 대시보드 (생성 전 안내 플레이스홀더)
+         ====================================================================== -->
+    <section class="dashboard-placeholder" id="dashboard-placeholder">
+      <div class="placeholder-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <path d="M12 18v-6"></path>
+          <path d="M9 15l3 3 3-3"></path>
+        </svg>
+      </div>
+      <h3 style="font-size: 1.1rem; color: var(--text-main); font-weight: 700;">맞춤형 자소서 초안과 실전 면접 질문지가 이곳에 생성됩니다</h3>
+      <p style="font-size: 0.92rem; max-width: 540px;">
+        상단에서 지원 직군과 실습 경험을 입력하거나 <strong>[샘플 데이터 자동 채우기]</strong> 버튼을 누른 뒤,<br />
+        <strong>[합격 자소서 초안 &amp; 실전 면접 질문 생성하기]</strong> 버튼을 클릭해 주세요.
+      </p>
+    </section>
+
+    <!-- ======================================================================
+         3. 하단 취업 클리닉 결과 대시보드 (생성 후 활성화 영역)
+         ====================================================================== -->
+    <div class="dashboard-results" id="dashboard-results" aria-live="polite">
+
+      <!-- ① 자기소개서 초안 카드 -->
+      <section class="card" id="essay-result-card">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="step-badge" style="background: #ccfbf1; color: #0f766e;">CLINIC 01</span>
+            <h2 class="card-title">맞춤형 자기소개서 초안 (<span id="result-meta-badge">간호사 · 700자</span>)</h2>
+          </div>
+          <button type="button" class="btn-action btn-copy" id="btn-copy-essay">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            자소서 복사
+          </button>
+        </div>
+
+        <div class="card-body">
+          <!-- 두괄식 소제목 배지/헤드라인 -->
+          <div class="headline-box">
+            <span class="headline-label">두괄식 핵심 소제목</span>
+            <div class="headline-text" id="generated-headline" contenteditable="true" spellcheck="false"></div>
+          </div>
+
+          <!-- 편집 가능한 자기소개서 본문 영역 -->
+          <div class="essay-editor-wrapper">
+            <div class="essay-content-box" id="generated-essay" contenteditable="true" spellcheck="false" role="textbox" aria-multiline="true" aria-label="생성된 자기소개서 본문 편집 영역"></div>
+            <div class="essay-edit-tip">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+              <span>생성된 소제목과 본문 텍스트를 직접 클릭하여 자유롭게 수정할 수 있으며, 글자 수가 실시간 반영됩니다.</span>
+            </div>
+          </div>
+
+          <!-- 실시간 글자 수 카운터 및 액션 바 -->
+          <div class="essay-footer-bar">
+            <div class="char-counter-group">
+              <span class="char-pill" id="char-with-space-pill">
+                공백 포함: <strong id="count-with-space">0</strong>자 / 목표 <span id="target-limit-display">700</span>자
+              </span>
+              <span class="char-pill">
+                공백 제외: <strong id="count-no-space">0</strong>자
+              </span>
+            </div>
+            <button type="button" class="btn-action btn-print" id="btn-print-all">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                <rect x="6" y="14" width="12" height="8"></rect>
+              </svg>
+              자소서·면접 질문지 인쇄 / PDF 저장
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ② 실전 면접 클리닉 카드 -->
+      <section class="card" id="interview-result-card">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="step-badge">CLINIC 02</span>
+            <h2 class="card-title">실전 면접 예상 질문 3선 &amp; 합격 답변 가이드</h2>
+          </div>
+          <div class="interview-controls">
+            <button type="button" class="btn-toggle-all" id="btn-toggle-accordions">전체 펼치기/접기</button>
+            <button type="button" class="btn-action btn-print" id="btn-print-interview">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                <rect x="6" y="14" width="12" height="8"></rect>
+              </svg>
+              면접 질문지 인쇄 / PDF 저장
+            </button>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="interview-list" id="interview-questions-container">
+            <!-- JS로 3대 예상 면접 질문 아코디언 렌더링 -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ③ 자소서 첨삭 셀프 체크리스트 카드 -->
+      <section class="card" id="checklist-card">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="step-badge" style="background: #e0f2fe; color: #0369a1;">CLINIC 03</span>
+            <h2 class="card-title">합격 자소서 최종 제출 전 셀프 첨삭 체크리스트</h2>
+          </div>
+          <div class="checklist-progress-wrap" aria-label="체크리스트 완료율">
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" id="checklist-progress-bar"></div>
+            </div>
+            <span class="progress-text" id="checklist-progress-text">0%</span>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="checklist-items" id="checklist-container">
+            <label class="check-item-label">
+              <input type="checkbox" class="clinic-checkbox" />
+              <span class="check-item-text">1. 추상적 미사여구('열심히', '최선을 다해') 대신 구체적 행동과 수치를 담았는가?</span>
+            </label>
+            <label class="check-item-label">
+              <input type="checkbox" class="clinic-checkbox" />
+              <span class="check-item-text">2. 지원 병원의 핵심 가치 및 인재상 키워드가 자연스럽게 녹아있는가?</span>
+            </label>
+            <label class="check-item-label">
+              <input type="checkbox" class="clinic-checkbox" />
+              <span class="check-item-text">3. 환자 안전, 감염 관리, 직무 전문성 등 보건의료인 핵심 역량이 드러나는가?</span>
+            </label>
+            <label class="check-item-label">
+              <input type="checkbox" class="clinic-checkbox" />
+              <span class="check-item-text">4. 실제 환자의 이름, 병실, 나이 등 개인식별정보(PHI)가 철저히 익명화되었는가?</span>
+            </label>
+            <label class="check-item-label">
+              <input type="checkbox" class="clinic-checkbox" />
+              <span class="check-item-text">5. 소리 내어 읽었을 때 문장이 간결하고 두괄식 구조가 명확한가?</span>
+            </label>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ========================================================================
+       4. 하단 푸터 영역
+       ======================================================================== -->
+  <footer class="app-footer">
+    <div class="footer-inner">
+      본 서비스에서 생성된 자기소개서 초안과 면접 가이드는 취업 준비를 돕기 위한 참고용 템플릿입니다. 실제 지원 시에는 반드시 본인의 진정성 있는 경험과 언어로 다듬어 최종 제출하시기 바랍니다. | <strong>광주보건대학교 AI대학혁신본부</strong>
+    </div>
+  </footer>
+
+  <!-- 토스트 알림 UI -->
+  <div class="toast-notification" id="toast" role="status" aria-live="polite">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#14b8a6" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="20 6 9 17 4 12"></polyline>
+    </svg>
+    <span id="toast-message">복사 완료!</span>
+  </div>
+
+  <!-- ========================================================================
+       JavaScript 핵심 자소서 및 면접 생성 엔진
+       ======================================================================== -->
+  <script>
+    (function () {
+      "use strict";
+
+      /* ----------------------------------------------------------------------
+         1. 직군별 전문 역량 및 맞춤형 샘플 데이터베이스
+         ---------------------------------------------------------------------- */
+      const ROLE_DATA = {
+        nurse: {
+          name: "간호사",
+          competencies: ["간호사정", "투약안전", "환자옹호", "근거기반간호"],
+          coreDuty: "정확한 간호사정과 철저한 투약안전 원칙 준수, 환자 중심의 전인적 간호",
+          protocolTerm: "5 Rights 투약 원칙 및 낙상·욕창 예방 표준 프로토콜",
+          sample: {
+            hospital: "전남대학교병원",
+            values: "환자중심, 생명존중, 창의적 전문인",
+            exp: "내과 병동 실습 중 고령 낙상 고위험군 환자의 보행 보조 및 눈높이 복약 안내로 환자 불안 해소",
+            strengths: "세심한 관찰력, 위기 대처 능력, 다학제 간 원활한 소통"
+          },
+          suddenScenario: "중환자실이나 급성기 병동에서 다수의 처치가 동시에 밀려드는 긴박한 상황에, 보호자분께서 대기 시간이 길어진다며 언성을 높이시는 상황이라면 어떻게 대처하시겠습니까?"
+        },
+        pt: {
+          name: "물리치료사",
+          competencies: ["기능회복", "운동치료", "보행재활", "환자맞춤형중재"],
+          coreDuty: "과학적 신체 기능 평가와 단계별 운동치료를 통한 환자의 일상 복귀 지원",
+          protocolTerm: "관절가동범위(ROM) 평가 및 낙상 방지 보행 재활 프로토콜",
+          sample: {
+            hospital: "서울아산병원",
+            values: "인간존중, 전문성, 나눔과 배려",
+            exp: "재활의학과 실습 중 편마비 뇌졸중 환자의 보행 패턴 분석 및 단계별 균형 훈련 프로그램 보조로 자립 보행 의지 고취",
+            strengths: "정밀한 동작 분석력, 공감적 라포 형성, 끈기 있는 동기부여"
+          },
+          suddenScenario: "통증에 대한 두려움과 재활 의지 저하로 운동치료를 완강히 거부하는 근골격계 수술 환자를 어떻게 설득하고 치료에 참여시키겠습니까?"
+        },
+        mt: {
+          name: "임상병리사",
+          competencies: ["검체무결성", "정도관리", "신속정확진단", "감염예방관리"],
+          coreDuty: "철저한 내·외부 정도관리(QC)와 검체 무결성 확보를 통한 신뢰도 높은 진단 결과 도출",
+          protocolTerm: "검체 바코드 이중 확인 및 이상치(Critical Value) 즉시 보고 지침",
+          sample: {
+            hospital: "삼성서울병원",
+            values: "환자행복, 의료혁신, 정직과 신뢰",
+            exp: "진단검사의학과 채혈실 및 미생물파트 실습 중 용혈 위험 검체 사전 예방과 검체 라벨 교차 검증으로 재채혈률 감소에 기여",
+            strengths: "철저한 원칙 준수, 데이터 정확성, 신속한 이상 수치 판독력"
+          },
+          suddenScenario: "응급실에서 의뢰된 긴급(STAT) 혈액 검체가 용혈되어 정확한 수치 산출이 불가능한 상황입니다. 임상의가 빠른 결과를 재촉할 때 어떻게 대응하시겠습니까?"
+        },
+        rt: {
+          name: "방사선사",
+          competencies: ["피폭저감ALARA", "정밀영상획득", "환자안심케어", "장비품질관리"],
+          coreDuty: "ALARA 원칙에 기반한 방사선 피폭 최소화와 진단에 최적화된 고해상도 영상 구현",
+          protocolTerm: "환자 신원 및 검사 부위 2중 확인(Time-out)과 차폐체 적용 기준",
+          sample: {
+            hospital: "세브란스병원",
+            values: "사랑의 실천, 최고 지향, 환자 안전 최우선",
+            exp: "영상의학과 일반촬영 및 CT실 실습 중 폐쇄공포증과 불안을 호소하는 환자에게 호흡법 사전 연습 및 차분한 안내로 재촬영 없이 선명한 영상 획득 지원",
+            strengths: "정밀한 포지셔닝 감각, 따뜻한 환자 안심 소통, 방사선 안전관리 의식"
+          },
+          suddenScenario: "검사 대기 환자가 밀려 있는 상태에서 조영제 투여 전 문진 중 환자가 과거 경미한 알레르기 이력을 뒤늦게 말씀하신다면 어떤 절차로 조치하시겠습니까?"
+        },
+        dh: {
+          name: "치과위생사",
+          competencies: ["구강보건예방", "감염관리", "진료협조", "맞춤형구강교육"],
+          coreDuty: "철저한 멸균·감염관리 시스템 운영과 환자 맞춤형 예방 치과 처치 및 구강보건교육",
+          protocolTerm: "치과 기구 멸균 프로토콜 및 수관 관리·개인보호구(PPE) 표준 지침",
+          sample: {
+            hospital: "경희대학교치과병원",
+            values: "창의적 도전, 생명존중, 환자 중심 진료",
+            exp: "치주과 및 예방치과 실습 중 치과 공포증이 심한 소아·고령 환자에게 치료 과정을 쉬운 비유로 설명하고 맞춤형 칫솔질 교육을 제공하여 구강 위생 개선 도모",
+            strengths: "섬세한 손기술, 철저한 감염관리 습관, 눈높이 환자 커뮤니케이션"
+          },
+          suddenScenario: "예약 시간보다 늦게 내원한 환자분이 대기 순서가 밀린 것에 불만을 제기하며 즉각적인 스케일링 및 진료를 요구하실 때 어떻게 응대하시겠습니까?"
+        },
+        dt: {
+          name: "치기공사",
+          competencies: ["정밀보철제작", "심미기능조화", "디지털CAD-CAM", "임상소통역량"],
+          coreDuty: "디지털 CAD/CAM 기술과 해부학적 지식을 결합한 오차 없는 정밀 치과보철물 제작",
+          protocolTerm: "교합 고경 정밀 검증 및 생체친화적 보철 재료 표준 제작 공정",
+          sample: {
+            hospital: "서울대학교치과병원",
+            values: "최고의 전문성, 윤리적 책임감, 미래 선도",
+            exp: "치과기공실 임상실습 중 3D 구강 스캔 데이터를 활용한 지르코니아 크라운 디자인 과정에서 인접면 접촉점과 교합 간섭을 세밀히 보정하여 체어사이드 조정 시간 단축",
+            strengths: "0.01mm 오차를 줄이는 집중력, 디지털 기공 역량, 치과의사와의 원활한 피드백 소통"
+          },
+          suddenScenario: "보철물 세팅 당일 진료실에서 마진 적합도나 쉐이드(색조) 수정이 급히 요청되었을 때, 한정된 시간 내에 완성도를 높이기 위해 어떻게 대처하시겠습니까?"
+        },
+        emt: {
+          name: "응급구조사",
+          competencies: ["골든타임", "중증도분류", "응급처치프로토콜", "현장안전통제"],
+          coreDuty: "긴박한 응급 현장에서의 신속한 중증도 분류(KTAS)와 골든타임 사수를 위한 전문 응급처치",
+          protocolTerm: "1차·2차 환자 평가 및 심폐소생술·외상 처치 표준 응급 프로토콜",
+          sample: {
+            hospital: "아주대학교병원 권역외상센터",
+            values: "생명존중, 신속정확, 팀워크와 헌신",
+            exp: "권역응급의료센터 실습 중 흉통을 호소하며 내원한 환자의 활력징후 변화와 주호소를 신속히 파악해 의료진에게 즉시 보고함으로써 골든타임 내 처치 연계",
+            strengths: "침착한 판단력, 강인한 체력과 실행력, 응급팀 내 명확한 SBAR 보고"
+          },
+          suddenScenario: "다수 사상자 발생 또는 응급실 과밀화 상황에서 중증도가 유사한 두 명의 응급 환자가 동시에 처치를 필요로 할 때, 어떤 기준으로 우선순위를 판단하시겠습니까?"
+        },
+        ha: {
+          name: "보건행정·원무",
+          competencies: ["원무프로세스효율화", "환자경험관리", "의료정보보호", "진료지원협업"],
+          coreDuty: "환자 중심의 스마트 원무 행정 서비스 구현과 엄격한 의무기록 및 개인정보 보호",
+          protocolTerm: "의료법 기반 개인정보 보호 규정 및 진료비 심사·수납 정확성 검증 절차",
+          sample: {
+            hospital: "분당서울대학교병원",
+            values: "혁신적 사고, 고객감동, 신뢰와 협력",
+            exp: "종합병원 원무팀 및 의무기록실 실습 중 키오스크 사용에 어려움을 겪는 고령 외래 환자를 위한 1:1 동선 안내 매뉴얼을 제안하여 수납 대기 혼잡도 완화",
+            strengths: "문제 해결 기획력, 따뜻한 고객 응대 태도, 정확한 행정·전산 처리 능력"
+          },
+          suddenScenario: "본인 확인 서류를 지참하지 않은 보호자가 환자의 진단서 및 의무기록 사본을 당장 발급해 달라며 강하게 항의할 경우, 법적 기준과 고객 만족 사이에서 어떻게 응대하시겠습니까?"
+        }
+      };
+
+      /* ----------------------------------------------------------------------
+         2. DOM 요소 캐싱
+         ---------------------------------------------------------------------- */
+      const els = {
+        form: document.getElementById("clinic-form"),
+        jobRole: document.getElementById("job-role"),
+        rolePreview: document.getElementById("role-competency-preview"),
+        lengthBtns: document.querySelectorAll(".length-btn"),
+        lengthGuideText: document.getElementById("length-guide-text"),
+        promptTabLabels: document.querySelectorAll(".prompt-tab-label"),
+        hospitalName: document.getElementById("hospital-name"),
+        hospitalValues: document.getElementById("hospital-values"),
+        clinicalExp: document.getElementById("clinical-exp"),
+        strengthKeywords: document.getElementById("strength-keywords"),
+        btnFillSample: document.getElementById("btn-fill-sample"),
+        btnGenerate: document.getElementById("btn-generate"),
+        placeholder: document.getElementById("dashboard-placeholder"),
+        results: document.getElementById("dashboard-results"),
+        resultMetaBadge: document.getElementById("result-meta-badge"),
+        headline: document.getElementById("generated-headline"),
+        essay: document.getElementById("generated-essay"),
+        countWithSpace: document.getElementById("count-with-space"),
+        countNoSpace: document.getElementById("count-no-space"),
+        targetLimitDisplay: document.getElementById("target-limit-display"),
+        charWithSpacePill: document.getElementById("char-with-space-pill"),
+        btnCopyEssay: document.getElementById("btn-copy-essay"),
+        btnPrintAll: document.getElementById("btn-print-all"),
+        btnPrintInterview: document.getElementById("btn-print-interview"),
+        btnToggleAccordions: document.getElementById("btn-toggle-accordions"),
+        interviewContainer: document.getElementById("interview-questions-container"),
+        checkboxes: document.querySelectorAll(".clinic-checkbox"),
+        progressBar: document.getElementById("checklist-progress-bar"),
+        progressText: document.getElementById("checklist-progress-text"),
+        toast: document.getElementById("toast"),
+        toastMessage: document.getElementById("toast-message")
+      };
+
+      let selectedLength = 700;
+      let toastTimer = null;
+
+      /* ----------------------------------------------------------------------
+         3. 유틸리티 함수 (토스트 알림, 문자열 정제, 조사 처리)
+         ---------------------------------------------------------------------- */
+      function showToast(msg) {
+        els.toastMessage.textContent = msg;
+        els.toast.classList.add("show");
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => {
+          els.toast.classList.remove("show");
+        }, 2600);
+      }
+
+      // 받침 유무에 따른 한국어 조사('을/를', '이/가', '은/는', '과/와') 자동 선택
+      function attachJosa(word, josaPair) {
+        if (!word) return "";
+        const clean = word.trim();
+        const lastChar = clean.charCodeAt(clean.length - 1);
+        const [withBatchim, withoutBatchim] = josaPair.split("/");
+        // 한글 음절 범위(0xAC00 ~ 0xD7A3) 체크
+        if (lastChar >= 0xAC00 && lastChar <= 0xD7A3) {
+          const hasBatchim = (lastChar - 0xAC00) % 28 !== 0;
+          return clean + (hasBatchim ? withBatchim : withoutBatchim);
+        }
+        return clean + withBatchim;
+      }
+
+      function parseKeywords(raw, fallbackList) {
+        if (!raw || !raw.trim()) return fallbackList;
+        const arr = raw
+          .split(/[,/·]+/)
+          .map((item) => item.trim())
+          .filter(Boolean);
+        return arr.length > 0 ? arr : fallbackList;
+      }
+
+      /* ----------------------------------------------------------------------
+         4. UI 상태 업데이트 (직군 역량 미리보기, 탭, 글자 수 버튼)
+         ---------------------------------------------------------------------- */
+      function renderRoleCompetencies() {
+        const roleKey = els.jobRole.value;
+        const roleInfo = ROLE_DATA[roleKey];
+        if (!roleInfo) return;
+
+        const tagsHtml = roleInfo.competencies
+          .map((comp) => `<span class="comp-tag">#${comp}</span>`)
+          .join("");
+
+        els.rolePreview.innerHTML = `<span style="font-weight:700; color:#0369a1;">핵심 역량 키워드:</span> ${tagsHtml}`;
+      }
+
+      function updateLengthSelection(newLength) {
+        selectedLength = Number(newLength);
+        els.lengthBtns.forEach((btn) => {
+          btn.classList.toggle("active", Number(btn.dataset.length) === selectedLength);
+        });
+
+        const minTarget = Math.round(selectedLength * 0.85);
+        const maxTarget = Math.round(selectedLength * 0.98);
+        els.lengthGuideText.textContent = `약 ${minTarget}~${maxTarget}자 내외(목표의 85~98%)의 정교한 STAR 구조로 생성됩니다.`;
+      }
+
+      // 실시간 글자 수 카운터 업데이트
+      function updateCharCounter() {
+        const text = els.essay.innerText || "";
+        const withSpace = text.length;
+        const noSpace = text.replace(/\s+/g, "").length;
+
+        els.countWithSpace.textContent = withSpace.toLocaleString();
+        els.countNoSpace.textContent = noSpace.toLocaleString();
+        els.targetLimitDisplay.textContent = selectedLength.toLocaleString();
+
+        if (withSpace > selectedLength) {
+          els.charWithSpacePill.classList.add("over-limit");
+        } else {
+          els.charWithSpacePill.classList.remove("over-limit");
+        }
+      }
+
+      /* ----------------------------------------------------------------------
+         5. 핵심 자소서 생성 엔진 (문항 유형 & 글자 수 동적 조절)
+         ---------------------------------------------------------------------- */
+      function generateEssayContent(params) {
+        const { roleKey, promptType, targetLen, hospital, valuesList, exp, strengthsList } = params;
+        const role = ROLE_DATA[roleKey];
+
+        const v1 = valuesList[0] || "환자중심";
+        const v2 = valuesList[1] || valuesList[0] || "생명존중";
+        const v3 = valuesList[2] || "전문성";
+
+        const s1 = strengthsList[0] || "세심한 관찰력";
+        const s2 = strengthsList[1] || strengthsList[0] || "명확한 소통 역량";
+        const s3 = strengthsList[2] || "원칙 준수 태도";
+
+        const c1 = role.competencies[0];
+        const c2 = role.competencies[1];
+        const c3 = role.competencies[2];
+
+        // 1) 두괄식 한 줄 소제목 생성
+        let headline = "";
+        if (promptType === "motivation") {
+          headline = `[${v1}·${v2}의 실천] '${s1}'과 '${c1}' 역량으로 ${hospital}의 신뢰를 높이는 ${role.name}`;
+        } else if (promptType === "competency") {
+          headline = `[현장에서 증명한 ${c1}·${c2}] '${s1}'을 바탕으로 환자 안전의 해답을 찾다`;
+        } else if (promptType === "collaboration") {
+          headline = `[경계를 허무는 ${s2}] 다학제 협력을 이끌어 환자 안심 케어를 완성하다`;
+        } else {
+          headline = `[생명을 지키는 타협 없는 원칙] '${v2}'의 사명감으로 환자 안전을 수호하는 ${role.name}`;
+        }
+
+        // 2) 문항 유형별 도입부(Introduction)
+        const introMap = {
+          motivation: {
+            short: `${hospital}이 추구하는 '${v1}'과 '${v2}'의 가치는 제가 예비 ${role.name}로서 품어온 보건의료인의 사명감과 정확히 맞닿아 있습니다. 대학 시절 임상실습을 거치며 ${role.coreDuty}이 환자의 회복에 미치는 결정적 영향을 체감했습니다.`,
+            medium: `대한민국 의료의 표준을 선도하는 ${hospital}이 지향하는 '${v1}'과 '${v2}'의 핵심 가치는 제가 예비 ${role.name}로서 정립해 온 직업적 사명감과 깊이 맞닿아 있습니다. 학부 전공 과정과 다양한 병원 임상실습 현장을 경험하며, 환자가 가장 취약한 순간에 마주하는 의료인의 전문성과 태도가 곧 치료의 신뢰로 직결됨을 깨달았습니다. 특히 '${s1}'과 '${s2}'이라는 저만의 강점을 바탕으로 ${hospital}의 일원이 되어 수준 높은 의료 서비스를 구현하고자 지원했습니다.`,
+            long: `대한민국 의료의 미래를 이끌어가는 ${hospital}이 추구하는 '${v1}', '${v2}', 그리고 '${v3}'의 핵심 가치는 제가 예비 ${role.name}로서 흔들림 없이 지켜온 사명감과 일치합니다. 보건의료 현장은 한순간의 방심도 허용되지 않는 치열한 생명의 공간이기에, 탄탄한 전공 지식은 물론 환자의 미세한 변화까지 읽어내는 따뜻한 시선이 필수적입니다. 저는 학부 시절 ${role.coreDuty}에 대한 깊은 이해를 쌓으며, 제 강점인 '${s1}'과 '${s2}'을 현장 역량으로 체화해 왔습니다. 환자 한 분 한 분의 존엄을 지키는 ${hospital}에서 최고의 전문가로 성장하고자 지원합니다.`
+          },
+          competency: {
+            short: `예비 ${role.name}로서 현장에서 가장 중요하게 여기는 핵심 역량은 '${c1}'과 '${c2}'입니다. 저는 임상실습 과정에서 저의 강점인 '${s1}'을 발휘하여 환자 안전과 직무 완성도를 높인 경험이 있습니다.`,
+            medium: `임상 현장에서 ${role.name}에게 요구되는 핵심 직무 역량은 정확한 '${c1}'과 흔들림 없는 '${c2}'입니다. 이론으로 배운 지식을 실제 환자에게 안전하게 적용하기 위해서는 상황을 객관적으로 분석하는 '${s1}'이 뒷받침되어야 합니다. 저는 학부 임상실습 기간 동안 주어진 역할을 수동적으로 수행하는 데 그치지 않고, 현장의 작은 위험 요인까지 선제적으로 개선하며 직무 전문성을 다져왔습니다.`,
+            long: `의료 기술이 고도화될수록 현장의 ${role.name}에게는 '${c1}'과 '${c2}'이라는 본질적 직무 역량이 더욱 엄격히 요구됩니다. 아무리 뛰어난 의료 인프라가 갖추어져 있더라도, 현장을 지키는 의료인의 세밀한 판단과 실행력이 뒷받침되지 않으면 온전한 환자 안전을 보장할 수 없기 때문입니다. 저는 학부 임상실습과 봉사활동을 통해 저만의 핵심 강점인 '${s1}'과 '${s2}'을 갈고닦았으며, 실제 임상 상황에서 프로토콜에 기반한 전문적 중재를 실천하며 실질적인 성과를 만들어 냈습니다.`
+          },
+          collaboration: {
+            short: `환자 안전은 어느 한 직종의 노력만으로는 완성될 수 없으며, 다학제 구성원 간의 유기적인 소통이 필수적입니다. 저는 실습 현장에서 '${s2}' 역량을 발휘해 환자 중심의 협력 시너지를 이끌어 냈습니다.`,
+            medium: `현대 의료기관은 다양한 직군의 전문 인력이 긴밀히 호흡하는 다학제 팀워크의 현장입니다. 특히 ${role.name}는 환자와 의료진, 그리고 유관 부서를 잇는 가교로서 정확한 정보 전달과 공감적 소통 역량을 갖추어야 합니다. 저는 임상실습 중 의견 차이나 소통의 공백이 발생할 수 있는 상황에서도 '${s2}'과 '${s1}'을 발휘하여 팀의 목표를 '환자 안전' 하나로 모으는 데 기여했습니다.`,
+            long: `복합적인 질환을 가진 환자를 치료하는 대학병원 환경에서는 각 직군의 전문성이 유기적으로 결합하는 다학제 협업이 치료 성패를 좌우합니다. ${role.name}는 임상 현장의 최전선에서 환자의 상태를 가장 가까이 살피며 타 부서와 긴밀히 소통하는 핵심 구성원입니다. 저는 임상실습과 팀 프로젝트를 수행하며 각자의 입장 차이로 갈등이나 업무 지연이 발생할 때마다, 경청과 객관적 근거 제시라는 '${s2}' 역량을 발휘해 원만한 합의와 환자 중심의 최선의 결과를 이끌어 냈습니다.`
+          },
+          ethics: {
+            short: `보건의료인의 직업윤리는 보이지 않는 순간에도 환자의 생명과 안전을 최우선으로 두는 타협 없는 원칙에서 시작됩니다. 저는 실습 현장에서 '${v2}'의 사명감을 행동으로 증명해 왔습니다.`,
+            medium: `보건의료인에게 직업윤리와 사명감은 선택이 아닌 생명과 직결된 절대적 기준입니다. 바쁘고 긴박한 임상 현장일수록 익숙함에 젖어 기본 절차를 생략하려는 유혹이 생길 수 있지만, 진정한 전문가는 어떤 상황에서도 '${v2}'의 원칙을 지켜야 합니다. 저는 예비 ${role.name}로서 실습에 임하며 ${role.protocolTerm}을 철저히 준수하고, 환자의 알 권리와 심리적 안정까지 세심히 배려하는 윤리적 태도를 실천해 왔습니다.`,
+            long: `환자가 자신의 몸과 생명을 온전히 맡기는 의료기관에서, 보건의료인의 직업윤리와 사명감은 병원 신뢰의 근간을 이룹니다. 특히 ${role.name}는 업무의 매 순간 환자의 안전 및 개인정보 보호와 직결된 결정을 내리기에, 누군가 지켜보지 않더라도 원칙을 고수하는 정직함이 필수적입니다. 저는 학부 시절부터 '${v2}'과 '${v1}'을 제 삶의 제1원칙으로 삼아, 번거롭더라도 ${role.protocolTerm}을 100% 이행하며 환자의 안전과 존엄을 지키는 데 앞장서 왔습니다.`
+          }
+        };
+
+        // 3) 전개부(STAR 기법: Situation - Task - Action - Result)
+        const cleanExp = exp.replace(/\.$/, "");
+        const starBody = {
+          short: `대표적으로 ${cleanExp} 경험이 있습니다. 당시 제한된 시간과 변수가 존재하는 임상 환경(Situation) 속에서, 환자의 안전을 확보하고 불안을 최소화해야 하는 과제(Task)에 직면했습니다. 저는 즉시 ${role.protocolTerm}을 점검한 뒤 '${s1}'을 발휘하여 환자의 상태를 면밀히 살피고 눈높이에 맞춘 전문적 설명과 세심한 중재(Action)를 실행했습니다. 그 결과 환자의 심리적 안정과 처치 협조도를 크게 높였으며, 현장 지도자분들로부터 '${c3}' 역량을 갖춘 예비 ${role.name}라는 긍정적 평가(Result)를 받았습니다.`,
+          medium: `구체적으로 ${cleanExp} 과정에서 직무 역량을 입증했습니다. [상황 및 문제인식] 당시 현장에서는 대상자의 개별적 특성과 불안 요인으로 인해 원활한 처치 진행과 안전 확보에 세심한 주의가 필요한 상황이었습니다. [전문적 행동] 저는 예비 ${role.name}로서 단순히 정해진 절차만 기계적으로 따르기보다, 저의 강점인 '${s1}'과 '${s2}'을 발휘했습니다. 먼저 ${role.protocolTerm}을 철저히 재확인하여 위험 요소를 차단하고, 대상자의 입장에서 이해하기 쉬운 언어로 과정과 목적을 상세히 안내하며 정서적 지지를 병행했습니다. [성과] 이러한 체계적 접근 덕분에 대상자는 높은 신뢰를 보이며 적극적으로 협조하였고, 단 한 건의 안전사고나 오류 없이 성공적으로 과정을 마무리하며 팀의 업무 효율 향상에도 기여할 수 있었습니다.`,
+          long: `이러한 저의 역량은 ${cleanExp} 경험을 통해 더욱 단단해졌습니다. [상황(Situation)] 당시 임상 현장에서는 대상자의 긴장감과 예기치 못한 변수로 인해 자칫하면 안전사고나 소통 오해로 이어질 수 있는 긴박한 상황이었습니다. [과제(Task)] 저는 예비 ${role.name}로서 대상자의 안전을 최우선으로 보호하는 동시에, 정확한 직무 수행을 통해 의료진과 환자 모두에게 신뢰를 주어야 한다는 책임감을 느꼈습니다. [행동(Action)] 이를 해결하기 위해 저는 핵심 강점인 '${s1}'과 '${s2}'을 적극 발휘했습니다. 우선 ${role.protocolTerm}에 따라 위험 요인을 단계별로 점검하고, 유관 파트와 명확하게 상황을 공유하여 협업 체계를 정비했습니다. 이어 대상자의 눈높이에 맞춘 차분한 안내와 세심한 배려로 불안감을 해소하며 '${c1}' 및 '${c2}' 역량을 현장에 적용했습니다. [결과(Result)] 그 결과 대상자의 협조도와 만족도가 눈에 띄게 향상되었고, 안전한 환경 속에서 목표한 임상 결과를 달성하며 현장 멘토로부터 즉각 실무 투입이 가능한 준비된 인재라는 호평을 받았습니다.`
+        };
+
+        // 4) 결론부(입사 후 포부 및 병원 인재상 연결)
+        const outroMap = {
+          short: `입사 후에도 '${s1}'을 무기로 ${role.coreDuty}에 매진하겠습니다. ${hospital}의 '${v1}' 가치를 현장에서 실천하며, 환자와 동료 모두가 가장 신뢰하는 ${role.name}로 자리매김하겠습니다.`,
+          medium: `${hospital} 입사 후에도 현장의 작은 목소리까지 경청하는 '${s1}'과 끊임없이 학습하는 자세로 ${role.coreDuty}을 완수하겠습니다. 나아가 '${v1}'과 '${v3}'의 인재상을 매일의 실무 속에서 실천하며, 선배 의료진에게는 든든한 파트너가 되고 환자에게는 따뜻한 희망을 전하는 핵심 ${role.name}로 성장하겠습니다.`,
+          long: `${hospital}의 일원이 된다면, 실습 현장에서 체득한 '${s1}'과 '${s2}'을 바탕으로 입사 초기부터 표준 프로토콜을 완벽히 숙지하여 환자 안전 제로(Zero) 결점에 도전하겠습니다. 또한 급변하는 의료 환경에 발맞춰 최신 임상 지견을 꾸준히 습득하고 업무 프로세스 개선에도 주도적으로 참여하겠습니다. '${v1}'과 '${v2}'이라는 ${hospital}의 숭고한 가치를 가슴에 새기고, 환자의 치유 여정에 가장 든든한 동반자가 되는 최고의 ${role.name}로 거듭나겠습니다.`
+        };
+
+        // 목표 글자 수(500 / 700 / 1000)에 따른 밀도 선택
+        let tier = "medium";
+        if (targetLen <= 500) tier = "short";
+        else if (targetLen >= 1000) tier = "long";
+
+        let fullText = `${introMap[promptType][tier]}\n\n${starBody[tier]}\n\n${outroMap[tier]}`;
+
+        // 목표 글자 수의 98%를 초과할 경우 문장 단위로 안전하게 트리밍하여 상한선 준수
+        const maxAllowed = Math.floor(targetLen * 0.98);
+        if (fullText.length > maxAllowed) {
+          const sentences = fullText.split(/(?<=[.!?])\s+/);
+          let trimmed = "";
+          for (const sentence of sentences) {
+            if ((trimmed + (trimmed ? " " : "") + sentence).length <= maxAllowed) {
+              trimmed += (trimmed ? " " : "") + sentence;
+            } else {
+              break;
+            }
+          }
+          if (trimmed.length >= Math.floor(targetLen * 0.7)) {
+            fullText = trimmed;
+          }
+        }
+
+        return { headline, fullText };
+      }
+
+      /* ----------------------------------------------------------------------
+         6. 실전 면접 예상 질문 3선 & 답변 가이드 생성 엔진
+         ---------------------------------------------------------------------- */
+      function generateInterviewQuestions(params) {
+        const { roleKey, hospital, valuesList, exp, strengthsList } = params;
+        const role = ROLE_DATA[roleKey];
+        const v1 = valuesList[0] || "환자중심";
+        const s1 = strengthsList[0] || "세심한 관찰력";
+        const s2 = strengthsList[1] || "명확한 소통 역량";
+        const c1 = role.competencies[0];
+        const c2 = role.competencies[1];
+
+        return [
+          {
+            badgeClass: "q-type-1",
+            badgeText: "질문 ① 직무·임상 역량 검증 질문",
+            question: `자기소개서에 작성하신 '${exp}' 경험에서, 당시 ${role.name} 직무의 핵심인 '${c1}'과 '${c2}' 원칙을 적용하기 위해 본인이 가장 우선시했던 임상적 판단 기준은 무엇이었습니까?`,
+            intent: `단순한 실습 보조 경험을 넘어, 예비 ${role.name}로서 과학적 근거와 표준 프로토콜(${role.protocolTerm})에 입각해 상황을 판단하고 실행했는지 직무 전문성을 검증하려는 질문입니다.`,
+            framework: [
+              {
+                step: "1. 두괄식 핵심 결론",
+                text: `"제가 가장 최우선으로 삼은 기준은 '환자 안전의 선제적 확보'와 '${role.protocolTerm}'의 철저한 준수였습니다."`
+              },
+              {
+                step: "2. 구체적 근거 및 행동",
+                text: `당시 현장에서 파악한 위험 징후를 구체적으로 언급하고, '${s1}'을 활용해 표준 지침에 따라 어떻게 단계별로 확인·대처했는지 논리적으로 설명하세요.`
+              },
+              {
+                step: "3. 입사 후 현업 적용",
+                text: `"${hospital} 입사 후에도 매뉴얼을 기반으로 한 정확한 판단력을 발휘해 오류 없는 ${role.coreDuty}을 실천하겠습니다."`
+              }
+            ]
+          },
+          {
+            badgeClass: "q-type-2",
+            badgeText: "질문 ② 인성·환자 응대 돌발상황 질문",
+            question: `${role.suddenScenario}`,
+            intent: `임상 현장의 예기치 못한 스트레스 및 갈등 상황에서 감정적으로 동요하지 않고, ${hospital}의 핵심 가치인 '${v1}'과 환자 안전 원칙을 조화롭게 지켜낼 수 있는 위기 대처 및 소통 역량을 평가합니다.`,
+            framework: [
+              {
+                step: "1. 공감과 즉각적 안정 유도",
+                text: `"먼저 환자(보호자)분의 불편함과 불안한 마음에 진심으로 공감하며 차분하고 정중한 태도로 경청하겠습니다."`
+              },
+              {
+                step: "2. 프로토콜 기반 대안 제시 및 보고",
+                text: `원칙과 안전 기준(${role.protocolTerm})은 명확히 지키되, 대기 사유와 향후 진행 절차를 투명하게 안내하고 필요시 선배 의료진 및 유관 부서와 즉시 공유하여 해결하겠습니다.`
+              },
+              {
+                step: "3. 사후 피드백 및 팀워크",
+                text: `상황 종료 후에도 대상자의 상태를 재확인하여 '${v1}'의 가치를 체감할 수 있도록 세심히 케어하겠다고 마무리하세요.`
+              }
+            ]
+          },
+          {
+            badgeClass: "q-type-3",
+            badgeText: "질문 ③ 꼬리질문 (강점 검증 및 현업 적용 심화)",
+            question: `본인의 핵심 강점으로 '${s1}'과 '${s2}'을 꼽아주셨습니다. 실제 대학병원 현장은 실습 때보다 업무 강도가 훨씬 높고 변수도 많은데, 바쁜 업무 중에도 그 강점이 약점으로 변질되지 않고 유지될 수 있는 본인만의 노하우는 무엇입니까?`,
+            intent: `자소서에 기재한 강점 키워드의 진정성을 검증하고, 과중한 업무 압박 속에서도 번아웃이나 실수 없이 강점을 일관되게 발휘할 수 있는 자기관리 및 회복탄력성을 확인하는 압박형 꼬리질문입니다.`,
+            framework: [
+              {
+                step: "1. 한계 인식 및 솔직한 인정",
+                text: `"네, 세심함이 지나치면 업무 속도가 늦어질 수 있다는 점을 잘 알고 있기에 '우선순위(Priority) 설정'을 습관화하고 있습니다."`
+              },
+              {
+                step: "2. 나만의 실무 루틴 제시",
+                text: `중증도와 시급성에 따라 업무를 분류하고, 체크리스트와 메모를 활용해 중요한 핵심 지표를 놓치지 않으면서도 신속성을 유지했던 실습 경험을 근거로 제시하세요.`
+              },
+              {
+                step: "3. 성장 의지 및 포부",
+                text: `"${hospital}의 체계적인 프리셉터십과 시스템을 빠르게 흡수하여, 정확성과 신속성을 모두 갖춘 ${role.name}로 기여하겠습니다."`
+              }
+            ]
+          }
+        ];
+      }
+
+      function renderInterviewCards(questions) {
+        els.interviewContainer.innerHTML = questions
+          .map((q, idx) => {
+            const isOpen = idx === 0 ? "open" : ""; // 첫 번째 질문은 기본 펼침 상태로 가독성 극대화
+            const frameworkHtml = q.framework
+              .map(
+                (item) => `<li><strong>[${item.step}]</strong> ${item.text}</li>`
+              )
+              .join("");
+
+            return `
+              <article class="interview-item ${isOpen}">
+                <button type="button" class="interview-question-btn" aria-expanded="${idx === 0 ? "true" : "false"}">
+                  <div class="q-header-left">
+                    <span class="q-type-badge ${q.badgeClass}">${q.badgeText}</span>
+                    <h3 class="q-text">Q${idx + 1}. ${q.question}</h3>
+                  </div>
+                  <svg class="chevron-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </button>
+                <div class="interview-answer-panel">
+                  <div class="guide-block">
+                    <div class="guide-title intent">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                      </svg>
+                      면접관의 질문 의도
+                    </div>
+                    <p class="guide-desc">${q.intent}</p>
+                  </div>
+                  <div class="guide-block">
+                    <div class="guide-title answer">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                      </svg>
+                      합격 답변 핵심 포인트 (3단계 답변 틀)
+                    </div>
+                    <ul class="answer-framework-list">
+                      ${frameworkHtml}
+                    </ul>
+                  </div>
+                </div>
+              </article>
+            `;
+          })
+          .join("");
+      }
+
+      /* ----------------------------------------------------------------------
+         7. 이벤트 리스너 등록
+         ---------------------------------------------------------------------- */
+      // 직군 변경 시 역량 배지 업데이트
+      els.jobRole.addEventListener("change", renderRoleCompetencies);
+
+      // 목표 글자 수 토글 버튼
+      els.lengthBtns.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          updateLengthSelection(btn.dataset.length);
+        });
+      });
+
+      // 자소서 문항 유형 탭 선택 스타일 동기화
+      els.promptTabLabels.forEach((label) => {
+        label.addEventListener("click", () => {
+          els.promptTabLabels.forEach((l) => l.classList.remove("selected"));
+          label.classList.add("selected");
+          const radio = label.querySelector('input[type="radio"]');
+          if (radio) radio.checked = true;
+        });
+      });
+
+      // [샘플 데이터 자동 채우기] 버튼 (현재 선택된 직군에 맞춘 데이터 자동 입력)
+      els.btnFillSample.addEventListener("click", () => {
+        const roleKey = els.jobRole.value;
+        const sample = ROLE_DATA[roleKey].sample;
+
+        els.hospitalName.value = sample.hospital;
+        els.hospitalValues.value = sample.values;
+        els.clinicalExp.value = sample.exp;
+        els.strengthKeywords.value = sample.strengths;
+
+        showToast(`[${ROLE_DATA[roleKey].name}] 합격 샘플 데이터가 입력되었습니다!`);
+      });
+
+      // [합격 자소서 초안 & 실전 면접 질문 생성하기] 폼 제출
+      els.form.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const roleKey = els.jobRole.value;
+        const role = ROLE_DATA[roleKey];
+        const promptRadio = document.querySelector('input[name="promptType"]:checked');
+        const promptType = promptRadio ? promptRadio.value : "motivation";
+
+        // 미입력 항목이 있을 경우 해당 직군 샘플을 기본값으로 유연하게 보완
+        const hospital = els.hospitalName.value.trim() || role.sample.hospital;
+        const valuesList = parseKeywords(els.hospitalValues.value, parseKeywords(role.sample.values, ["환자중심", "생명존중"]));
+        const exp = els.clinicalExp.value.trim() || role.sample.exp;
+        const strengthsList = parseKeywords(els.strengthKeywords.value, parseKeywords(role.sample.strengths, ["세심한 관찰력", "원활한 소통"]));
+
+        // 입력란이 비어있었다면 사용자 편의를 위해 채워줌
+        if (!els.hospitalName.value.trim()) els.hospitalName.value = hospital;
+        if (!els.hospitalValues.value.trim()) els.hospitalValues.value = valuesList.join(", ");
+        if (!els.clinicalExp.value.trim()) els.clinicalExp.value = exp;
+        if (!els.strengthKeywords.value.trim()) els.strengthKeywords.value = strengthsList.join(", ");
+
+        const params = {
+          roleKey,
+          promptType,
+          targetLen: selectedLength,
+          hospital,
+          valuesList,
+          exp,
+          strengthsList
+        };
+
+        // 자소서 및 면접 질문 생성
+        const essayResult = generateEssayContent(params);
+        const interviewQuestions = generateInterviewQuestions(params);
+
+        // UI 반영
+        els.resultMetaBadge.textContent = `${role.name} · ${selectedLength.toLocaleString()}자 이내`;
+        els.headline.textContent = essayResult.headline;
+        els.essay.innerText = essayResult.fullText;
+        updateCharCounter();
+
+        renderInterviewCards(interviewQuestions);
+
+        // 대시보드 표시 및 부드러운 스크롤
+        els.placeholder.style.display = "none";
+        els.results.classList.add("visible");
+
+        setTimeout(() => {
+          els.results.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 60);
+
+        showToast("맞춤형 자소서 초안과 실전 면접 질문지가 생성되었습니다!");
+      });
+
+      // 본문 직접 편집 시 실시간 글자 수 카운트
+      els.essay.addEventListener("input", updateCharCounter);
+
+      // [자소서 복사] 버튼 (iFrame 환경을 고려한 execCommand fallback 포함)
+      els.btnCopyEssay.addEventListener("click", () => {
+        const headlineText = els.headline.innerText.trim();
+        const bodyText = els.essay.innerText.trim();
+        const fullCopyText = `${headlineText}\n\n${bodyText}`;
+
+        const copyFallback = (text) => {
+          const tempTextarea = document.createElement("textarea");
+          tempTextarea.value = text;
+          tempTextarea.style.position = "fixed";
+          tempTextarea.style.left = "-9999px";
+          document.body.appendChild(tempTextarea);
+          tempTextarea.select();
+          try {
+            document.execCommand("copy");
+            showToast("자소서 소제목과 본문이 클립보드에 복사되었습니다!");
+          } catch (err) {
+            showToast("복사에 실패했습니다. 텍스트를 드래그하여 복사해 주세요.");
+          }
+          document.body.removeChild(tempTextarea);
+        };
+
+        if (navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard.writeText(fullCopyText).then(
+            () => showToast("자소서 소제목과 본문이 클립보드에 복사되었습니다!"),
+            () => copyFallback(fullCopyText)
+          );
+        } else {
+          copyFallback(fullCopyText);
+        }
+      });
+
+      // 면접 질문 아코디언 개별 토글 (이벤트 위임)
+      els.interviewContainer.addEventListener("click", (e) => {
+        const btn = e.target.closest(".interview-question-btn");
+        if (!btn) return;
+        const item = btn.closest(".interview-item");
+        const isOpen = item.classList.toggle("open");
+        btn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+      });
+
+      // 면접 질문 아코디언 전체 펼치기/접기
+      els.btnToggleAccordions.addEventListener("click", () => {
+        const items = els.interviewContainer.querySelectorAll(".interview-item");
+        const anyClosed = Array.from(items).some((item) => !item.classList.contains("open"));
+        items.forEach((item) => {
+          item.classList.toggle("open", anyClosed);
+          const btn = item.querySelector(".interview-question-btn");
+          if (btn) btn.setAttribute("aria-expanded", anyClosed ? "true" : "false");
+        });
+      });
+
+      // 인쇄 / PDF 저장 버튼 연동
+      const handlePrint = () => {
+        window.print();
+      };
+      els.btnPrintAll.addEventListener("click", handlePrint);
+      els.btnPrintInterview.addEventListener("click", handlePrint);
+
+      // 자소서 첨삭 셀프 체크리스트 진행률 게이지 업데이트
+      function updateChecklistProgress() {
+        const total = els.checkboxes.length;
+        let checkedCount = 0;
+        els.checkboxes.forEach((cb) => {
+          const label = cb.closest(".check-item-label");
+          if (cb.checked) {
+            checkedCount++;
+            label.classList.add("checked");
+          } else {
+            label.classList.remove("checked");
+          }
+        });
+        const percent = Math.round((checkedCount / total) * 100);
+        els.progressBar.style.width = `${percent}%`;
+        els.progressText.textContent = `${percent}%`;
+      }
+
+      els.checkboxes.forEach((cb) => {
+        cb.addEventListener("change", updateChecklistProgress);
+      });
+
+      // 초기 렌더링 실행
+      renderRoleCompetencies();
+      updateLengthSelection(700);
+    })();
+  </script>
+</body>
+</html>

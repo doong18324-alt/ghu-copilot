@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>초등학생도 이해하는 개념 설명가 &amp; 미니 퀴즈 웹 앱</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    /* 기본 폰트 및 부드러운 스크롤 설정 */
+    body {
+      font-family: 'Noto Sans KR', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #fdfbf7;
+      color: #1e293b;
+      word-break: keep-all;
+    }
+
+    /* 커스텀 애니메이션 */
+    @keyframes fadeSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate-card {
+      animation: fadeSlideUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* 인쇄 및 PDF 저장 최적화 스타일 */
+    @media print {
+      body {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .print-only-block {
+        display: block !important;
+      }
+      .shadow-sm, .shadow-md, .shadow-lg, .shadow-xl {
+        box-shadow: none !important;
+      }
+      .card-avoid-break {
+        break-inside: avoid;
+        page-break-inside: avoid;
+        border: 1px solid #cbd5e1 !important;
+        margin-bottom: 16px !important;
+      }
+      #dashboardSection {
+        display: block !important;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-amber-200 selection:text-amber-950">
+
+  <!-- 상단 헤더 영역 -->
+  <header class="bg-white/90 backdrop-blur-md border-b border-amber-100 sticky top-0 z-30 no-print">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 py-4">
+      <!-- 상단 우측 소속 배지 (오른쪽 정렬) -->
+      <div class="flex justify-end mb-2">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-900 border border-amber-200/90 shadow-2xs">
+          <span>🏫</span>
+          <span>광주보건대학교 AI대학혁신본부</span>
+        </span>
+      </div>
+
+      <!-- 웹 앱 제목 및 부제목 (가운데 정렬) -->
+      <div class="flex flex-col items-center text-center">
+        <div class="flex items-center justify-center gap-2.5 mb-1">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-300 via-orange-300 to-rose-300 flex items-center justify-center text-xl shadow-sm shrink-0">
+            💡
+          </div>
+          <h1 class="text-lg sm:text-2xl font-extrabold text-slate-800 tracking-tight">
+            초등학생도 이해하는 개념 설명가 <span class="text-orange-500">&amp; 미니 퀴즈</span>
+          </h1>
+        </div>
+        <p class="text-xs sm:text-sm text-slate-500 font-medium">
+          어려운 전공 서적·뉴스 기사를 일상 속 꿀비유와 3문제 퀴즈로 즉시 변환해요!
+        </p>
+      </div>
+    </div>
+  </header>
+
+  <!-- 메인 컨테이너 -->
+  <main class="max-w-4xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-8 flex-grow">
+
+    <!-- 1. 상단 입력 및 설명 수준 설정 패널 -->
+    <section aria-labelledby="inputPanelHeading" class="bg-white rounded-3xl p-5 sm:p-8 shadow-sm border border-amber-100/80 no-print">
+      <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-100">
+        <div class="flex items-center gap-2.5">
+          <span class="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 font-bold flex items-center justify-center text-sm">1</span>
+          <h2 id="inputPanelHeading" class="text-lg sm:text-xl font-bold text-slate-800">
+            설명 수준 설정 및 원문 입력
+          </h2>
+        </div>
+        <button
+          type="button"
+          id="resetAllBtn"
+          class="text-xs sm:text-sm font-medium text-slate-400 hover:text-slate-600 px-2.5 py-1.5 rounded-xl hover:bg-slate-100 transition-colors"
+        >
+          초기화 ↺
+        </button>
+      </div>
+
+      <div class="space-y-6">
+        <!-- 대상 눈높이 선택 버튼 (라디오 카드형 토글) -->
+        <div>
+          <label class="block text-sm font-bold text-slate-700 mb-2.5">
+            🎯 누구의 눈높이에 맞춰 설명할까요?
+          </label>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" role="radiogroup" aria-label="대상 눈높이 선택">
+            <label class="cursor-pointer group">
+              <input type="radio" name="targetLevel" value="elementary" class="peer sr-only" checked />
+              <div class="p-3.5 rounded-2xl border-2 border-slate-200 bg-slate-50/50 peer-checked:border-amber-400 peer-checked:bg-amber-50/80 transition-all hover:border-amber-300 h-full flex flex-col justify-center">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-base font-extrabold text-slate-800">🐣 초등학생 눈높이</span>
+                  <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-amber-200/70 text-amber-900">아주 쉽게</span>
+                </div>
+                <p class="text-xs text-slate-500">다정한 해요체 + 친숙한 놀이·생활 비유 중심</p>
+              </div>
+            </label>
+
+            <label class="cursor-pointer group">
+              <input type="radio" name="targetLevel" value="secondary" class="peer sr-only" />
+              <div class="p-3.5 rounded-2xl border-2 border-slate-200 bg-slate-50/50 peer-checked:border-sky-400 peer-checked:bg-sky-50/80 transition-all hover:border-sky-300 h-full flex flex-col justify-center">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-base font-extrabold text-slate-800">🎒 중·고등학생 눈높이</span>
+                  <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-sky-200/70 text-sky-900">비유+핵심용어</span>
+                </div>
+                <p class="text-xs text-slate-500">직관적 비유에 교과서 핵심 용어를 연결해 설명</p>
+              </div>
+            </label>
+
+            <label class="cursor-pointer group">
+              <input type="radio" name="targetLevel" value="college" class="peer sr-only" />
+              <div class="p-3.5 rounded-2xl border-2 border-slate-200 bg-slate-50/50 peer-checked:border-emerald-400 peer-checked:bg-emerald-50/80 transition-all hover:border-emerald-300 h-full flex flex-col justify-center">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-base font-extrabold text-slate-800">🎓 대학 신입생 눈높이</span>
+                  <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-200/70 text-emerald-900">기초 개념 정리</span>
+                </div>
+                <p class="text-xs text-slate-500">구조적 메커니즘과 전공 기초 어휘를 체계화</p>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- 분야 선택 드롭다운 & 예시 지문 채우기 버튼 -->
+        <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
+          <div class="sm:col-span-7">
+            <label for="domainSelect" class="block text-sm font-bold text-slate-700 mb-2">
+              📚 지문 분야 선택
+            </label>
+            <div class="relative">
+              <select
+                id="domainSelect"
+                class="w-full appearance-none rounded-2xl border-2 border-slate-200 bg-white px-4 py-3 pr-10 text-sm sm:text-base font-semibold text-slate-800 focus:border-amber-400 focus:outline-none transition-colors cursor-pointer"
+              >
+                <option value="medical">🩺 보건·의학·간호</option>
+                <option value="economy">📈 경제·시사 뉴스</option>
+                <option value="tech">💻 IT·과학기술</option>
+                <option value="humanities">🏛️ 인문·사회·기타</option>
+              </select>
+              <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3.5 text-slate-500">
+                ▼
+              </div>
+            </div>
+          </div>
+
+          <div class="sm:col-span-5">
+            <button
+              type="button"
+              id="fillSampleBtn"
+              class="w-full py-3 px-4 rounded-2xl border-2 border-dashed border-orange-300 bg-orange-50/80 hover:bg-orange-100 text-orange-800 font-bold text-sm sm:text-base transition-all flex items-center justify-center gap-2 active:scale-[0.99]"
+            >
+              <span>✨</span>
+              <span>예시 지문 채우기</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 원문 텍스트 입력창 -->
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <label for="sourceTextInput" class="block text-sm font-bold text-slate-700">
+              📝 어려운 전공 문장이나 뉴스 기사를 붙여넣어 주세요
+            </label>
+            <span class="text-xs text-slate-400">어떤 문장이든 입력 가능해요!</span>
+          </div>
+          <div class="relative">
+            <textarea
+              id="sourceTextInput"
+              rows="6"
+              placeholder="예시: '심근경색은 관상동맥의 죽상경화반이 파열되면서 혈전이 형성되어 혈류가 급격히 차단되고, 이로 인해 심근 조직에 비가역적인 허혈성 괴사가 초래되는 응급 질환이다.' 처럼 어려운 문장을 입력하거나 위의 [예시 지문 채우기] 버튼을 눌러보세요!"
+              class="w-full rounded-2xl border-2 border-slate-200 bg-slate-50/40 p-4 pb-9 text-sm sm:text-base text-slate-800 placeholder:text-slate-400 focus:bg-white focus:border-amber-400 focus:outline-none transition-all resize-y leading-relaxed"
+            ></textarea>
+            <div class="absolute bottom-3 right-4 flex items-center gap-2 text-xs font-semibold text-slate-400 bg-white/90 px-2.5 py-0.5 rounded-full border border-slate-100">
+              <span>현재 글자 수:</span>
+              <span id="charCount" class="text-orange-600 font-bold">0</span>
+              <span>자</span>
+            </div>
+          </div>
+          <!-- 입력 안내 알림 박스 (alert 대신 사용) -->
+          <div id="inputAlertBox" class="hidden mt-2.5 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs sm:text-sm font-medium flex items-center gap-2">
+            <span>⚠️</span>
+            <span id="inputAlertText">원문 텍스트를 먼저 입력하거나 [예시 지문 채우기] 버튼을 눌러주세요!</span>
+          </div>
+        </div>
+
+        <!-- 하단 대형 실행 버튼 -->
+        <button
+          type="button"
+          id="generateBtn"
+          class="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-600 hover:via-orange-600 hover:to-rose-600 text-white font-extrabold text-base sm:text-lg shadow-lg shadow-orange-200 hover:shadow-xl hover:shadow-orange-300/70 transition-all flex items-center justify-center gap-2.5 active:scale-[0.99] cursor-pointer"
+        >
+          <span class="text-xl">🪄</span>
+          <span>쉬운 비유 설명 + 3문제 퀴즈 만들기</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- 2. 하단 학습 대시보드 및 인터랙티브 퀴즈 UI -->
+    <section id="dashboardSection" class="hidden space-y-6" aria-live="polite">
+      
+      <!-- 대시보드 상단 컨트롤 바 -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 sm:px-6 rounded-2xl border border-slate-200/80 shadow-sm">
+        <div class="flex items-center gap-2.5 flex-wrap">
+          <span class="px-3 py-1 rounded-full text-xs font-extrabold bg-orange-100 text-orange-800" id="badgeDomain">
+            분야
+          </span>
+          <span class="px-3 py-1 rounded-full text-xs font-extrabold bg-sky-100 text-sky-800" id="badgeLevel">
+            눈높이
+          </span>
+          <span class="text-sm font-bold text-slate-700">맞춤형 개념 학습지가 완성되었어요!</span>
+        </div>
+
+        <div class="flex items-center gap-2 no-print">
+          <button
+            type="button"
+            id="copyAllBtn"
+            class="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs sm:text-sm transition-colors flex items-center justify-center gap-1.5"
+          >
+            <span>📋</span>
+            <span>설명 내용 전체 복사</span>
+          </button>
+          <button
+            type="button"
+            id="printBtn"
+            class="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold text-xs sm:text-sm transition-colors flex items-center justify-center gap-1.5"
+          >
+            <span>🖨️</span>
+            <span>학습지 인쇄 / PDF 저장</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ① 한 줄 핵심 요약 카드 (크림 파스텔) -->
+      <article class="animate-card card-avoid-break rounded-3xl p-6 sm:p-7 bg-[#FFFDF2] border-2 border-amber-200/80 shadow-sm">
+        <div class="flex items-center gap-2.5 mb-3">
+          <span class="w-9 h-9 rounded-2xl bg-amber-200/80 text-amber-900 flex items-center justify-center text-lg shadow-inner">
+            ①
+          </span>
+          <div>
+            <h3 class="text-base sm:text-lg font-extrabold text-amber-950">한 줄 핵심 요약</h3>
+            <p class="text-xs text-amber-700/80">이 글이 말하는 진짜 핵심을 한 문장으로 콕 집었어요!</p>
+          </div>
+        </div>
+        <div class="bg-white/90 rounded-2xl p-4 sm:p-5 border border-amber-200/60">
+          <p id="summaryOutput" class="text-base sm:text-lg font-bold text-slate-800 leading-relaxed"></p>
+        </div>
+      </article>
+
+      <!-- ② 일상 속 꿀비유 카드 (스카이블루 파스텔) -->
+      <article class="animate-card card-avoid-break rounded-3xl p-6 sm:p-7 bg-[#F3FAFF] border-2 border-sky-200/80 shadow-sm" style="animation-delay: 0.08s;">
+        <div class="flex items-center gap-2.5 mb-3">
+          <span class="w-9 h-9 rounded-2xl bg-sky-200/80 text-sky-900 flex items-center justify-center text-lg shadow-inner">
+            ②
+          </span>
+          <div>
+            <h3 class="text-base sm:text-lg font-extrabold text-sky-950">일상 속 꿀비유 카드</h3>
+            <p class="text-xs text-sky-700/80">머릿속에 그림이 딱 그려지는 친숙한 비유로 이해해 봐요!</p>
+          </div>
+        </div>
+
+        <div class="bg-white/95 rounded-2xl p-5 sm:p-6 border border-sky-200/70 space-y-3">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-sky-100 text-sky-900 font-extrabold text-sm sm:text-base">
+            <span id="analogyEmoji" class="text-xl">🎈</span>
+            <span id="analogyHeadline">이 개념은 마치 일상 속 상황과 같아요!</span>
+          </div>
+          <p id="analogyBody" class="text-sm sm:text-base text-slate-700 leading-relaxed"></p>
+          <div id="analogyPointBox" class="p-3.5 rounded-xl bg-sky-50/90 border border-sky-100 text-xs sm:text-sm text-sky-900 font-medium"></div>
+        </div>
+      </article>
+
+      <!-- ③ 어려운 용어 사전 카드 (민트 파스텔) -->
+      <article class="animate-card card-avoid-break rounded-3xl p-6 sm:p-7 bg-[#F2FCF7] border-2 border-emerald-200/80 shadow-sm" style="animation-delay: 0.16s;">
+        <div class="flex items-center gap-2.5 mb-4">
+          <span class="w-9 h-9 rounded-2xl bg-emerald-200/80 text-emerald-900 flex items-center justify-center text-lg shadow-inner">
+            ③
+          </span>
+          <div>
+            <h3 class="text-base sm:text-lg font-extrabold text-emerald-950">어려운 용어 사전</h3>
+            <p class="text-xs text-emerald-700/80">원문 속 낯선 전문 용어와 한자어를 쉬운 우리말로 풀었어요!</p>
+          </div>
+        </div>
+
+        <div id="glossaryGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <!-- 자바스크립트로 용어 카드 3~4개 동적 삽입 -->
+        </div>
+      </article>
+
+      <!-- ④ 이해도 확인 퀴즈 3문항 카드 (피치·라벤더 파스텔) -->
+      <article class="animate-card card-avoid-break rounded-3xl p-6 sm:p-7 bg-[#FFF6F3] border-2 border-rose-200/80 shadow-sm" style="animation-delay: 0.24s;">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+          <div class="flex items-center gap-2.5">
+            <span class="w-9 h-9 rounded-2xl bg-rose-200/80 text-rose-900 flex items-center justify-center text-lg shadow-inner">
+              ④
+            </span>
+            <div>
+              <h3 class="text-base sm:text-lg font-extrabold text-rose-950">이해도 확인 미니 퀴즈 (3문항)</h3>
+              <p class="text-xs text-rose-700/80">보기를 클릭하면 바로 정답(O/X)과 친절한 해설이 펼쳐집니다!</p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            id="gradeAllBtn"
+            class="no-print px-4 py-2 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs sm:text-sm shadow-sm transition-all active:scale-95"
+          >
+            정답 확인 및 채점하기 ✓
+          </button>
+        </div>
+
+        <!-- 퀴즈 3문항 컨테이너 -->
+        <div id="quizContainer" class="space-y-5">
+          <!-- 자바스크립트로 3문제 동적 렌더링 -->
+        </div>
+
+        <!-- 3문제 완료 시 최종 점수 및 칭찬 메시지 배너 -->
+        <div id="finalScoreBanner" class="hidden mt-6 p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-amber-100 via-rose-100 to-purple-100 border-2 border-rose-300 text-center space-y-2 shadow-sm">
+          <div id="scoreTrophy" class="text-3xl sm:text-4xl">🏆</div>
+          <h4 id="scoreTitle" class="text-lg sm:text-xl font-extrabold text-slate-800">
+            100점 / 3문제 중 3문제 정답!
+          </h4>
+          <p id="scorePraiseMsg" class="text-sm sm:text-base font-medium text-slate-700"></p>
+          <div class="pt-2 no-print">
+            <button
+              type="button"
+              id="retryQuizBtn"
+              class="px-4 py-2 rounded-xl bg-white hover:bg-slate-50 text-rose-700 font-bold text-xs sm:text-sm border border-rose-200 shadow-sm transition-colors"
+            >
+              🔄 퀴즈 다시 풀어보기
+            </button>
+          </div>
+        </div>
+      </article>
+
+    </section>
+
+  </main>
+
+  <!-- 복사 완료 토스트 메시지 -->
+  <div
+    id="toastNotification"
+    role="status"
+    class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-2xl bg-slate-900/95 text-white text-sm font-semibold shadow-xl opacity-0 pointer-events-none transition-all duration-300 flex items-center gap-2"
+  >
+    <span>✅</span>
+    <span id="toastText">학습 내용이 클립보드에 복사되었습니다!</span>
+  </div>
+
+  <!-- 4. 주의사항 및 안전장치 푸터 -->
+  <footer class="bg-slate-100/90 border-t border-slate-200/80 mt-12 py-6 px-4 sm:px-6">
+    <div class="max-w-4xl mx-auto text-center space-y-2">
+      <p class="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium">
+        ※ 안내: 어려운 전공 및 시사 개념을 일상적 비유로 쉽게 풀어 설명하는 과정에서 세부적인 학술적·의학적 엄밀함이 일부 단순화될 수 있습니다. 전공 심화 학습 및 정확한 학술 판단을 위해서는 반드시 원문 교재와 공식 문헌을 함께 참고하시기 바랍니다.
+      </p>
+      <p class="text-[11px] text-slate-400">
+        초등학생도 이해하는 개념 설명가 &amp; 미니 퀴즈 웹 앱 · 학습 보조용 인터랙티브 에듀테크 도구
+      </p>
+    </div>
+  </footer>
+
+  <!-- 핵심 설명 및 퀴즈 생성 엔진 (Vanilla JS) -->
+  <script>
+    (function () {
+      'use strict';
+
+      /* =========================================================================
+       * 1. 분야별 고난도 예시 지문 데이터베이스 & 도메인 비유/용어 사전 엔진
+       * ========================================================================= */
+      const SAMPLE_PASSAGES = {
+        medical:
+          "심근경색은 심장 근육에 산소와 영양분을 공급하는 관상동맥의 내벽에 콜레스테롤 등이 쌓여 형성된 죽상경화반이 갑자기 파열되면서 혈전(피떡)이 만들어지고, 이로 인해 혈관 내강이 급격히 폐쇄되어 심근 조직에 비가역적인 허혈성 괴사가 초래되는 응급 질환이다. 골든타임 내에 재관류 치료를 시행하지 않으면 심부전이나 치명적인 부정맥으로 이어질 수 있다.",
+        economy:
+          "중앙은행이 인플레이션 압력을 억제하기 위해 기준금리를 인상하는 긴축적 통화정책을 단행하면, 시중 은행의 여신 및 수신 금리가 동반 상승하여 가계의 소비 여력과 기업의 설비 투자 유인이 위축된다. 이로 인해 총수요가 둔화되면서 물가 상승세는 진정되지만, 단기적으로는 경기 침체와 부채 상환 부담 가중이라는 부작용이 수반될 수 있다.",
+        tech:
+          "생성형 인공지능의 핵심 기반인 트랜스포머 아키텍처는 입력된 문장 속 단어들 간의 상관관계를 순차적으로 처리하지 않고, 셀프 어텐션(Self-Attention) 메커니즘을 활용해 모든 단어 쌍의 중요도 가중치를 병렬적으로 동시에 연산한다. 이를 통해 장거리 문맥 의존성 문제를 해결하고 대규모 병렬 학습 효율을 획기적으로 극대화하였다.",
+        humanities:
+          "사회계약론에서 홉스는 자연상태를 모든 개인이 자기보존의 본능에 따라 무한한 자유를 행사함으로써 '만인에 대한 만인의 투쟁'이 벌어지는 극단적 불안정 상태로 규정하였다. 따라서 인간은 생명과 안전을 보장받기 위해 각자의 자연권을 절대 주권자인 리바이어던에게 양도하는 상호 계약을 체결함으로써 국가 질서를 수립한다고 보았다."
+      };
+
+      // 전문 용어 및 한자어 지식 베이스 (원문 매칭 + 문맥 분석 보조)
+      const TERM_DICTIONARY = {
+        // 보건·의학·간호
+        "심근경색": {
+          elementary: "심장 근육에 피가 통하지 않아 심장이 크게 아파하는 응급 병이에요.",
+          secondary: "심장 근육에 혈액을 공급하는 혈관이 막혀 심장 조직이 손상되는 질환입니다.",
+          college: "관상동맥 폐쇄로 인해 심근에 급성 허혈 및 괴사가 발생하는 치명적 심혈관 질환입니다."
+        },
+        "관상동맥": {
+          elementary: "심장 겉면을 왕관처럼 둘러싸고 심장에게 밥(산소와 영양분)을 날라주는 혈관이에요.",
+          secondary: "심장 근육 자체에 산소와 영양소를 공급하는 중요한 동맥 혈관입니다.",
+          college: "대동맥 기시부에서 분지하여 심근에 혈류를 공급하는 고유 순환 혈관계입니다."
+        },
+        "죽상경화반": {
+          elementary: "혈관 벽에 기름때(콜레스테롤)가 끈적하게 쌓여서 볼록하게 뭉친 덩어리예요.",
+          secondary: "혈관 내벽에 콜레스테롤과 염증 세포가 쌓여 혈관을 좁아지게 만드는 침착물입니다.",
+          college: "동맥 내막에 지질과 섬유성 조직이 축적되어 형성된 병변(Atheromatous plaque)입니다."
+        },
+        "혈전": {
+          elementary: "혈관 속에서 피가 젤리처럼 굳어져 만들어진 딱딱한 핏덩어리(피떡)예요.",
+          secondary: "혈액이 혈관 내부에서 비정상적으로 응고되어 혈류를 막는 피떡 덩어리입니다.",
+          college: "혈소판과 피브린이 응집하여 혈관 내강에서 형성된 혈액 응고물(Thrombus)입니다."
+        },
+        "허혈성 괴사": {
+          elementary: "피가 안 통해서 산소를 못 받은 세포들이 숨을 못 쉬고 죽어버리는 현상이에요.",
+          secondary: "혈액 공급이 중단되어 산소가 부족해진 조직 세포가 회복 불가능하게 손상되는 것입니다.",
+          college: "혈류 차단(허혈)으로 산소·대사물질 공급이 고갈되어 발생하는 비가역적 세포 사멸입니다."
+        },
+        "재관류": {
+          elementary: "막혀 있던 혈관 길을 다시 뻥 뚫어서 피가 시원하게 흐르게 해주는 치료예요.",
+          secondary: "막힌 혈관을 넓히거나 혈전을 녹여 혈액 순환을 다시 회복시키는 시술입니다.",
+          college: "폐쇄된 혈관의 개통성을 회복시켜 허혈 조직에 혈류를 재공급하는 치료적 처치입니다."
+        },
+        "항상성": {
+          elementary: "바깥 날씨가 덥거나 추워도 우리 몸이 체온을 늘 똑같이 유지하려는 힘이에요.",
+          secondary: "외부 환경 변화에도 신체 내부 상태를 일정하게 유지하려는 생체 조절 성질입니다.",
+          college: "내외부 자극에 대응하여 생체 내 환경을 동적 평형 상태로 유지하는 생리적 기전입니다."
+        },
+
+        // 경제·시사 뉴스
+        "인플레이션": {
+          elementary: "시중에 돈이 많아져서 과자나 학용품 같은 물건 값이 계속 오르는 현상이에요.",
+          secondary: "화폐 가치가 하락하면서 전반적인 물가 수준이 지속적으로 상승하는 경제 현상입니다.",
+          college: "총수요 초과나 비용 상승 등으로 재화·서비스의 일반 물가 수준이 지속 상승하는 현상입니다."
+        },
+        "기준금리": {
+          elementary: "나라의 대장 은행(한국은행)이 다른 은행들과 돈을 빌리고 맡길 때 정하는 '기준 이자율'이에요.",
+          secondary: "중앙은행이 시중 금리의 기준으로 삼기 위해 결정하는 핵심 정책 이자율입니다.",
+          college: "중앙은행이 통화정책 목표 달성을 위해 금융기관과의 거래에서 기준으로 삼는 정책금리입니다."
+        },
+        "긴축적 통화정책": {
+          elementary: "물가가 너무 오를 때 이자를 높여서 시중에 돌아다니는 돈을 줄이려는 방법이에요.",
+          secondary: "금리 인상 등을 통해 시중 유동성(통화량)을 축소하여 경기 과열을 식히는 정책입니다.",
+          college: "물가 안정을 위해 기준금리 인상 및 유동성 흡수로 통화 공급을 억제하는 정책 기조입니다."
+        },
+        "여신": {
+          elementary: "은행이 사람이나 회사에게 돈을 빌려주는 것(대출)을 어려운 말로 부르는 거예요.",
+          secondary: "금융기관이 고객에게 자금을 빌려주거나 신용을 공여하는 행위(대출)를 뜻합니다.",
+          college: "금융기관이 차입자에게 원리금 상환을 약정받고 자금을 공급하는 대출 업무 전반입니다."
+        },
+        "수신": {
+          elementary: "은행이 사람들의 저금통 돈을 받아서 안전하게 맡아주는 것(예금·적금)이에요.",
+          secondary: "금융기관이 예금이나 적금 형태로 고객의 자금을 받아들이는 행위입니다.",
+          college: "금융기관이 예금자들로부터 유휴 자금을 조달하는 예금·적금 등 자금 수탁 업무입니다."
+        },
+        "총수요": {
+          elementary: "우리나라 안의 모든 사람과 회사가 물건을 사려고 하는 힘의 전체 합계예요.",
+          secondary: "일정 기간 동안 한 국가 경제 내의 가계·기업·정부가 구매하고자 하는 재화의 총량입니다.",
+          college: "거시경제 내에서 소비(C), 투자(I), 정부지출(G), 순수출(NX)을 합산한 총지출 수요입니다."
+        },
+
+        // IT·과학기술
+        "아키텍처": {
+          elementary: "컴퓨터 프로그램이나 AI가 똑똑하게 일하도록 설계한 전체 '뼈대와 설계도'예요.",
+          secondary: "시스템이나 소프트웨어의 전체 구조와 구성 요소 간의 작동 방식을 설계한 틀입니다.",
+          college: "하드웨어 및 소프트웨어 시스템의 핵심 구성 요소와 상호작용을 정의한 구조적 설계입니다."
+        },
+        "셀프 어텐션": {
+          elementary: "AI가 문장을 읽을 때 어떤 단어가 서로 가장 친하고 중요한지 스스로 집중해 찾는 기술이에요.",
+          secondary: "문장 내의 각 단어가 다른 모든 단어와 얼마나 밀접한 관련이 있는지 계산하는 핵심 기법입니다.",
+          college: "시퀀스 내 토큰 간 상호 연관성(Query-Key-Value 내적)을 가중치로 산출하는 연산 메커니즘입니다."
+        },
+        "병렬": {
+          elementary: "일을 한 줄로 차례차례 하지 않고, 여러 친구가 동시에 나눠서 한꺼번에 처리하는 방식이에요.",
+          secondary: "여러 연산 작업을 순차적이 아니라 동시에 여러 처리 장치에서 수행하는 방식입니다.",
+          college: "다수의 연산 프로세스를 동시 다발적으로 실행하여 처리 속도를 높이는 컴퓨팅 구조입니다."
+        },
+        "장거리 문맥 의존성": {
+          elementary: "아주 긴 글에서 맨 앞줄에 나온 주인공 이름을 맨 뒷줄에서도 까먹지 않고 기억하는 능력이에요.",
+          secondary: "긴 문장이나 문서에서 멀리 떨어진 단어들 사이의 의미적 연결 관계를 파악하는 문제입니다.",
+          college: "시퀀스 길이가 길어질 때 초기 토큰의 정보가 후기 토큰까지 손실 없이 전달되어야 하는 과제입니다."
+        },
+        "알고리즘": {
+          elementary: "문제를 해결하기 위해 순서대로 차근차근 정해 놓은 '요리 레시피' 같은 규칙이에요.",
+          secondary: "특정 문제를 해결하기 위해 입력값을 처리하는 명확한 단계별 절차나 규칙입니다.",
+          college: "유한한 단계를 거쳐 입력 데이터를 원하는 출력으로 변환하는 논리적 연산 절차입니다."
+        },
+
+        // 인문·사회·기타
+        "사회계약론": {
+          elementary: "사람들이 서로 싸우지 않고 안전하게 살기 위해 다 같이 약속을 정해 나라를 만들었다는 생각이에요.",
+          secondary: "개인의 자유와 안전을 보장받기 위해 구성원들의 합의와 계약으로 국가가 탄생했다는 이론입니다.",
+          college: "자연상태의 한계를 극복하기 위해 개인들이 주권 양도 계약을 맺어 국가 권력을 정당화한 정치철학입니다."
+        },
+        "자연상태": {
+          elementary: "아직 나라나 법, 경찰이 생기기 전의 아주 옛날 모습이에요.",
+          secondary: "국가 권력이나 법률이 존재하지 않고 인간이 본성대로 살아가는 가설적 상태입니다.",
+          college: "정치적 주권과 실정법이 부재하여 개인의 자연권만이 존재하는 가설적 원초 상태입니다."
+        },
+        "자기보존": {
+          elementary: "위험한 상황에서 내 목숨과 안전을 스스로 지키려고 하는 자연스러운 마음이에요.",
+          secondary: "외부의 위협으로부터 자신의 생명과 존재를 유지하려는 인간의 근본적 본능입니다.",
+          college: "개체가 생명 유지와 생존을 최우선으로 추구하는 근원적 생물학·철학적 본능입니다."
+        },
+        "자연권": {
+          elementary: "사람이라면 누구나 태어날 때부터 하늘에서 선물 받은 소중한 권리예요.",
+          secondary: "국가나 법이 만들어지기 이전부터 인간이 태어나면서부터 지니는 천부적 권리입니다.",
+          college: "실정법에 선행하여 인간 본성에 근거해 모든 개인에게 부여된 보편적 권리입니다."
+        },
+        "리바이어던": {
+          elementary: "모두의 약속을 지키게 하고 나쁜 사람을 혼내주기 위해 만든 '아주 힘이 센 거대한 나라(정부)'예요.",
+          secondary: "홉스가 사회 질서 유지를 위해 강력한 권한을 부여받은 절대 주권 국가를 비유한 말입니다.",
+          college: "개인의 자연권을 위임받아 평화와 안녕을 강제하는 절대적 주권 권력을 상징하는 개념입니다."
+        }
+      };
+
+      // 분야별 기본 비유 템플릿 (사용자 임의 텍스트 입력 시에도 문맥과 결합해 자연스럽게 작동)
+      const DOMAIN_PROFILES = {
+        medical: {
+          name: "보건·의학·간호",
+          emoji: "🚑",
+          metaphorTitle: "우리 몸속 '마을 도로와 119 소방대'의 작동 원리",
+          metaphorTemplate: {
+            elementary:
+              "이 개념은 마치 우리 몸속 구석구석으로 영양분 도시락을 배달하는 '고속도로'와, 길이 막히거나 세균이 쳐들어왔을 때 출동하는 '119 구조대' 이야기와 같아요! 도로가 뻥 뚫려야 마을(세포)이 건강하게 웃을 수 있답니다.",
+            secondary:
+              "이 의학 개념은 우리 몸이라는 거대한 도시에 산소와 영양소를 실어 나르는 '혈액 순환 물류망'과, 위기 발생 시 정상 상태를 복구하려는 '인체 방어·조절 시스템'에 비유할 수 있습니다.",
+            college:
+              "해당 보건·의학 기전은 인체 내부의 생리적 평형(항상성)을 유지하기 위한 순환·대사 경로와, 병리적 자극으로 인한 기능 저하 및 임상적 중재의 인과관계를 보여줍니다."
+          },
+          metaphorKeyPoint: "핵심 원리: 우리 몸의 통로와 조절 장치가 제때 균형을 맞춰야 건강이 유지된다는 점!"
+        },
+        economy: {
+          name: "경제·시사 뉴스",
+          emoji: "🎢",
+          metaphorTitle: "놀이공원의 '입장권 가격과 시소 균형' 조절하기",
+          metaphorTemplate: {
+            elementary:
+              "이 개념은 마치 놀이공원에서 사람들이 너무 많이 몰릴 때 '입장권 가격'을 조금 올려서 줄을 줄이고, 손님이 너무 적을 때는 가격을 내려서 다시 놀러 오게 만드는 '시소 균형 맞추기'와 같아요!",
+            secondary:
+              "이 경제 원리는 시장에 풀린 돈의 양과 이자율이라는 '수도꼭지'를 잠그거나 열어서, 물가 상승과 경기 침체라는 양쪽 시소의 균형을 맞추는 과정과 같습니다.",
+            college:
+              "해당 경제 현상은 금리·유동성 등 거시경제 변수의 조정이 가계와 기업의 의사결정을 매개로 총수요와 물가 수준에 파급되는 경로를 설명합니다."
+          },
+          metaphorKeyPoint: "핵심 원리: 한쪽을 누르면 다른 쪽이 움직이는 시소처럼 돈의 흐름과 가격이 서로 연결되어 있다는 점!"
+        },
+        tech: {
+          name: "IT·과학기술",
+          emoji: "🧩",
+          metaphorTitle: "수백 명의 탐정이 동시에 단서를 찾는 '초고속 퍼즐 팀'",
+          metaphorTemplate: {
+            elementary:
+              "이 기술은 마치 두꺼운 동화책을 한 줄씩 느리게 읽는 대신, 수백 명의 똑똑한 탐정 친구들이 한꺼번에 각자 페이지를 맡아 중요한 힌트를 동시에 찾아 연결하는 '초고속 퍼즐 팀'과 같아요!",
+            secondary:
+              "이 기술 원리는 복잡한 데이터를 한 줄로 줄 세워 처리하던 기존 방식에서 벗어나, 여러 핵심 요소의 연관성을 동시에 계산해 정답을 도출하는 '병렬형 스마트 검색망'과 같습니다.",
+            college:
+              "해당 기술 메커니즘은 순차적 연산의 병목 현상을 극복하고, 데이터 요소 간의 가중치와 상관관계를 병렬 구조로 연산하여 처리 효율과 정확도를 극대화하는 원리입니다."
+          },
+          metaphorKeyPoint: "핵심 원리: 복잡한 정보를 혼자 순서대로 처리하지 않고 핵심 관계를 한눈에 파악해 빠르게 계산한다는 점!"
+        },
+        humanities: {
+          name: "인문·사회·기타",
+          emoji: "🤝",
+          metaphorTitle: "운동장에서 모두가 즐겁게 놀기 위해 정한 '학급 규칙 약속'",
+          metaphorTemplate: {
+            elementary:
+              "이 개념은 마치 규칙이 없어서 서로 싸우고 다치던 운동장에서, 친구들이 모두 안전하게 뛰어놀기 위해 다 같이 '학급 규칙'을 정하고 심판(반장)에게 규칙을 지킬 힘을 맡긴 약속과 같아요!",
+            secondary:
+              "이 개념은 규칙 없는 혼란과 갈등을 막기 위해 사회 구성원들이 서로의 권리를 조금씩 양보하고, 공통의 법과 질서를 세워 안전과 공존을 약속하는 '사회적 합의 과정'과 같습니다.",
+            college:
+              "해당 인문·사회 이론은 개인의 자유와 공동체의 질서 사이에서 발생하는 갈등을 해결하기 위해, 구성원 간의 합리적 합의와 제도적 규범이 형성되는 논리적 구조를 다룹니다."
+          },
+          metaphorKeyPoint: "핵심 원리: 개인의 안전과 모두의 평화를 지키기 위해 서로 믿고 따를 규칙과 제도를 만든다는 점!"
+        }
+      };
+
+      /* =========================================================================
+       * 2. DOM 요소 참조
+       * ========================================================================= */
+      const domainSelect = document.getElementById('domainSelect');
+      const sourceTextInput = document.getElementById('sourceTextInput');
+      const charCount = document.getElementById('charCount');
+      const fillSampleBtn = document.getElementById('fillSampleBtn');
+      const generateBtn = document.getElementById('generateBtn');
+      const resetAllBtn = document.getElementById('resetAllBtn');
+      const inputAlertBox = document.getElementById('inputAlertBox');
+      const inputAlertText = document.getElementById('inputAlertText');
+
+      const dashboardSection = document.getElementById('dashboardSection');
+      const badgeDomain = document.getElementById('badgeDomain');
+      const badgeLevel = document.getElementById('badgeLevel');
+      const summaryOutput = document.getElementById('summaryOutput');
+      const analogyEmoji = document.getElementById('analogyEmoji');
+      const analogyHeadline = document.getElementById('analogyHeadline');
+      const analogyBody = document.getElementById('analogyBody');
+      const analogyPointBox = document.getElementById('analogyPointBox');
+      const glossaryGrid = document.getElementById('glossaryGrid');
+      const quizContainer = document.getElementById('quizContainer');
+
+      const gradeAllBtn = document.getElementById('gradeAllBtn');
+      const finalScoreBanner = document.getElementById('finalScoreBanner');
+      const scoreTrophy = document.getElementById('scoreTrophy');
+      const scoreTitle = document.getElementById('scoreTitle');
+      const scorePraiseMsg = document.getElementById('scorePraiseMsg');
+      const retryQuizBtn = document.getElementById('retryQuizBtn');
+
+      const copyAllBtn = document.getElementById('copyAllBtn');
+      const printBtn = document.getElementById('printBtn');
+      const toastNotification = document.getElementById('toastNotification');
+      const toastText = document.getElementById('toastText');
+
+      // 현재 생성된 학습 데이터 상태
+      let currentStudyData = null;
+      let userAnswers = [null, null, null];
+      let isGraded = [false, false, false];
+
+      /* =========================================================================
+       * 3. 텍스트 분석 및 동적 학습 콘텐츠 생성 엔진
+       * ========================================================================= */
+
+      // 선택된 눈높이 반환
+      function getSelectedLevel() {
+        const checked = document.querySelector('input[name="targetLevel"]:checked');
+        return checked ? checked.value : 'elementary';
+      }
+
+      function getLevelLabel(level) {
+        if (level === 'elementary') return '🐣 초등학생 눈높이(아주 쉽게)';
+        if (level === 'secondary') return '🎒 중·고등학생 눈높이(비유+핵심용어)';
+        return '🎓 대학 신입생 눈높이(기초 개념 정리)';
+      }
+
+      // 불용어 제거 및 핵심 명사구/키워드 추출기
+      function extractKeywords(text) {
+        const stopwords = new Set([
+          '있는', '없는', '하는', '되는', '이다', '있다', '없다', '위해', '통해', '따라',
+          '대한', '관한', '경우', '때문', '것이', '것을', '수는', '있으며', '있고', '하며',
+          '하고', '된다', '이로', '인해', '만약', '따라서', '그러나', '하지만', '그리고',
+          '또한', '매우', '가장', '모든', '각각', '이러한', '그러한', '어떤', '우리', '자신'
+        ]);
+
+        // 괄호 안 한자/영어 제거 후 한글 2글자 이상 단어 추출
+        const cleaned = text.replace(/\([^)]*\)/g, ' ').replace(/[^가-힣a-zA-Z0-9\s]/g, ' ');
+        const tokens = cleaned.split(/\s+/).filter(Boolean);
+
+        // 조사 간이 제거
+        const josaRegex = /(은|는|이|가|을|를|의|에|에서|로|으로|와|과|도|만|부터|까지|처럼|보다)$/;
+        const freqMap = new Map();
+
+        tokens.forEach((raw) => {
+          let word = raw.replace(josaRegex, '');
+          if (word.length >= 2 && !stopwords.has(word) && !/^\d+$/.test(word)) {
+            freqMap.set(word, (freqMap.get(word) || 0) + 1);
+          }
+        });
+
+        // 사전 등록 단어에 가산점 부여
+        const sorted = Array.from(freqMap.entries())
+          .map(([word, count]) => {
+            const inDict = Object.keys(TERM_DICTIONARY).some((k) => k.includes(word) || word.includes(k));
+            return { word, score: count * 2 + (inDict ? 5 : 0) + (word.length >= 3 ? 1 : 0) };
+          })
+          .sort((a, b) => b.score - a.score)
+          .map((item) => item.word);
+
+        return sorted.slice(0, 8);
+      }
+
+      // 1) 한 줄 핵심 요약 생성
+      function buildOneLineSummary(text, level, domainKey, keywords) {
+        const sentences = text
+          .split(/[.!?]\s+|[.!?]$/)
+          .map((s) => s.trim())
+          .filter((s) => s.length >= 8);
+
+        const mainTopic = keywords[0] || DOMAIN_PROFILES[domainKey].name;
+        const subTopic = keywords[1] || '핵심 원리';
+        const thirdTopic = keywords[2] || '중요한 결과';
+
+        // 첫 문장에서 주어와 핵심 서술 맥락 추출
+        const firstSentence = sentences[0] || text.trim();
+        const isWarning = /(위험|악화|침체|괴사|투쟁|부작용|폐쇄|위축|손상)/.test(text);
+        const isSolution = /(극대화|해결|수립|치료|진정|향상|유지|보호)/.test(text);
+
+        if (level === 'elementary') {
+          if (isWarning && isSolution) {
+            return `쉽게 말해, '${mainTopic}' 때문에 '${subTopic}'에 문제가 생길 수 있으니 제때 잘 돌보고 해결해야 한다는 이야기예요!`;
+          }
+          if (isWarning) {
+            return `쉽게 말해, '${mainTopic}'에 변화가 생기면 '${subTopic}'과 '${thirdTopic}'에 큰 어려움이 생길 수 있으니 조심해야 한다는 뜻이에요!`;
+          }
+          return `쉽게 말해, '${mainTopic}'이(가) '${subTopic}'과 함께 힘을 합쳐 '${thirdTopic}'을(를) 멋지게 해낸다는 이야기예요!`;
+        }
+
+        if (level === 'secondary') {
+          if (isWarning && isSolution) {
+            return `이 글의 핵심은 '${mainTopic}'의 변화로 인해 '${subTopic}'에 위험이 발생할 수 있으며, 이를 막기 위한 적절한 대응이 중요하다는 것입니다.`;
+          }
+          return `이 글은 '${mainTopic}'이(가) '${subTopic}'에 미치는 인과관계를 설명하며, 그 결과로 나타나는 '${thirdTopic}'의 중요성을 강조하고 있습니다.`;
+        }
+
+        // college
+        const compactFirst = firstSentence.length > 85 ? firstSentence.slice(0, 82) + '...' : firstSentence;
+        return `본 지문은 '${mainTopic}'과 '${subTopic}' 간의 구조적 상호작용을 중심으로, '${thirdTopic}'으로 이어지는 핵심 메커니즘을 규명하고 있습니다. (${compactFirst})`;
+      }
+
+      // 2) 일상 속 꿀비유 카드 생성
+      function buildAnalogyCard(text, level, domainKey, keywords) {
+        const profile = DOMAIN_PROFILES[domainKey];
+        const k1 = keywords[0] || '이 개념';
+        const k2 = keywords[1] || '주변 환경';
+        const k3 = keywords[2] || '전체 시스템';
+
+        const headline = `이 개념은 마치 ${profile.metaphorTitle}와 같아요!`;
+        const baseStory = profile.metaphorTemplate[level];
+
+        let customBridge = '';
+        if (level === 'elementary') {
+          customBridge = ` 이 글에 나온 '${k1}'은(는) 우리 비유 속 가장 중요한 주인공 역할을 하고, '${k2}'와(과) '${k3}'은 서로 톱니바퀴처럼 맞물려 움직이는 친구들이랍니다!`;
+        } else if (level === 'secondary') {
+          customBridge = ` 지문 속 '${k1}'의 작용이 곧바로 '${k2}'와 '${k3}'의 상태 변화로 이어지는 연쇄 반응에 주목하면 원리가 훨씬 선명하게 이해됩니다.`;
+        } else {
+          customBridge = ` 즉, '${k1}'이라는 핵심 변수가 매개 요인인 '${k2}'를 거쳐 최종 결과인 '${k3}'에 영향을 미치는 인과 구조를 일상적 시스템에 투영해 이해할 수 있습니다.`;
+        }
+
+        return {
+          emoji: profile.emoji,
+          headline,
+          body: baseStory + customBridge,
+          keyPoint: profile.metaphorKeyPoint
+        };
+      }
+
+      // 3) 어려운 용어 사전 3~4개 추출 및 풀이 생성
+      function buildGlossary(text, level, domainKey, keywords) {
+        const foundTerms = [];
+
+        // 1단계: 내장 전문 용어 사전에서 원문에 포함된 단어 우선 매칭
+        Object.keys(TERM_DICTIONARY).forEach((dictTerm) => {
+          if (text.includes(dictTerm) && foundTerms.length < 4) {
+            foundTerms.push({
+              term: dictTerm,
+              meaning: TERM_DICTIONARY[dictTerm][level]
+            });
+          }
+        });
+
+        // 2단계: 3개 미만일 경우 원문 키워드 기반 동적 용어 풀이 보충
+        if (foundTerms.length < 4) {
+          for (let i = 0; i < keywords.length && foundTerms.length < 4; i++) {
+            const kw = keywords[i];
+            if (!foundTerms.some((item) => item.term.includes(kw) || kw.includes(item.term))) {
+              let dynamicMeaning = '';
+              if (level === 'elementary') {
+                dynamicMeaning = `이 글에서 아주 중요한 역할을 하는 핵심 낱말로, '${kw}'이(가) 어떻게 움직이는지 살펴보면 글의 뜻을 쉽게 알 수 있어요!`;
+              } else if (level === 'secondary') {
+                dynamicMeaning = `지문의 논리 전개를 이끄는 핵심 개념어로, 앞뒤 문맥 속에서 원인과 결과를 연결하는 중요한 열쇠 말입니다.`;
+              } else {
+                dynamicMeaning = `본 텍스트의 핵심 명제를 구성하는 주요 개념 단위로, 대상의 성질이나 작용 기전을 규정하는 기초 용어입니다.`;
+              }
+              foundTerms.push({
+                term: kw,
+                meaning: dynamicMeaning
+              });
+            }
+          }
+        }
+
+        // 최소 3개 보장
+        if (foundTerms.length < 3) {
+          const fallbackPool = Object.entries(TERM_DICTIONARY).slice(0, 3);
+          fallbackPool.forEach(([t, m]) => {
+            if (foundTerms.length < 3 && !foundTerms.some((x) => x.term === t)) {
+              foundTerms.push({ term: t, meaning: m[level] });
+            }
+          });
+        }
+
+        return foundTerms.slice(0, 4);
+      }
+
+      // 배열 셔플 헬퍼
+      function shuffleOptions(optionsArray, correctText) {
+        const arr = [...optionsArray];
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return {
+          options: arr,
+          answerIndex: arr.indexOf(correctText)
+        };
+      }
+
+      // 4) 이해도 확인 4지선다 퀴즈 3문항 동적 생성
+      function buildQuizzes(level, domainKey, summary, analogy, glossary, keywords) {
+        const k1 = keywords[0] || glossary[0].term;
+        const k2 = keywords[1] || (glossary[1] ? glossary[1].term : '핵심 원리');
+        const profile = DOMAIN_PROFILES[domainKey];
+
+        // 문제 1: 핵심 주제 및 요약 이해 확인
+        const q1Correct = `‘${k1}’와(과) ‘${k2}’의 관계를 통해 글의 핵심 원리를 설명하고 있다.`;
+        const q1Distractors = [
+          `전혀 관계없는 옛날 전래동화의 주인공 이름을 소개하고 있다.`,
+          `‘${k1}’은(는) 아무런 역할도 하지 않으니 무시해도 된다고 주장한다.`,
+          `오늘 저녁에 먹을 가장 맛있는 간식 레시피 순서를 알려주고 있다.`
+        ];
+        const q1Shuffled = shuffleOptions([q1Correct, ...q1Distractors], q1Correct);
+
+        // 문제 2: 일상 속 꿀비유 연결 이해 확인
+        const otherDomains = Object.values(DOMAIN_PROFILES).filter((d) => d.name !== profile.name);
+        const q2Correct = `${profile.metaphorTitle}`;
+        const q2Distractors = otherDomains.map((d) => d.metaphorTitle);
+        const q2Shuffled = shuffleOptions([q2Correct, ...q2Distractors], q2Correct);
+
+        // 문제 3: 어려운 용어 사전 뜻 확인
+        const targetTermObj = glossary[0];
+        const otherTerms = Object.entries(TERM_DICTIONARY)
+          .filter(([t]) => t !== targetTermObj.term)
+          .slice(0, 3)
+          .map(([, m]) => m[level]);
+
+        const q3Correct = targetTermObj.meaning;
+        const q3Shuffled = shuffleOptions([q3Correct, ...otherTerms], q3Correct);
+
+        const tonePrefix =
+          level === 'elementary'
+            ? '정답이에요! 참 잘했어요 👏 '
+            : level === 'secondary'
+            ? '정확하게 이해했습니다! 👍 '
+            : '핵심 개념을 정확히 파악하셨습니다. 💡 ';
+
+        return [
+          {
+            number: 1,
+            tag: '핵심 주제 파악',
+            question: `방금 읽은 글의 ‘한 줄 핵심 요약’ 내용으로 가장 알맞은 것은 무엇일까요?`,
+            options: q1Shuffled.options,
+            answerIndex: q1Shuffled.answerIndex,
+            explanation: `${tonePrefix}${summary}`
+          },
+          {
+            number: 2,
+            tag: '일상 비유 연결',
+            question: `오늘 배운 어려운 개념을 우리 주변의 친숙한 상황에 빗댄 ‘일상 속 꿀비유’는 무엇이었나요?`,
+            options: q2Shuffled.options,
+            answerIndex: q2Shuffled.answerIndex,
+            explanation: `${tonePrefix}이 개념은 ‘${profile.metaphorTitle}’에 비유하면 원리를 훨씬 직관적으로 이해할 수 있습니다.`
+          },
+          {
+            number: 3,
+            tag: '어려운 용어 풀이',
+            question: `용어 사전에서 배운 ‘${targetTermObj.term}’의 쉬운 뜻으로 올바른 것은 무엇일까요?`,
+            options: q3Shuffled.options,
+            answerIndex: q3Shuffled.answerIndex,
+            explanation: `${tonePrefix}‘${targetTermObj.term}’은(는) “${targetTermObj.meaning}”라는 뜻입니다.`
+          }
+        ];
+      }
+
+      /* =========================================================================
+       * 4. UI 렌더링 및 인터랙티브 퀴즈 로직
+       * ========================================================================= */
+
+      function showToast(message) {
+        toastText.textContent = message;
+        toastNotification.classList.remove('opacity-0', 'translate-y-2');
+        toastNotification.classList.add('opacity-100', 'translate-y-0');
+
+        clearTimeout(showToast._timer);
+        showToast._timer = setTimeout(() => {
+          toastNotification.classList.remove('opacity-100', 'translate-y-0');
+          toastNotification.classList.add('opacity-0', 'translate-y-2');
+        }, 2600);
+      }
+
+      function renderDashboard(data) {
+        currentStudyData = data;
+        userAnswers = [null, null, null];
+        isGraded = [false, false, false];
+        finalScoreBanner.classList.add('hidden');
+
+        // 상단 배지 업데이트
+        badgeDomain.textContent = `분야: ${data.domainName}`;
+        badgeLevel.textContent = data.levelLabel;
+
+        // ① 한 줄 핵심 요약
+        summaryOutput.textContent = data.summary;
+
+        // ② 일상 속 꿀비유 카드
+        analogyEmoji.textContent = data.analogy.emoji;
+        analogyHeadline.textContent = data.analogy.headline;
+        analogyBody.textContent = data.analogy.body;
+        analogyPointBox.textContent = `💡 ${data.analogy.keyPoint}`;
+
+        // ③ 어려운 용어 사전
+        glossaryGrid.innerHTML = '';
+        data.glossary.forEach((item, idx) => {
+          const card = document.createElement('div');
+          card.className =
+            'bg-white/95 rounded-2xl p-4 border border-emerald-200/80 shadow-xs flex flex-col justify-between gap-1.5';
+          card.innerHTML = `
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded-lg bg-emerald-100 text-emerald-800 text-xs font-extrabold">용어 ${idx + 1}</span>
+              <h4 class="font-extrabold text-slate-800 text-sm sm:text-base">${escapeHtml(item.term)}</h4>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">${escapeHtml(item.meaning)}</p>
+          `;
+          glossaryGrid.appendChild(card);
+        });
+
+        // ④ 인터랙티브 퀴즈 3문항
+        renderQuizzes();
+
+        // 대시보드 표시 및 부드러운 스크롤
+        dashboardSection.classList.remove('hidden');
+        dashboardSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      function renderQuizzes() {
+        quizContainer.innerHTML = '';
+        const numCircles = ['①', '②', '③', '④'];
+
+        currentStudyData.quizzes.forEach((quiz, qIdx) => {
+          const qCard = document.createElement('div');
+          qCard.id = `quizCard_${qIdx}`;
+          qCard.className = 'bg-white rounded-2xl p-5 border border-rose-200/80 shadow-xs space-y-3.5 transition-all';
+
+          const graded = isGraded[qIdx];
+          const selectedOpt = userAnswers[qIdx];
+          const isCorrect = selectedOpt === quiz.answerIndex;
+
+          // O/X 배지 HTML
+          let statusBadgeHtml = '';
+          if (graded) {
+            if (selectedOpt === null) {
+              statusBadgeHtml = `<span class="px-2.5 py-1 rounded-full text-xs font-extrabold bg-amber-100 text-amber-800">미선택 ⚠️</span>`;
+            } else if (isCorrect) {
+              statusBadgeHtml = `<span class="px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-300">⭕ 정답 (O)</span>`;
+            } else {
+              statusBadgeHtml = `<span class="px-3 py-1 rounded-full text-xs font-extrabold bg-rose-100 text-rose-800 border border-rose-300">❌ 오답 (X)</span>`;
+            }
+          }
+
+          // 보기 버튼 생성
+          const optionsHtml = quiz.options
+            .map((optText, oIdx) => {
+              let btnStyle =
+                'border-slate-200 bg-slate-50/60 hover:bg-rose-50/70 hover:border-rose-300 text-slate-700';
+
+              if (graded) {
+                if (oIdx === quiz.answerIndex) {
+                  btnStyle = 'border-emerald-500 bg-emerald-50 text-emerald-950 font-bold ring-2 ring-emerald-200';
+                } else if (oIdx === selectedOpt && oIdx !== quiz.answerIndex) {
+                  btnStyle = 'border-rose-400 bg-rose-50 text-rose-900 line-through opacity-90';
+                } else {
+                  btnStyle = 'border-slate-200 bg-slate-50/40 text-slate-400';
+                }
+              } else if (selectedOpt === oIdx) {
+                btnStyle = 'border-rose-500 bg-rose-50 text-rose-950 font-bold';
+              }
+
+              return `
+                <button
+                  type="button"
+                  data-qidx="${qIdx}"
+                  data-oidx="${oIdx}"
+                  class="quiz-option-btn w-full text-left p-3 sm:p-3.5 rounded-xl border-2 text-xs sm:text-sm transition-all flex items-start gap-2.5 cursor-pointer ${btnStyle}"
+                >
+                  <span class="font-extrabold shrink-0 mt-0.5">${numCircles[oIdx]}</span>
+                  <span class="leading-snug">${escapeHtml(optText)}</span>
+                </button>
+              `;
+            })
+            .join('');
+
+          // 해설 토글 박스
+          const explanationHtml = graded
+            ? `
+              <div class="mt-3 p-3.5 rounded-xl ${
+                isCorrect ? 'bg-emerald-50/90 border border-emerald-200 text-emerald-950' : 'bg-amber-50/90 border border-amber-200 text-amber-950'
+              } text-xs sm:text-sm leading-relaxed animate-card">
+                <span class="font-extrabold block mb-1">💡 친절한 해설:</span>
+                ${escapeHtml(quiz.explanation)}
+              </div>
+            `
+            : '';
+
+          qCard.innerHTML = `
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-lg bg-rose-100 text-rose-800 text-xs font-extrabold">문제 ${quiz.number}</span>
+                <span class="text-xs font-bold text-slate-400">${escapeHtml(quiz.tag)}</span>
+              </div>
+              ${statusBadgeHtml}
+            </div>
+            <p class="text-sm sm:text-base font-bold text-slate-800 leading-snug">
+              ${escapeHtml(quiz.question)}
+            </p>
+            <div class="grid grid-cols-1 gap-2 pt-1">
+              ${optionsHtml}
+            </div>
+            ${explanationHtml}
+          `;
+
+          quizContainer.appendChild(qCard);
+        });
+
+        // 보기 클릭 이벤트 바인딩 (누르자마자 즉시 채점 및 해설 펼침)
+        document.querySelectorAll('.quiz-option-btn').forEach((btn) => {
+          btn.addEventListener('click', function () {
+            const qIdx = Number(this.getAttribute('data-qidx'));
+            const oIdx = Number(this.getAttribute('data-oidx'));
+            userAnswers[qIdx] = oIdx;
+            isGraded[qIdx] = true;
+            renderQuizzes();
+            checkAllCompleted();
+          });
+        });
+      }
+
+      // 3문제 모두 완료되었는지 확인 후 최종 점수 배너 표시
+      function checkAllCompleted() {
+        const allAnswered = userAnswers.every((ans) => ans !== null);
+        if (!allAnswered) return;
+
+        let correctCount = 0;
+        currentStudyData.quizzes.forEach((quiz, idx) => {
+          if (userAnswers[idx] === quiz.answerIndex) {
+            correctCount++;
+          }
+        });
+
+        const score = Math.round((correctCount / 3) * 100);
+        const level = currentStudyData.level;
+
+        scoreTitle.textContent = `${score}점 / 3문제 중 ${correctCount}문제 정답!`;
+
+        if (correctCount === 3) {
+          scoreTrophy.textContent = '🏆🎉';
+          scorePraiseMsg.textContent =
+            level === 'elementary'
+              ? '우와, 만점이에요! 어려운 내용도 척척 이해하는 최고의 개념 박사님이네요!'
+              : '완벽합니다! 핵심 요약부터 비유, 전문 용어까지 100% 마스터하셨습니다!';
+        } else if (correctCount === 2) {
+          scoreTrophy.textContent = '🥈✨';
+          scorePraiseMsg.textContent =
+            '아주 훌륭해요! 2문제를 맞혔어요. 틀린 1문제의 친절한 해설만 살짝 다시 읽어보면 완벽해요!';
+        } else {
+          scoreTrophy.textContent = '🌱💪';
+          scorePraiseMsg.textContent =
+            '좋은 시작이에요! 위의 [일상 속 꿀비유 카드]와 [어려운 용어 사전]을 한 번 더 읽고 다시 도전해 볼까요?';
+        }
+
+        finalScoreBanner.classList.remove('hidden');
+      }
+
+      // XSS 방지 이스케이프 헬퍼
+      function escapeHtml(str) {
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+      }
+
+      /* =========================================================================
+       * 5. 이벤트 리스너 연결
+       * ========================================================================= */
+
+      // 실시간 글자 수 카운터
+      sourceTextInput.addEventListener('input', () => {
+        charCount.textContent = sourceTextInput.value.length;
+        if (sourceTextInput.value.trim().length > 0) {
+          inputAlertBox.classList.add('hidden');
+        }
+      });
+
+      // [예시 지문 채우기] 버튼
+      fillSampleBtn.addEventListener('click', () => {
+        const domain = domainSelect.value;
+        sourceTextInput.value = SAMPLE_PASSAGES[domain] || SAMPLE_PASSAGES.medical;
+        charCount.textContent = sourceTextInput.value.length;
+        inputAlertBox.classList.add('hidden');
+        showToast('선택한 분야의 어려운 예시 지문이 입력되었습니다!');
+      });
+
+      // 분야 변경 시 이미 예시 지문이 들어있다면 해당 분야 예시로 자동 교체 편의 제공
+      domainSelect.addEventListener('change', () => {
+        const currentVal = sourceTextInput.value.trim();
+        const isPreset = Object.values(SAMPLE_PASSAGES).includes(currentVal);
+        if (isPreset) {
+          sourceTextInput.value = SAMPLE_PASSAGES[domainSelect.value];
+          charCount.textContent = sourceTextInput.value.length;
+        }
+      });
+
+      // [쉬운 비유 설명 + 3문제 퀴즈 만들기] 메인 실행 버튼
+      generateBtn.addEventListener('click', () => {
+        const rawText = sourceTextInput.value.trim();
+        if (rawText.length < 10) {
+          inputAlertText.textContent =
+            rawText.length === 0
+              ? '원문 텍스트를 입력하거나 [예시 지문 채우기] 버튼을 먼저 눌러주세요!'
+              : '조금 더 정확한 분석을 위해 최소 10자 이상의 문장을 입력해 주세요!';
+          inputAlertBox.classList.remove('hidden');
+          sourceTextInput.focus();
+          return;
+        }
+
+        inputAlertBox.classList.add('hidden');
+
+        const level = getSelectedLevel();
+        const domainKey = domainSelect.value;
+        const domainName = DOMAIN_PROFILES[domainKey].name;
+        const levelLabel = getLevelLabel(level);
+
+        const keywords = extractKeywords(rawText);
+        const summary = buildOneLineSummary(rawText, level, domainKey, keywords);
+        const analogy = buildAnalogyCard(rawText, level, domainKey, keywords);
+        const glossary = buildGlossary(rawText, level, domainKey, keywords);
+        const quizzes = buildQuizzes(level, domainKey, summary, analogy, glossary, keywords);
+
+        renderDashboard({
+          level,
+          levelLabel,
+          domainKey,
+          domainName,
+          summary,
+          analogy,
+          glossary,
+          quizzes
+        });
+      });
+
+      // [정답 확인 및 채점하기] 전체 일괄 채점 버튼
+      gradeAllBtn.addEventListener('click', () => {
+        if (!currentStudyData) return;
+        isGraded = [true, true, true];
+        renderQuizzes();
+        checkAllCompleted();
+        if (!userAnswers.every((a) => a !== null)) {
+          showToast('아직 선택하지 않은 문항이 있어요! 보기를 클릭해 보세요.');
+        }
+      });
+
+      // [퀴즈 다시 풀어보기] 버튼
+      retryQuizBtn.addEventListener('click', () => {
+        if (!currentStudyData) return;
+        userAnswers = [null, null, null];
+        isGraded = [false, false, false];
+        finalScoreBanner.classList.add('hidden');
+        renderQuizzes();
+        showToast('퀴즈가 초기화되었습니다. 다시 도전해 보세요!');
+      });
+
+      // [설명 내용 전체 복사] 버튼 (클립보드 복사 + 폴백 지원)
+      copyAllBtn.addEventListener('click', () => {
+        if (!currentStudyData) return;
+
+        const d = currentStudyData;
+        const glossaryLines = d.glossary.map((g, i) => `  ${i + 1}. ${g.term}: ${g.meaning}`).join('\n');
+        const quizLines = d.quizzes
+          .map(
+            (q) =>
+              `[문제 ${q.number}] ${q.question}\n` +
+              q.options.map((opt, idx) => `  (${idx + 1}) ${opt}`).join('\n') +
+              `\n  👉 정답: (${q.answerIndex + 1})번 / 해설: ${q.explanation}`
+          )
+          .join('\n\n');
+
+        const fullCopyText = [
+          `====================================`,
+          `💡 초등학생도 이해하는 개념 설명가 학습지`,
+          `[분야: ${d.domainName} | ${d.levelLabel}]`,
+          `====================================`,
+          ``,
+          `① 한 줄 핵심 요약`,
+          `${d.summary}`,
+          ``,
+          `② 일상 속 꿀비유 카드`,
+          `${d.analogy.headline}`,
+          `${d.analogy.body}`,
+          `(${d.analogy.keyPoint})`,
+          ``,
+          `③ 어려운 용어 사전`,
+          glossaryLines,
+          ``,
+          `④ 이해도 확인 퀴즈 3문항`,
+          quizLines,
+          ``,
+          `※ 안내: 어려운 전공 및 시사 개념을 일상적 비유로 쉽게 풀어 설명하는 과정에서 세부적인 학술적·의학적 엄밀함이 일부 단순화될 수 있습니다.`
+        ].join('\n');
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard
+            .writeText(fullCopyText)
+            .then(() => showToast('요약·비유·용어·퀴즈 전체 내용이 복사되었습니다!'))
+            .catch(() => fallbackCopyText(fullCopyText));
+        } else {
+          fallbackCopyText(fullCopyText);
+        }
+      });
+
+      function fallbackCopyText(text) {
+        const tempArea = document.createElement('textarea');
+        tempArea.value = text;
+        tempArea.style.position = 'fixed';
+        tempArea.style.left = '-9999px';
+        document.body.appendChild(tempArea);
+        tempArea.select();
+        try {
+          document.execCommand('copy');
+          showToast('요약·비유·용어·퀴즈 전체 내용이 복사되었습니다!');
+        } catch (err) {
+          showToast('복사에 실패했습니다. 텍스트를 직접 드래그해 복사해 주세요.');
+        }
+        document.body.removeChild(tempArea);
+      }
+
+      // [학습지 인쇄 / PDF 저장] 버튼
+      printBtn.addEventListener('click', () => {
+        window.print();
+      });
+
+      // [초기화] 버튼
+      resetAllBtn.addEventListener('click', () => {
+        sourceTextInput.value = '';
+        charCount.textContent = '0';
+        inputAlertBox.classList.add('hidden');
+        dashboardSection.classList.add('hidden');
+        currentStudyData = null;
+        showToast('입력창과 학습지가 초기화되었습니다.');
+      });
+    })();
+  </script>
+</body>
+</html>

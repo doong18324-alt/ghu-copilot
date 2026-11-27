@@ -1,0 +1,170 @@
+// GHU 바이탈 앱마켓에 올라가는 웹앱 목록입니다.
+// 파일은 public/webapps/ 에 있으며, 모두 브라우저 안에서만 작동합니다(서버 전송 없음).
+// 새 앱을 올릴 때: 파일을 public/webapps/ 에 넣고 아래 목록에 한 줄을 추가합니다.
+
+export const MARKET_ROLES = {
+  student: '학생',
+  faculty: '교수',
+  staff: '직원',
+}
+
+export const CATEGORIES = ['학습·국가고시', '취업·진로', '학생 지도', '행정·문서', '규정·민원', '기획·홍보', '건강·생활']
+
+// stored: 입력한 자료를 이 기기 브라우저에 저장하는지 여부
+// caution: 사용 전 꼭 알려야 할 내용
+export const WEBAPPS = [
+  {
+    id: 'license-cbt', icon: '📝', tone: 'blue', version: 'V2', stored: true,
+    title: '보건의료 국가고시 CBT 모의고사·오답노트',
+    summary: '10개 면허 직종의 과목별 모의고사를 풀고 틀린 문제를 오답노트로 모읍니다.',
+    roles: ['student', 'faculty'], category: '학습·국가고시',
+    tags: ['국시', '국가고시', 'CBT', '모의고사', '오답노트', '간호', '물리치료', '방사선', '임상병리', '치위생', '기출'],
+    features: ['직종·과목·난이도·문항 수를 골라 출제', '학과에서 만든 기출·모의고사 파일 업로드', '틀린 문제 자동 오답노트'],
+  },
+  {
+    id: 'easy-explainer', icon: '💡', tone: 'amber', version: 'V2',
+    title: '어려운 개념 쉽게 풀기·미니 퀴즈',
+    summary: '전공 문장이나 기사를 붙여 넣으면 눈높이에 맞춘 비유 설명과 확인 퀴즈 3문제를 만듭니다.',
+    roles: ['student', 'faculty'], category: '학습·국가고시',
+    tags: ['개념', '비유', '설명', '퀴즈', '복습', '전공 용어', '수업 자료'],
+    features: ['초등·중고등·대학 신입생 눈높이 선택', '보건·경제·IT·인문 분야 선택', '확인 퀴즈 3문제'],
+  },
+  {
+    id: 'career-clinic', icon: '🩺', tone: 'green', version: 'V1',
+    title: '대학병원·의료기관 취업 자소서·면접 클리닉',
+    summary: '임상실습 경험을 STAR 구조 자기소개서로 정리하고 직군별 예상 면접 질문을 준비합니다.',
+    roles: ['student'], category: '취업·진로',
+    tags: ['자소서', '자기소개서', '면접', '취업', '병원', 'STAR', '실습 경험'],
+    features: ['간호사·물리치료사 등 8개 직군', '목표 글자 수에 맞춘 문단', '면접 예상 질문'],
+    caution: '실제 환자의 이름·병실·등록번호는 쓰지 말고 익명으로 적으세요.',
+  },
+  {
+    id: 'rules-chatbot', icon: '📘', tone: 'blue', version: 'V1', stored: true,
+    title: '학칙·대학 규정 Q&A 챗봇',
+    summary: '학칙·장학·인사 규정 파일을 올리면 질문에 맞는 조항을 근거로 답합니다.',
+    roles: ['student', 'faculty', 'staff'], category: '규정·민원',
+    tags: ['학칙', '규정', '장학', '휴학', '인사 규정', '조항', '챗봇'],
+    features: ['규정 PDF 업로드', '조항 근거 답변', '샘플 학칙으로 바로 체험'],
+    caution: '올리는 규정이 현재 시행 중인 최신 개정본인지 먼저 확인하세요.',
+  },
+  {
+    id: 'advising-guide', icon: '🧭', tone: 'green', version: 'V1',
+    title: '지도학생 진로·학업 위기 상담 가이드',
+    summary: '면담 전에 학생 상황을 고르면 공감 화법과 교내 지원 프로그램 연계 방안을 정리합니다.',
+    roles: ['faculty'], category: '학생 지도',
+    tags: ['지도학생', '상담', '면담', '휴학', '자퇴', '학사경고', '진로', '위기 학생'],
+    features: ['학년·위기 유형 선택', '면담 단계별 화법', '교내 지원 프로그램 연계', '면담 준비지 출력'],
+    caution: '학생 이름·학번 등 개인정보는 넣지 않고 상황만 고르세요.',
+  },
+  {
+    id: 'press-notice', icon: '📰', tone: 'blue', version: 'V2',
+    title: '보도자료·공지사항 자동 작성',
+    summary: '육하원칙만 입력하면 언론 배포용 보도자료와 교내 공지문 초안을 함께 만듭니다.',
+    roles: ['staff', 'faculty'], category: '행정·문서',
+    tags: ['보도자료', '공지', '공지사항', '홍보', '행사', '육하원칙', '5W1H'],
+    features: ['보도자료·공지문 양식 선택', '담당자 인용 코멘트', '문서 톤 선택'],
+  },
+  {
+    id: 'voucher-checker', icon: '🧾', tone: 'amber', version: 'V2', stored: true,
+    title: '산학협력단 결의서 스마트 검증기',
+    summary: '사업별 집행 지침을 등록하고 결의서의 금액·일자·필수 증빙을 지침과 대조해 점검합니다.',
+    roles: ['staff', 'faculty'], category: '행정·문서',
+    tags: ['결의서', '연구비', '사업비', '산학협력단', '증빙', '집행 지침', '회계', '정산'],
+    features: ['집행 지침 PDF 자동 분석', '회계 산식·일자 선후관계 점검', '비목별 필수 증빙 대조', '검증 결과서 출력'],
+    caution: '최종 판단은 산학협력단 담당자가 합니다.',
+  },
+  {
+    id: 'complaint-script', icon: '☎️', tone: 'red', version: 'V1', stored: true,
+    title: '학내 민원·학부모 문의 응대 스크립트',
+    summary: '등록금·성적·장학 같은 민감한 문의에 규정 근거와 정중한 응대 문안을 함께 준비합니다.',
+    roles: ['staff'], category: '규정·민원',
+    tags: ['민원', '학부모', '응대', '전화', '등록금', '성적 이의', '장학', '스크립트'],
+    features: ['규정 파일 업로드', '상황별 응대 문안', '감정 완화 화법'],
+    caution: '올리는 규정이 최신 개정본인지 먼저 확인하세요.',
+  },
+  {
+    id: 'future-strategy', icon: '📊', tone: 'blue', version: 'V8',
+    title: '미래전략 추천·수익성 분석',
+    summary: '대학·지역·주변 대학 자료를 바탕으로 학과·MD·평생교육 개설안을 추천하고 손익분기를 계산합니다.',
+    roles: ['staff', 'faculty'], category: '기획·홍보',
+    tags: ['기획', '학과 개편', '평생교육', 'MD', '수익성', '손익분기', 'BEP', '재정', '공시'],
+    features: ['공시·CSV 기초자료 불러오기', '학과·MD·평생교육 추천', '재정·BEP 시뮬레이션'],
+  },
+  {
+    id: 'admission-studio', icon: '🎬', tone: 'amber', version: 'V1',
+    title: '입시 홍보 카드뉴스·숏폼 대본',
+    summary: '학과 강점을 입력하면 SNS 홍보 문구, 숏폼 대본, 영상·포스터 제작용 프롬프트를 만듭니다.',
+    roles: ['staff', 'faculty'], category: '기획·홍보',
+    tags: ['입시', '홍보', '카드뉴스', '숏폼', '릴스', 'SNS', '학과 소개', '포스터'],
+    features: ['수험생·학부모 대상 선택', '숏폼 대본', '영상·이미지 AI용 프롬프트'],
+  },
+  {
+    id: 'toast-maker', icon: '🥂', tone: 'amber', version: 'V2',
+    title: '건배사 생성기',
+    summary: '모임 성격과 키워드를 고르면 삼행시, 선창·후창 구호 등 건배사 5개를 추천합니다.',
+    roles: ['staff', 'faculty', 'student'], category: '건강·생활',
+    tags: ['건배사', '회식', 'MT', '삼행시', '환영회'],
+    features: ['모임 성격 선택', '키워드 삼행시'],
+  },
+  {
+    id: 'mind-rest', icon: '🌿', tone: 'green', version: 'V1',
+    title: '마음 비움터: 감정 털어놓기',
+    summary: '지금 마음을 적고 비우면 판단 없는 공감 문장과 마음을 가라앉히는 작은 행동을 안내합니다.',
+    roles: ['student', 'faculty', 'staff'], category: '건강·생활',
+    tags: ['마음', '스트레스', '감정', '공감', '위로', '상담'],
+    features: ['감정 선택', '공감 문장', '안정 팁'],
+    caution: '전문 상담을 대신하지 않습니다. 혼자 감당하기 어려우면 학생상담센터나 자살예방상담전화 109(24시간)에 연락하세요.',
+  },
+  {
+    id: 'diet-planner', icon: '🥗', tone: 'green', version: 'V3',
+    title: '건강 식단 플래너·장보기 예산',
+    summary: '나이·활동량·건강 목표와 주간 식비를 넣으면 예산 안에서 7일 식단과 장보기 목록을 만듭니다.',
+    roles: ['student', 'faculty', 'staff'], category: '건강·생활',
+    tags: ['식단', '장보기', '식비', '예산', '저염식', '혈당', '자취'],
+    features: ['건강 목표별 식단', '제외 식재료 반영', '주간 예산 계산'],
+    caution: '질환이 있으면 식단은 담당 의료진과 상의하세요.',
+  },
+  {
+    id: 'home-massage', icon: '💆', tone: 'blue', version: 'V2',
+    title: '가족 맞춤 안전 홈 안마·지압',
+    summary: '통증 부위와 기저질환을 고르면 위험한 부위와 동작을 빼고 안전한 지압·스트레칭을 안내합니다.',
+    roles: ['student', 'faculty', 'staff'], category: '건강·생활',
+    tags: ['안마', '지압', '마사지', '스트레칭', '통증', '부모님', '관절염'],
+    features: ['대상 가족 선택', '기저질환별 금기 부위 제외', '단계별 동작 안내'],
+    caution: '통증이 심하거나 오래가면 의료기관 진료를 먼저 받으세요.',
+  },
+  {
+    id: 'pet-signal', icon: '🐾', tone: 'amber', version: 'V1',
+    title: '반려동물 행동 통역사',
+    summary: '강아지·고양이의 행동과 증상을 고르면 이유와 대처법, 병원 방문이 필요한 정도를 안내합니다.',
+    roles: ['student', 'faculty', 'staff'], category: '건강·생활',
+    tags: ['반려동물', '강아지', '고양이', '행동', '증상', '응급'],
+    features: ['종·연령 선택', '응급도 신호등', '대처법 안내'],
+    caution: '응급 증상이 있으면 바로 동물병원에 가세요.',
+  },
+]
+
+export const appUrl = a => `./webapps/${a.id}.html`
+export const appById = id => WEBAPPS.find(a => a.id === id)
+
+// 띄어쓰기·대소문자와 관계없이 제목, 설명, 태그, 기능에서 찾습니다.
+const norm = s => (s || '').toLowerCase().replace(/\s+/g, '')
+export function searchApps(list, q) {
+  const words = (q || '').trim().split(/\s+/).filter(Boolean).map(norm)
+  if (words.length === 0) return list
+  return list
+    .map(a => {
+      const title = norm(a.title)
+      const body = norm([a.summary, a.category, ...a.tags, ...a.features, ...a.roles.map(r => MARKET_ROLES[r])].join(' '))
+      let score = 0
+      for (const w of words) {
+        if (title.includes(w)) score += 3
+        else if (body.includes(w)) score += 1
+        else return null
+      }
+      return [a, score]
+    })
+    .filter(Boolean)
+    .sort((x, y) => y[1] - x[1])
+    .map(x => x[0])
+}

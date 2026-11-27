@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>지도학생 진로·학업 위기 상담 스마트 가이드 | 광주보건대학교 AI대학혁신본부</title>
+  <!-- Tailwind CSS 로드 -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Pretendard & Noto Sans KR -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome 아이콘 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #faf8f5;
+      color: #1e293b;
+      word-break: keep-all;
+    }
+
+    /* 커스텀 스크롤바 */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1ede6;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #94a3b8;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #0f4c5c;
+    }
+
+    /* 부드러운 페이드인 애니메이션 */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .animate-fade-in-up {
+      animation: fadeInUp 0.45s ease-out forwards;
+    }
+
+    /* 인쇄 전용 스타일 (@media print) */
+    @media print {
+      body {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        font-size: 11pt;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .print-only-header {
+        display: block !important;
+      }
+      .print-card {
+        box-shadow: none !important;
+        border: 1px solid #cbd5e1 !important;
+        margin-bottom: 16px !important;
+        page-break-inside: avoid;
+      }
+      textarea#counselingLogText {
+        border: 1px solid #94a3b8 !important;
+        background-color: #ffffff !important;
+        height: auto !important;
+        min-height: 220px !important;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- 알림 토스트 메시지 박스 (alert 대신 사용) -->
+  <div id="toastNotification" class="fixed bottom-6 right-6 z-50 hidden transform transition-all duration-300 translate-y-2 opacity-0 no-print">
+    <div class="bg-[#0f4c5c] text-white px-5 py-3.5 rounded-xl shadow-xl flex items-center space-x-3 border border-teal-600">
+      <i class="fa-solid fa-circle-check text-[#6ee7b7] text-lg"></i>
+      <span id="toastMessage" class="text-sm font-medium">복사되었습니다.</span>
+    </div>
+  </div>
+
+  <!-- 1. 최상단 기관 브랜딩 및 타이틀 헤더 영역 -->
+  <header class="bg-gradient-to-br from-[#0f4c5c] via-[#134e4a] to-[#0d3b46] text-white shadow-md no-print">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-8">
+      <!-- 우측 상단 기관 배지 (명확한 오른쪽 정렬) -->
+      <div class="w-full flex justify-end text-right mb-5">
+        <div class="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm border border-white/25 px-4 py-1.5 rounded-full shadow-sm">
+          <span class="w-2 h-2 rounded-full bg-[#6ee7b7] animate-pulse"></span>
+          <span class="text-xs sm:text-sm font-semibold tracking-wide text-[#e6f4f1]">광주보건대학교 AI대학혁신본부</span>
+        </div>
+      </div>
+
+      <!-- 메인 타이틀 및 서브 설명 -->
+      <div class="max-w-3xl">
+        <div class="inline-flex items-center space-x-2 text-[#99f6e4] text-xs sm:text-sm font-medium mb-2">
+          <i class="fa-solid fa-hand-holding-heart"></i>
+          <span>지도교수 맞춤형 학생상담 코칭 &amp; 교내 지원 연계 솔루션</span>
+        </div>
+        <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white leading-snug mb-3">
+          지도학생 진로·학업 위기 상담 스마트 가이드
+        </h1>
+        <p class="text-sm sm:text-base text-[#e6f4f1]/90 leading-relaxed font-light">
+          면담 전 학생 상황만 입력하면 신뢰를 여는 공감 화법부터 교내 지원 프로그램 연계까지 한눈에 준비할 수 있습니다
+        </p>
+      </div>
+    </div>
+  </header>
+
+  <!-- 인쇄 시에만 보이는 상단 문서 헤더 -->
+  <div class="hidden print-only-header border-b-2 border-[#0f4c5c] pb-3 mb-5 px-4 pt-4">
+    <div class="flex justify-between items-center">
+      <h1 class="text-xl font-bold text-[#0f4c5c]">지도학생 진로·학업 위기 상담 면담 준비지</h1>
+      <span class="text-xs font-semibold text-slate-600">광주보건대학교 AI대학혁신본부</span>
+    </div>
+    <p id="printSummaryMeta" class="text-xs text-slate-600 mt-1"></p>
+  </div>
+
+  <!-- 메인 콘텐츠 영역 -->
+  <main class="flex-grow max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8">
+
+    <!-- 2. 상단 지도학생 면담 사전 정보 입력 패널 -->
+    <section class="bg-white rounded-2xl shadow-sm border border-[#e2dcd2] overflow-hidden no-print">
+      <div class="bg-[#e6f4f1] border-b border-[#cce7e1] px-5 sm:px-7 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+        <div class="flex items-center space-x-2.5">
+          <span class="w-8 h-8 rounded-lg bg-[#0f4c5c] text-white flex items-center justify-center text-sm font-bold shadow-sm">
+            <i class="fa-solid fa-clipboard-user"></i>
+          </span>
+          <div>
+            <h2 class="text-base sm:text-lg font-bold text-[#0f4c5c]">면담 사전 정보 입력</h2>
+            <p class="text-xs text-[#134e4a]/80">학생의 현재 상황과 성향을 선택해 주세요.</p>
+          </div>
+        </div>
+        <button type="button" id="fillSampleBtn" class="inline-flex items-center justify-center space-x-1.5 bg-white hover:bg-[#f0fdfa] text-[#0f4c5c] border border-[#0f4c5c]/30 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition shadow-xs cursor-pointer">
+          <i class="fa-solid fa-wand-magic-sparkles text-teal-600"></i>
+          <span>샘플 학생 사례 자동 채우기</span>
+        </button>
+      </div>
+
+      <div class="p-5 sm:p-7 space-y-6">
+        <!-- (1) 학생 학년 및 시기 선택 버튼 (단일 선택 토글) -->
+        <div>
+          <label class="block text-sm font-bold text-slate-800 mb-2.5">
+            1. 학생 학년 및 시기 <span class="text-xs font-normal text-slate-500 ml-1">(1개 선택)</span>
+          </label>
+          <div id="gradeGroup" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+            <button type="button" data-value="1학년 (적응기)" class="grade-btn active-grade text-left px-4 py-3 rounded-xl border-2 border-[#0f4c5c] bg-[#e6f4f1] text-[#0f4c5c] font-semibold text-sm transition flex items-center justify-between cursor-pointer">
+              <span>1학년 (적응기)</span>
+              <i class="fa-solid fa-circle-check text-[#0f4c5c]"></i>
+            </button>
+            <button type="button" data-value="2학년 (전공심화·실습전)" class="grade-btn text-left px-4 py-3 rounded-xl border border-slate-200 bg-[#faf8f5] hover:bg-slate-100 text-slate-700 font-medium text-sm transition flex items-center justify-between cursor-pointer">
+              <span>2학년 (전공심화·실습전)</span>
+              <i class="fa-regular fa-circle text-slate-400"></i>
+            </button>
+            <button type="button" data-value="3·4학년 (국가시험·취업준비기)" class="grade-btn text-left px-4 py-3 rounded-xl border border-slate-200 bg-[#faf8f5] hover:bg-slate-100 text-slate-700 font-medium text-sm transition flex items-center justify-between cursor-pointer">
+              <span>3·4학년 (국가시험·취업준비기)</span>
+              <i class="fa-regular fa-circle text-slate-400"></i>
+            </button>
+            <button type="button" data-value="복학생" class="grade-btn text-left px-4 py-3 rounded-xl border border-slate-200 bg-[#faf8f5] hover:bg-slate-100 text-slate-700 font-medium text-sm transition flex items-center justify-between cursor-pointer">
+              <span>복학생</span>
+              <i class="fa-regular fa-circle text-slate-400"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- (2) 핵심 위기·고민 유형 선택 칩 (복수 선택 가능) -->
+        <div>
+          <label class="block text-sm font-bold text-slate-800 mb-2.5">
+            2. 핵심 위기·고민 유형 <span class="text-xs font-normal text-teal-700 ml-1">(복수 선택 가능)</span>
+          </label>
+          <div id="crisisGroup" class="flex flex-wrap gap-2.5">
+            <button type="button" data-value="휴학·자퇴 고민" class="crisis-chip px-3.5 py-2.5 rounded-xl border border-slate-200 bg-[#faf8f5] hover:border-[#0f4c5c]/50 text-slate-700 text-sm font-medium transition flex items-center space-x-2 cursor-pointer">
+              <i class="fa-solid fa-door-open text-slate-400"></i>
+              <span>휴학·자퇴 고민</span>
+            </button>
+            <button type="button" data-value="성적 저하·학사경고 위험" class="crisis-chip px-3.5 py-2.5 rounded-xl border border-slate-200 bg-[#faf8f5] hover:border-[#0f4c5c]/50 text-slate-700 text-sm font-medium transition flex items-center space-x-2 cursor-pointer">
+              <i class="fa-solid fa-chart-line text-slate-400"></i>
+              <span>성적 저하·학사경고 위험</span>
+            </button>
+            <button type="button" data-value="교우·선후배 대인관계 어려움" class="crisis-chip px-3.5 py-2.5 rounded-xl border border-slate-200 bg-[#faf8f5] hover:border-[#0f4c5c]/50 text-slate-700 text-sm font-medium transition flex items-center space-x-2 cursor-pointer">
+              <i class="fa-solid fa-user-group text-slate-400"></i>
+              <span>교우·선후배 대인관계 어려움</span>
+            </button>
+            <button type="button" data-value="전공 부적응·진로 방황" class="crisis-chip px-3.5 py-2.5 rounded-xl border border-slate-200 bg-[#faf8f5] hover:border-[#0f4c5c]/50 text-slate-700 text-sm font-medium transition flex items-center space-x-2 cursor-pointer">
+              <i class="fa-solid fa-compass text-slate-400"></i>
+              <span>전공 부적응·진로 방황</span>
+            </button>
+            <button type="button" data-value="임상실습·국가시험 스트레스" class="crisis-chip px-3.5 py-2.5 rounded-xl border border-slate-200 bg-[#faf8f5] hover:border-[#0f4c5c]/50 text-slate-700 text-sm font-medium transition flex items-center space-x-2 cursor-pointer">
+              <i class="fa-solid fa-stethoscope text-slate-400"></i>
+              <span>임상실습·국가시험 스트레스</span>
+            </button>
+            <button type="button" data-value="경제적 어려움·장학 상담" class="crisis-chip px-3.5 py-2.5 rounded-xl border border-slate-200 bg-[#faf8f5] hover:border-[#0f4c5c]/50 text-slate-700 text-sm font-medium transition flex items-center space-x-2 cursor-pointer">
+              <i class="fa-solid fa-coins text-slate-400"></i>
+              <span>경제적 어려움·장학 상담</span>
+            </button>
+            <button type="button" data-value="정서적 우울·무기력감" class="crisis-chip px-3.5 py-2.5 rounded-xl border border-slate-200 bg-[#faf8f5] hover:border-[#0f4c5c]/50 text-slate-700 text-sm font-medium transition flex items-center space-x-2 cursor-pointer">
+              <i class="fa-solid fa-cloud-rain text-slate-400"></i>
+              <span>정서적 우울·무기력감</span>
+            </button>
+          </div>
+          <p id="crisisError" class="hidden text-xs text-rose-600 font-medium mt-1.5">
+            <i class="fa-solid fa-circle-exclamation mr-1"></i>최소 1개 이상의 위기·고민 유형을 선택해 주세요.
+          </p>
+        </div>
+
+        <!-- (3) 학생 성향 선택 드롭다운 & (4) 구체적인 관찰 상황 입력창 -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+          <div class="lg:col-span-5">
+            <label for="personalitySelect" class="block text-sm font-bold text-slate-800 mb-2">
+              3. 학생 성향 및 태도
+            </label>
+            <div class="relative">
+              <select id="personalitySelect" class="w-full appearance-none bg-[#faf8f5] border border-slate-300 text-slate-800 text-sm rounded-xl px-4 py-3 pr-10 focus:outline-none focus:ring-2 focus:ring-[#0f4c5c] focus:border-[#0f4c5c] font-medium">
+                <option value="말수가 적고 방어적인 편">말수가 적고 방어적인 편</option>
+                <option value="감정이 격해져 있거나 불안해함">감정이 격해져 있거나 불안해함</option>
+                <option value="겉으로는 괜찮은 척하지만 속으로 고민함">겉으로는 괜찮은 척하지만 속으로 고민함</option>
+                <option value="구체적인 해결책을 바로 원함">구체적인 해결책을 바로 원함</option>
+              </select>
+              <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3.5 text-slate-500">
+                <i class="fa-solid fa-chevron-down text-xs"></i>
+              </div>
+            </div>
+            <div class="mt-3 p-3.5 rounded-xl bg-[#faf8f5] border border-slate-200/80 text-xs text-slate-600 leading-relaxed">
+              <span class="font-semibold text-[#0f4c5c]"><i class="fa-solid fa-lightbulb mr-1"></i>성향별 코칭 포인트:</span>
+              <span id="personalityHintText">질문을 쏟아붓기보다 충분한 침묵을 기다려주고 판단하지 않는 안전한 분위기를 먼저 조성합니다.</span>
+            </div>
+          </div>
+
+          <div class="lg:col-span-7">
+            <div class="flex items-center justify-between mb-2">
+              <label for="observationInput" class="block text-sm font-bold text-slate-800">
+                4. 구체적인 관찰 상황 <span class="text-xs font-normal text-slate-500 ml-1">(선택 입력)</span>
+              </label>
+              <button type="button" id="clearInputBtn" class="text-xs text-slate-500 hover:text-slate-700 underline cursor-pointer">내용 지우기</button>
+            </div>
+            <textarea id="observationInput" rows="4" placeholder="예: 최근 2주간 전공수업 3회 연속 지각 및 결석, 중간고사 성적이 크게 하락함. 카카오톡 면담 요청에 단답형으로만 대답하며 휴학 신청 절차를 문의함." class="w-full bg-[#faf8f5] border border-slate-300 text-slate-800 text-sm rounded-xl p-3.5 focus:outline-none focus:ring-2 focus:ring-[#0f4c5c] focus:border-[#0f4c5c] leading-relaxed placeholder:text-slate-400"></textarea>
+          </div>
+        </div>
+
+        <!-- 하단 대형 실행 버튼 -->
+        <div class="pt-2">
+          <button type="button" id="generateGuideBtn" class="w-full bg-gradient-to-r from-[#0f4c5c] to-[#134e4a] hover:from-[#0b3b47] hover:to-[#0f3d3a] text-white font-bold text-base sm:text-lg py-4 px-6 rounded-xl shadow-md hover:shadow-lg transition transform active:scale-[0.99] flex items-center justify-center space-x-2.5 cursor-pointer">
+            <i class="fa-solid fa-comments text-[#6ee7b7]"></i>
+            <span>맞춤형 면담 화법 &amp; 교내 프로그램 연계 가이드 생성</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. 핵심 면담 솔루션 및 상담일지 생성 결과 영역 -->
+    <div id="resultSection" class="hidden space-y-6 animate-fade-in-up">
+
+      <!-- 결과 요약 바 및 인쇄 버튼 -->
+      <div class="bg-[#e6f4f1] border border-[#b7dfd6] rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 no-print">
+        <div>
+          <div class="flex flex-wrap items-center gap-2 mb-1">
+            <span class="bg-[#0f4c5c] text-white text-xs font-bold px-2.5 py-1 rounded-md" id="summaryGradeBadge">1학년 (적응기)</span>
+            <span class="bg-white text-[#134e4a] border border-teal-200 text-xs font-semibold px-2.5 py-1 rounded-md" id="summaryPersonalityBadge">말수가 적고 방어적인 편</span>
+          </div>
+          <p class="text-xs sm:text-sm text-[#134e4a] font-medium" id="summaryCrisisText">선택 위기 유형: 휴학·자퇴 고민</p>
+        </div>
+        <button type="button" id="printGuideBtn" class="inline-flex items-center justify-center space-x-2 bg-white hover:bg-slate-50 text-[#0f4c5c] border border-[#0f4c5c] px-4 py-2.5 rounded-xl text-sm font-bold shadow-xs transition cursor-pointer shrink-0">
+          <i class="fa-solid fa-print"></i>
+          <span>면담 준비지 인쇄 / PDF 저장</span>
+        </button>
+      </div>
+
+      <!-- 카드 ① 면담 3단계 공감 화법 스크립트 (교수님 실전 대사집) -->
+      <article class="bg-white rounded-2xl shadow-sm border border-[#e2dcd2] overflow-hidden print-card">
+        <div class="bg-[#0f4c5c] text-white px-5 sm:px-7 py-4 flex items-center justify-between gap-2">
+          <div class="flex items-center space-x-2.5">
+            <span class="w-7 h-7 rounded-full bg-white/20 text-white flex items-center justify-center text-sm font-bold">1</span>
+            <h3 class="text-base sm:text-lg font-bold">면담 3단계 공감 화법 스크립트 <span class="text-xs font-normal text-[#99f6e4] hidden sm:inline">(교수님 실전 대사집)</span></h3>
+          </div>
+          <button type="button" id="copyScriptBtn" class="no-print inline-flex items-center space-x-1.5 bg-white/15 hover:bg-white/25 text-white border border-white/30 px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer shrink-0">
+            <i class="fa-regular fa-copy"></i>
+            <span>화법 복사</span>
+          </button>
+        </div>
+
+        <div id="scriptCardBody" class="p-5 sm:p-7 space-y-5">
+          <!-- 동적 렌더링 영역 -->
+        </div>
+      </article>
+
+      <!-- 카드 ② 면담 시 반드시 피해야 할 금기 화법 (DO & DON'T) -->
+      <article class="bg-white rounded-2xl shadow-sm border border-[#e2dcd2] overflow-hidden print-card">
+        <div class="bg-[#134e4a] text-white px-5 sm:px-7 py-4 flex items-center space-x-2.5">
+          <span class="w-7 h-7 rounded-full bg-white/20 text-white flex items-center justify-center text-sm font-bold">2</span>
+          <h3 class="text-base sm:text-lg font-bold">면담 시 반드시 피해야 할 금기 화법 (DON'T &amp; DO)</h3>
+        </div>
+
+        <div class="p-5 sm:p-7">
+          <p class="text-xs sm:text-sm text-slate-600 mb-4">
+            위기 상황의 학생은 작은 지적에도 자신을 실패자로 인식하여 마음의 문을 닫을 수 있습니다. 아래와 같이 표현을 전환해 보세요.
+          </p>
+          <div class="overflow-x-auto rounded-xl border border-slate-200">
+            <table class="w-full text-left border-collapse text-sm">
+              <thead>
+                <tr class="bg-[#faf8f5] border-b border-slate-200">
+                  <th class="py-3 px-4 font-bold text-rose-700 w-1/2 border-r border-slate-200">
+                    <i class="fa-solid fa-circle-xmark mr-1.5"></i>피해야 할 표현 (DON'T)
+                  </th>
+                  <th class="py-3 px-4 font-bold text-[#0f4c5c] w-1/2">
+                    <i class="fa-solid fa-circle-check mr-1.5"></i>신뢰를 여는 대체 표현 (DO)
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="dontDoTableBody" class="divide-y divide-slate-200">
+                <!-- 동적 렌더링 영역 -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </article>
+
+      <!-- 카드 ③ 교내 지원 부서 및 비교과 프로그램 맞춤형 연계 처방전 -->
+      <article class="bg-white rounded-2xl shadow-sm border border-[#e2dcd2] overflow-hidden print-card">
+        <div class="bg-[#0f4c5c] text-white px-5 sm:px-7 py-4 flex items-center space-x-2.5">
+          <span class="w-7 h-7 rounded-full bg-white/20 text-white flex items-center justify-center text-sm font-bold">3</span>
+          <h3 class="text-base sm:text-lg font-bold">교내 지원 부서 및 비교과 프로그램 맞춤형 연계 처방전</h3>
+        </div>
+
+        <div id="programCardBody" class="p-5 sm:p-7 space-y-4">
+          <!-- 동적 렌더링 영역 -->
+        </div>
+      </article>
+
+      <!-- 카드 ④ 원클릭 지도교수 상담일지 초안 생성기 -->
+      <article class="bg-white rounded-2xl shadow-sm border border-[#e2dcd2] overflow-hidden print-card">
+        <div class="bg-[#134e4a] text-white px-5 sm:px-7 py-4 flex items-center justify-between gap-2">
+          <div class="flex items-center space-x-2.5">
+            <span class="w-7 h-7 rounded-full bg-white/20 text-white flex items-center justify-center text-sm font-bold">4</span>
+            <h3 class="text-base sm:text-lg font-bold">원클릭 지도교수 상담일지 초안 <span class="text-xs font-normal text-[#99f6e4] hidden sm:inline">(학사행정시스템 붙여넣기용)</span></h3>
+          </div>
+          <button type="button" id="copyLogBtn" class="no-print inline-flex items-center space-x-1.5 bg-[#6ee7b7] hover:bg-[#34d399] text-[#064e3b] px-3.5 py-1.5 rounded-lg text-xs font-bold transition shadow-xs cursor-pointer shrink-0">
+            <i class="fa-regular fa-clipboard"></i>
+            <span>상담일지 초안 복사</span>
+          </button>
+        </div>
+
+        <div class="p-5 sm:p-7 space-y-3">
+          <div class="flex items-center justify-between text-xs text-slate-500 no-print">
+            <span><i class="fa-solid fa-pen-to-square mr-1 text-[#0f4c5c]"></i>면담 후 실제 대화 내용을 반영하여 아래 초안을 자유롭게 수정한 뒤 복사하실 수 있습니다.</span>
+          </div>
+          <textarea id="counselingLogText" rows="11" class="w-full bg-[#faf8f5] border border-slate-300 rounded-xl p-4 text-sm text-slate-800 leading-relaxed focus:outline-none focus:ring-2 focus:ring-[#0f4c5c] font-normal"></textarea>
+        </div>
+      </article>
+
+      <!-- 4. 윤리적 안전장치 및 고위험 위기대응 배너 -->
+      <aside class="bg-rose-50 border-2 border-rose-200 rounded-2xl p-5 sm:p-6 shadow-xs print-card">
+        <div class="flex flex-col sm:flex-row items-start space-y-3 sm:space-y-0 sm:space-x-4">
+          <div class="w-11 h-11 rounded-xl bg-rose-600 text-white flex items-center justify-center text-xl shrink-0 shadow-xs">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+          </div>
+          <div class="space-y-1.5">
+            <h4 class="text-base font-bold text-rose-900">
+              [고위험 심리 위기 징후 발견 시 즉각 인계 안내]
+            </h4>
+            <p class="text-xs sm:text-sm text-rose-800 leading-relaxed">
+              면담 중 학생에게서 <strong>극심한 우울감, 자해·자살 암시, 현실 검증력 저하, 심각한 트라우마 호소</strong> 등 고위험 징후가 관찰될 경우, 지도교수 혼자 감당하려 하지 마시고 즉시 <strong>광주보건대학교 학생상담센터 전문상담사 및 대학 위기대응 매뉴얼</strong>로 긴급 연계(동행 또는 즉시 전화 인계)해 주시기 바랍니다.
+            </p>
+            <div class="pt-1 flex flex-wrap gap-2 text-xs font-semibold text-rose-900">
+              <span class="bg-white px-3 py-1 rounded-lg border border-rose-200">
+                <i class="fa-solid fa-phone-volume mr-1 text-rose-600"></i>교내 긴급연계: 광주보건대학교 학생상담센터
+              </span>
+              <span class="bg-white px-3 py-1 rounded-lg border border-rose-200">
+                <i class="fa-solid fa-life-ring mr-1 text-rose-600"></i>24시간 위기상담: 자살예방상담전화 109 / 정신건강위기상담 1577-0199
+              </span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+  </main>
+
+  <!-- 푸터 -->
+  <footer class="bg-white border-t border-[#e2dcd2] py-5 mt-12 no-print">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-2">
+      <span>광주보건대학교 AI대학혁신본부 | 학생 성공 및 교수 상담 역량 강화 지원</span>
+      <span>본 가이드는 지도교수 면담 보조용 참고 자료이며, 개인정보 입력 시 보안에 유의해 주십시오.</span>
+    </div>
+  </footer>
+
+  <!-- 자바스크립트 로직 (백틱 ` 미사용, 단일/이중 따옴표와 + 연산자만 사용) -->
+  <script>
+    (function () {
+      // 상태 관리 객체
+      var state = {
+        selectedGrade: "1학년 (적응기)",
+        selectedCrises: ["휴학·자퇴 고민"],
+        selectedPersonality: "말수가 적고 방어적인 편",
+        sampleIndex: 0
+      };
+
+      // 샘플 사례 데이터 (순환 자동 채우기용)
+      var sampleCases = [
+        {
+          grade: "1학년 (적응기)",
+          crises: ["휴학·자퇴 고민", "전공 부적응·진로 방황"],
+          personality: "말수가 적고 방어적인 편",
+          observation: "입학 후 한 달 반 동안 동기들과 어울리지 못하고 혼자 다니는 모습이 자주 관찰됨. 최근 전공기초 과목 2주 연속 결석 후 과대표를 통해 휴학 절차를 물어보았으며, 교수 면담 요청 문자에 '별일 없습니다'라고 짧게 답장함."
+        },
+        {
+          grade: "2학년 (전공심화·실습전)",
+          crises: ["성적 저하·학사경고 위험", "정서적 우울·무기력감"],
+          personality: "겉으로는 괜찮은 척하지만 속으로 고민함",
+          observation: "1학년 때는 성적이 우수했으나 2학년 전공심화 교과목 진입 후 중간고사 성적이 크게 하락하여 학사경고 위험군으로 분류됨. 면담 시 웃으며 괜찮다고 말하지만 밤에 잠을 잘 못 자고 의욕이 전혀 없다고 동기에게 털어놓음."
+        },
+        {
+          grade: "3·4학년 (국가시험·취업준비기)",
+          crises: ["임상실습·국가시험 스트레스", "교우·선후배 대인관계 어려움"],
+          personality: "감정이 격해져 있거나 불안해함",
+          observation: "병원 임상실습과 모의 국가시험 준비가 겹치면서 극심한 압박감을 호소함. 실습 조별 과제 과정에서 팀원들과 갈등이 생겼고, 국가시험에 떨어질 것 같다는 불안감에 면담 신청 전 울먹이며 연락이 옴."
+        },
+        {
+          grade: "복학생",
+          crises: ["경제적 어려움·장학 상담", "성적 저하·학사경고 위험"],
+          personality: "구체적인 해결책을 바로 원함",
+          observation: "군 전역 후 복학했으나 학업 감각이 떨어져 전공 수업 이해에 어려움을 겪고 있음. 야간 아르바이트를 병행하느라 오전 수업 지각이 잦으며, 학비와 생활비 마련을 위한 장학금 및 근로장학 제도를 빠르게 알고 싶어 함."
+        }
+      ];
+
+      // 성향별 코칭 힌트 문구
+      var personalityHints = {
+        "말수가 적고 방어적인 편": "질문을 쏟아붓기보다 충분한 침묵을 기다려주고, 평가나 추궁 없이 안전하게 머물 수 있는 분위기를 먼저 조성합니다.",
+        "감정이 격해져 있거나 불안해함": "성급히 해결책을 제시하기보다 학생의 감정을 충분히 수용하고 호흡을 가다듬을 수 있도록 차분하고 안정적인 어조로 공감합니다.",
+        "겉으로는 괜찮은 척하지만 속으로 고민함": "밝은 표정 이면의 부담감을 알아봐 주고, 약한 모습을 보여도 괜찮다는 심리적 안전장치를 언어화해 전달합니다.",
+        "구체적인 해결책을 바로 원함": "핵심 요점을 명확히 짚어주고, 학사 일정·장학·비교과 등 즉시 실행 가능한 선택지와 로드맵을 구조화하여 안내합니다."
+      };
+
+      // DOM 요소 참조
+      var gradeButtons = document.querySelectorAll(".grade-btn");
+      var crisisChips = document.querySelectorAll(".crisis-chip");
+      var crisisError = document.getElementById("crisisError");
+      var personalitySelect = document.getElementById("personalitySelect");
+      var personalityHintText = document.getElementById("personalityHintText");
+      var observationInput = document.getElementById("observationInput");
+      var fillSampleBtn = document.getElementById("fillSampleBtn");
+      var clearInputBtn = document.getElementById("clearInputBtn");
+      var generateGuideBtn = document.getElementById("generateGuideBtn");
+      var resultSection = document.getElementById("resultSection");
+      var printGuideBtn = document.getElementById("printGuideBtn");
+      var copyScriptBtn = document.getElementById("copyScriptBtn");
+      var copyLogBtn = document.getElementById("copyLogBtn");
+
+      // 토스트 알림 함수
+      function showToast(msg) {
+        var toast = document.getElementById("toastNotification");
+        var toastMsg = document.getElementById("toastMessage");
+        toastMsg.textContent = msg;
+        toast.classList.remove("hidden");
+        setTimeout(function () {
+          toast.classList.remove("translate-y-2", "opacity-0");
+        }, 10);
+        setTimeout(function () {
+          toast.classList.add("translate-y-2", "opacity-0");
+          setTimeout(function () {
+            toast.classList.add("hidden");
+          }, 300);
+        }, 2600);
+      }
+
+      // 안전한 클립보드 복사 함수 (document.execCommand 사용)
+      function copyTextToClipboard(text, successMsg) {
+        var tempTextarea = document.createElement("textarea");
+        tempTextarea.value = text;
+        tempTextarea.style.position = "fixed";
+        tempTextarea.style.left = "-9999px";
+        tempTextarea.style.top = "0";
+        document.body.appendChild(tempTextarea);
+        tempTextarea.focus();
+        tempTextarea.select();
+        try {
+          var successful = document.execCommand("copy");
+          if (successful) {
+            showToast(successMsg);
+          } else {
+            showToast("복사에 실패했습니다. 직접 드래그하여 복사해 주세요.");
+          }
+        } catch (err) {
+          showToast("복사 중 오류가 발생했습니다.");
+        }
+        document.body.removeChild(tempTextarea);
+      }
+
+      // 학년 버튼 UI 동기화
+      function updateGradeUI() {
+        for (var i = 0; i < gradeButtons.length; i++) {
+          var btn = gradeButtons[i];
+          var val = btn.getAttribute("data-value");
+          var icon = btn.querySelector("i");
+          if (val === state.selectedGrade) {
+            btn.className = "grade-btn active-grade text-left px-4 py-3 rounded-xl border-2 border-[#0f4c5c] bg-[#e6f4f1] text-[#0f4c5c] font-semibold text-sm transition flex items-center justify-between cursor-pointer";
+            icon.className = "fa-solid fa-circle-check text-[#0f4c5c]";
+          } else {
+            btn.className = "grade-btn text-left px-4 py-3 rounded-xl border border-slate-200 bg-[#faf8f5] hover:bg-slate-100 text-slate-700 font-medium text-sm transition flex items-center justify-between cursor-pointer";
+            icon.className = "fa-regular fa-circle text-slate-400";
+          }
+        }
+      }
+
+      // 위기 유형 칩 UI 동기화
+      function updateCrisisUI() {
+        for (var i = 0; i < crisisChips.length; i++) {
+          var chip = crisisChips[i];
+          var val = chip.getAttribute("data-value");
+          var icon = chip.querySelector("i");
+          var isSelected = state.selectedCrises.indexOf(val) !== -1;
+          if (isSelected) {
+            chip.className = "crisis-chip px-3.5 py-2.5 rounded-xl border-2 border-[#0f4c5c] bg-[#e6f4f1] text-[#0f4c5c] text-sm font-bold transition flex items-center space-x-2 cursor-pointer shadow-2xs";
+            icon.classList.remove("text-slate-400");
+            icon.classList.add("text-[#0f4c5c]");
+          } else {
+            chip.className = "crisis-chip px-3.5 py-2.5 rounded-xl border border-slate-200 bg-[#faf8f5] hover:border-[#0f4c5c]/50 text-slate-700 text-sm font-medium transition flex items-center space-x-2 cursor-pointer";
+            icon.classList.remove("text-[#0f4c5c]");
+            icon.classList.add("text-slate-400");
+          }
+        }
+        if (state.selectedCrises.length > 0) {
+          crisisError.classList.add("hidden");
+        }
+      }
+
+      // 초기 위기 유형 선택 상태 반영
+      updateGradeUI();
+      updateCrisisUI();
+
+      // 학년 버튼 클릭 이벤트
+      for (var i = 0; i < gradeButtons.length; i++) {
+        gradeButtons[i].addEventListener("click", function () {
+          state.selectedGrade = this.getAttribute("data-value");
+          updateGradeUI();
+        });
+      }
+
+      // 위기 칩 클릭 이벤트 (토글)
+      for (var j = 0; j < crisisChips.length; j++) {
+        crisisChips[j].addEventListener("click", function () {
+          var val = this.getAttribute("data-value");
+          var idx = state.selectedCrises.indexOf(val);
+          if (idx === -1) {
+            state.selectedCrises.push(val);
+          } else {
+            state.selectedCrises.splice(idx, 1);
+          }
+          updateCrisisUI();
+        });
+      }
+
+      // 성향 드롭다운 변경 이벤트
+      personalitySelect.addEventListener("change", function () {
+        state.selectedPersonality = this.value;
+        personalityHintText.textContent = personalityHints[state.selectedPersonality] || "";
+      });
+
+      // 샘플 사례 자동 채우기 버튼 이벤트
+      fillSampleBtn.addEventListener("click", function () {
+        var sample = sampleCases[state.sampleIndex];
+        state.sampleIndex = (state.sampleIndex + 1) % sampleCases.length;
+
+        state.selectedGrade = sample.grade;
+        state.selectedCrises = sample.crises.slice();
+        state.selectedPersonality = sample.personality;
+
+        personalitySelect.value = sample.personality;
+        personalityHintText.textContent = personalityHints[sample.personality];
+        observationInput.value = sample.observation;
+
+        updateGradeUI();
+        updateCrisisUI();
+        showToast("샘플 학생 사례(" + sample.grade + ")가 입력되었습니다.");
+      });
+
+      // 내용 지우기 버튼
+      clearInputBtn.addEventListener("click", function () {
+        observationInput.value = "";
+        observationInput.focus();
+      });
+
+      // 3단계 공감 화법 생성 엔진
+      function buildEmpathyScript(grade, crises, personality, obs) {
+        // 1단계: 마음 열기 (성향 + 학년 기반)
+        var step1Intro = "";
+        if (personality === "말수가 적고 방어적인 편") {
+          step1Intro = "\"OO야, 바쁠 텐데 교수님 연구실까지 와주어서 정말 고맙다. 오늘 자리는 뭐가 잘못됐는지 따지거나 혼내려고 부른 게 전혀 아니야. 요즘 OO가 학교생활 하면서 혹시 혼자 끙끙 앓고 있는 건 없는지, 교수님이 도울 수 있는 게 있는지 편하게 얼굴 보고 이야기 나누고 싶었어. 말하기 어려운 부분은 천천히 이야기해도 괜찮아.\"";
+        } else if (personality === "감정이 격해져 있거나 불안해함") {
+          step1Intro = "\"OO야, 여기까지 오느라 마음이 많이 무겁고 긴장됐지? 우선 따뜻한 물 한 잔 마시면서 숨부터 천천히 고르자. 지금 당장 모든 결론을 내리지 않아도 괜찮아. 이 방에서는 OO가 느끼는 불안이나 속상한 마음을 있는 그대로 다 털어놓아도 안전하니까, 교수님이 끝까지 잘 들어줄게.\"";
+        } else if (personality === "겉으로는 괜찮은 척하지만 속으로 고민함") {
+          step1Intro = "\"OO야, 늘 밝고 성실하게 지내려고 애쓰는 모습이 교수님 눈에도 보여. 그런데 사람이라는 게 겉으로는 괜찮아 보여도 속으로는 혼자 버티기 버거운 순간이 오기 마련이잖아. 오늘만큼은 '잘해야 한다'는 부담 잠깐 내려놓고, 진짜 OO의 속마음을 솔직하게 들려주면 좋겠어.\"";
+        } else {
+          step1Intro = "\"OO야, 시간 내어 찾아와 줘서 반갑다. 오늘 면담에서는 OO가 현재 겪고 있는 어려움을 정확히 짚어보고, 학교에서 활용할 수 있는 가장 현실적이고 빠른 해결 방법들을 같이 찾아보려고 해. 지금 OO 입장에서 가장 시급하게 해결하고 싶은 문제부터 편하게 이야기해 줄래?\"";
+        }
+
+        // 학년별 보충 멘트
+        var gradeContext = "";
+        if (grade.indexOf("1학년") !== -1) {
+          gradeContext = " (대학 입학 후 새로운 환경에 적응하는 첫 학기라 낯설고 막막한 게 너무 당연하단다.)";
+        } else if (grade.indexOf("2학년") !== -1) {
+          gradeContext = " (전공 난이도가 갑자기 높아지고 실습을 앞둔 시기라 많은 학생들이 흔들리는 때야.)";
+        } else if (grade.indexOf("3·4학년") !== -1) {
+          gradeContext = " (임상실습과 국가시험, 취업 준비가 한꺼번에 몰려 심리적 압박이 최고조에 달하는 시기지.)";
+        } else {
+          gradeContext = " (복학 후 달라진 학교 분위기와 학업 리듬을 다시 맞추는 과정이 결코 쉽지 않았을 거야.)";
+        }
+        step1Intro = step1Intro.slice(0, -1) + gradeContext + "\"";
+
+        // 2단계: 비난 없는 공감 및 탐색 질문 3가지 (선택된 위기 유형 조합)
+        var questions = [];
+        if (crises.indexOf("휴학·자퇴 고민") !== -1) {
+          questions.push("\"휴학이나 진로 변경을 고민하기까지 혼자서 얼마나 많은 생각을 했을까. 지금 당장 학교생활에서 OO를 가장 지치게 만드는 결정적인 이유는 무엇이니?\"");
+        }
+        if (crises.indexOf("성적 저하·학사경고 위험") !== -1) {
+          questions.push("\"성적이나 출석 때문에 스스로도 많이 위축되고 속상했을 텐데, 수업을 따라가거나 공부 시간을 확보하는 과정에서 어떤 부분이 가장 큰 걸림돌이었어?\"");
+        }
+        if (crises.indexOf("교우·선후배 대인관계 어려움") !== -1) {
+          questions.push("\"학과 안에서 사람들과 어울리거나 조별 활동을 할 때 마음이 편치 않았던 순간이 있었니? 어떤 상황에서 가장 혼자라는 느낌이나 부담을 느꼈는지 들려줄 수 있을까?\"");
+        }
+        if (crises.indexOf("전공 부적응·진로 방황") !== -1) {
+          questions.push("\"막상 전공 수업을 들어보니 처음 기대했던 것과 다르거나 적성에 맞지 않는다는 생각이 들었던 지점이 있었니? OO가 진짜 해보고 싶거나 잘할 수 있다고 느끼는 분야는 어떤 쪽이야?\"");
+        }
+        if (crises.indexOf("임상실습·국가시험 스트레스") !== -1) {
+          questions.push("\"실습 현장의 긴장감과 국가시험 압박감을 동시에 견디느라 에너지가 많이 소진된 것 같아. 지금 하루 일과 중에서 숨이 턱 막힐 정도로 부담되는 부분은 구체적으로 무엇이니?\"");
+        }
+        if (crises.indexOf("경제적 어려움·장학 상담") !== -1) {
+          questions.push("\"학비나 생활비를 스스로 해결하려고 애쓰느라 학업에 집중할 여력이 많이 부족했겠구나. 현재 아르바이트 시간이나 경제적 부담이 어느 정도인지 솔직하게 이야기해 줄 수 있니?\"");
+        }
+        if (crises.indexOf("정서적 우울·무기력감") !== -1) {
+          questions.push("\"요즘 아침에 눈을 뜨거나 학교에 오는 발걸음조차 무겁게 느껴질 만큼 마음이 많이 지쳐 있는 것 같아. 최근 수면이나 식사는 잘 챙기고 있는지, 언제부터 이렇게 무기력해졌는지 편하게 말해줄래?\"");
+        }
+
+        // 질문이 3개 미만일 경우 보편적 탐색 질문 추가, 3개 초과 시 상위 3개 선별
+        var fallbackQuestions = [
+          "\"지금 이 상황을 조금이라도 나아지게 만들기 위해 교수님이나 학교가 가장 먼저 도와주었으면 하는 한 가지는 무엇이니?\"",
+          "\"요즘 하루 중 그나마 마음이 좀 편해지거나 숨통이 트이는 시간은 언제야?\""
+        ];
+        while (questions.length < 3) {
+          questions.push(fallbackQuestions[questions.length % fallbackQuestions.length]);
+        }
+        questions = questions.slice(0, 3);
+
+        // 관찰 상황이 입력된 경우 반영 팁 생성
+        var obsTip = "";
+        if (obs && obs.trim().length > 0) {
+          obsTip = "※ 관찰 메모 반영 팁: 교수님께서 파악하신 상황(\"" + obs.trim().substring(0, 55) + (obs.trim().length > 55 ? "..." : "") + "\")을 언급하실 때는 '왜 그랬니?' 대신 '그만큼 많이 힘들었다는 신호로 보여서 걱정이 됐다'고 표현해 주세요.";
+        }
+
+        // 3단계: 긍정적 지지 및 다음 약속
+        var step3Closing = "\"오늘 쉽지 않은 이야기를 교수님에게 솔직하게 털어놓아 주어서 정말 고맙다. 네가 지금 겪는 고민은 결코 네가 부족해서가 아니라, 누구든 성장 과정에서 만날 수 있는 자연스러운 과정이야. 우리 오늘 이야기한 지원 프로그램부터 하나씩 가볍게 시도해 보자. 부담 갖지 말고 다음 주 화요일 오후에 잠깐 들러서 어떻게 지냈는지 10분만 얼굴 보고 이야기하자. 교수님이 끝까지 네 편에서 함께 방법을 찾아줄게.\"";
+
+        return {
+          step1: step1Intro,
+          questions: questions,
+          obsTip: obsTip,
+          step3: step3Closing
+        };
+      }
+
+      // 금기 화법 (DON'T & DO) 생성 엔진
+      function buildDontDoList(crises, personality) {
+        var list = [
+          {
+            dont: "\"다른 애들도 다 똑같이 힘든데 너만 왜 유난이니? 다들 참고 버텨.\"",
+            do: "\"남들 눈에 어떻게 보이든, 지금 네가 느끼는 이 무게가 너에게는 가장 버겁고 힘들었을 거야.\""
+          },
+          {
+            dont: "\"지금 휴학하면 나중에 복학해서 적응하기 훨씬 더 힘들어. 무조건 버텨.\"",
+            do: "\"휴학이든 학업 유지든 네 미래를 위한 최선의 선택이 무엇인지, 장단점과 대안을 같이 따져보자.\""
+          }
+        ];
+
+        if (crises.indexOf("성적 저하·학사경고 위험") !== -1 || crises.indexOf("임상실습·국가시험 스트레스") !== -1) {
+          list.push({
+            dont: "\"공부를 안 하니까 성적이 떨어지지. 이 성적으로 나중에 국가시험이나 취업 어떻게 하려고 그래?\"",
+            do: "\"성적표 숫자보다 네가 공부하면서 어디서 막혔는지가 더 중요해. 학습클리닉이나 튜터링으로 기초부터 다시 잡아보자.\""
+          });
+        } else {
+          list.push({
+            dont: "\"입학할 때 다 알고 들어온 전공인데 이제 와서 안 맞는다고 하면 어떡하니?\"",
+            do: "\"직접 부딪혀 보면서 고민이 생기는 건 당연해. 진로상담을 통해 네 강점이 살 수 있는 방향을 함께 탐색해 보자.\""
+          });
+        }
+
+        if (personality === "말수가 적고 방어적인 편" || personality === "겉으로는 괜찮은 척하지만 속으로 고민함") {
+          list.push({
+            dont: "\"대답을 좀 해봐야 교수님이 도와주지, 왜 아무 말도 안 하고 가만히 있어?\"",
+            do: "\"지금 당장 말로 정리하기 어려우면 천천히 생각해도 돼. 카톡이나 메모로 먼저 보내줘도 괜찮아.\""
+          });
+        } else {
+          list.push({
+            dont: "\"그렇게 감정적으로 불안해한다고 해결되는 건 아무것도 없어. 냉정해져야지.\"",
+            do: "\"많이 놀라고 불안한 마음이 드는 게 당연해. 우선 마음부터 진정시키고 할 수 있는 것부터 하나씩 정리해 보자.\""
+          });
+        }
+
+        return list;
+      }
+
+      // 교내 지원 부서 및 비교과 프로그램 연계 처방전 생성 엔진
+      function buildProgramRecommendations(crises, grade) {
+        var programs = [];
+
+        if (crises.indexOf("성적 저하·학사경고 위험") !== -1) {
+          programs.push({
+            dept: "교수학습지원센터",
+            name: "학습클리닉 & 또래 학습튜터링 프로그램",
+            badgeColor: "bg-teal-100 text-teal-900",
+            desc: "학사경고 위험군 및 기초학습 부진 학생을 위한 1:1 학습전략 진단, 시간관리 코칭 및 선배 튜터 매칭 지원",
+            mentorScript: "\"혼자 책상 앞에 앉아 막막해하기보다 교수학습지원센터의 '학습튜터링'을 신청해 보자. 선배 튜터랑 같이 공부 습관을 잡으면 훨씬 수월할 거야. 교수님이 추천서 써줄게.\""
+          });
+        }
+
+        if (crises.indexOf("정서적 우울·무기력감") !== -1 || crises.indexOf("휴학·자퇴 고민") !== -1 || crises.indexOf("교우·선후배 대인관계 어려움") !== -1) {
+          programs.push({
+            dept: "학생상담센터",
+            name: "개인심리상담 & 심리검사(MMPI-2 / TCI / U&I 학습유형검사)",
+            badgeColor: "bg-emerald-100 text-emerald-900",
+            desc: "전문상담사와의 비밀보장 1:1 심층 상담, 정서·성격 검사 및 대인관계 향상 집단상담 프로그램 연계",
+            mentorScript: "\"마음이 지칠 때는 전문가의 객관적인 도움을 받는 게 정말 큰 힘이 돼. 우리 대학 학생상담센터는 비밀이 100% 보장되고 무료로 심리검사도 받을 수 있으니 교수님이랑 같이 예약해 볼까?\""
+          });
+        }
+
+        if (crises.indexOf("전공 부적응·진로 방황") !== -1 || crises.indexOf("임상실습·국가시험 스트레스") !== -1 || grade.indexOf("3·4학년") !== -1) {
+          programs.push({
+            dept: "취창업지원처 · 대학일자리플러스센터",
+            name: "진로적성검사 & 직무멘토링·국가시험/취업 역량강화 특강",
+            badgeColor: "bg-sky-100 text-sky-900",
+            desc: "전공 기반 다양한 진로 트랙 탐색, 진로취업 전문컨설턴트 1:1 상담, 보건의료계열 직무 특강 및 모의면접 지원",
+            mentorScript: "\"전공을 살릴 수 있는 길은 네가 생각하는 것보다 훨씬 다양해. 취창업지원처 진로컨설턴트와 만나서 적성검사를 해보고 여러 진로 선택지를 넓혀보자.\""
+          });
+        }
+
+        if (crises.indexOf("경제적 어려움·장학 상담") !== -1) {
+          programs.push({
+            dept: "학생지원팀 (장학복지)",
+            name: "국가·교내 가계곤란 장학금 & 교내 근로장학 연계 상담",
+            badgeColor: "bg-amber-100 text-amber-900",
+            desc: "국가장학금 재신청/구제신청 안내, 교내 면학장학금 및 학업과 병행 가능한 교내 행정부서 근로장학생 선발 안내",
+            mentorScript: "\"외부 아르바이트 때문에 수업까지 빠지면 너무 아깝잖아. 학생지원팀 장학 담당 선생님께 연결해 줄 테니 교내 근로장학이나 추가 장학금 혜택을 먼저 확인해 보자.\""
+          });
+        }
+
+        // 최소 2개 이상 추천 보장
+        if (programs.length < 2) {
+          programs.push({
+            dept: "학생상담센터 · AI대학혁신본부 학생성공지원",
+            name: "지도교수-학생 멘토링 및 대학생활 적응 비교과 프로그램",
+            badgeColor: "bg-teal-100 text-teal-900",
+            desc: "대학생활 적응도 진단, 학과 선후배 멘토링 및 비교과 마일리지 연계 프로그램 안내",
+            mentorScript: "\"혼자 고민하면 작은 문제도 크게 느껴지곤 해. 학교 비교과 프로그램에 참여하면서 환기도 하고 작은 성취감을 하나씩 쌓아가 보자.\""
+          });
+        }
+
+        return programs;
+      }
+
+      // 상담일지 초안 생성 엔진
+      function buildCounselingLogDraft(grade, crises, personality, obs, programs) {
+        var today = new Date();
+        var yyyy = today.getFullYear();
+        var mm = String(today.getMonth() + 1);
+        if (mm.length < 2) { mm = "0" + mm; }
+        var dd = String(today.getDate());
+        if (dd.length < 2) { dd = "0" + dd; }
+        var dateStr = yyyy + "." + mm + "." + dd + ".";
+
+        var deptNames = [];
+        for (var i = 0; i < programs.length; i++) {
+          deptNames.push(programs[i].dept + "(" + programs[i].name + ")");
+        }
+
+        var obsSummary = (obs && obs.trim().length > 0)
+          ? obs.trim()
+          : "최근 학업 및 대학생활 적응 과정에서 심리적·학업적 부담을 느끼고 있는 상태로 관찰됨.";
+
+        var logText = "[상담일시 및 대상] " + dateStr + " / 지도학생 (학년: " + grade + ")\n" +
+          "[상담유형] 진로·학업 위기 예방 및 대학생활 적응 지도상담\n\n" +
+          "1. 학생 현황 및 주호소 문제\n" +
+          "- 주요 호소 영역: " + crises.join(", ") + "\n" +
+          "- 사전 관찰 및 특이사항: " + obsSummary + "\n\n" +
+          "2. 주요 상담 내용 및 학생 반응\n" +
+          "- 면담 초기 학생은 '" + personality + "' 특성을 보였으나, 학업 및 진로 과정에서 겪는 현실적 고충을 경청하고 정서적으로 지지함으로써 점차 라포를 형성함.\n" +
+          "- 학생이 느끼는 어려움의 구체적인 원인을 함께 탐색하고, 성급한 결정(휴학·학업중단 등)에 앞서 활용 가능한 교내 지원 제도를 안내함.\n\n" +
+          "3. 지도교수 의견 및 향후 연계 계획\n" +
+          "- 정서적 안정감 회복 및 학업 지속 동기 강화를 위해 교내 유관부서 프로그램 연계 권유: " + deptNames.join(", ") + "\n" +
+          "- 향후 계획: 차주 중 10분 내외의 짧은 후속 면담을 통해 교내 프로그램 신청 여부 및 생활 안정도를 재점검할 예정임.";
+
+        return logText;
+      }
+
+      // 생성 버튼 클릭 이벤트 핸들러
+      generateGuideBtn.addEventListener("click", function () {
+        if (state.selectedCrises.length === 0) {
+          crisisError.classList.remove("hidden");
+          crisisError.scrollIntoView({ behavior: "smooth", block: "center" });
+          return;
+        }
+
+        var grade = state.selectedGrade;
+        var crises = state.selectedCrises;
+        var personality = state.selectedPersonality;
+        var obs = observationInput.value;
+
+        // 상단 요약 배지 업데이트
+        document.getElementById("summaryGradeBadge").textContent = grade;
+        document.getElementById("summaryPersonalityBadge").textContent = personality;
+        document.getElementById("summaryCrisisText").textContent = "선택 위기·고민 유형: " + crises.join(" · ");
+        document.getElementById("printSummaryMeta").textContent = "대상: " + grade + " | 성향: " + personality + " | 유형: " + crises.join(", ");
+
+        // ① 3단계 공감 화법 렌더링
+        var scriptData = buildEmpathyScript(grade, crises, personality, obs);
+        var scriptBody = document.getElementById("scriptCardBody");
+        var questionsHtml = "";
+        for (var q = 0; q < scriptData.questions.length; q++) {
+          questionsHtml += "<li class=\"flex items-start space-x-2.5 bg-white p-3 rounded-lg border border-teal-100\">" +
+            "<span class=\"inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#0f4c5c] text-white text-xs font-bold shrink-0 mt-0.5\">Q" + (q + 1) + "</span>" +
+            "<span class=\"text-sm text-slate-800 leading-relaxed\">" + scriptData.questions[q] + "</span>" +
+            "</li>";
+        }
+
+        var obsTipHtml = "";
+        if (scriptData.obsTip !== "") {
+          obsTipHtml = "<div class=\"mt-3 p-3 rounded-lg bg-amber-50 border border-amber-200 text-xs text-amber-900 font-medium\">" +
+            "<i class=\"fa-solid fa-note-sticky mr-1.5 text-amber-600\"></i>" + scriptData.obsTip +
+            "</div>";
+        }
+
+        scriptBody.innerHTML =
+          "<div class=\"p-4 sm:p-5 rounded-xl bg-[#faf8f5] border-l-4 border-[#0f4c5c]\">" +
+            "<div class=\"flex items-center space-x-2 text-[#0f4c5c] font-bold text-sm mb-2\">" +
+              "<span class=\"px-2 py-0.5 rounded bg-[#e6f4f1] text-xs\">1단계</span>" +
+              "<span>마음 열기 (Ice-breaking &amp; 라포 형성)</span>" +
+            "</div>" +
+            "<p class=\"text-sm sm:text-base text-slate-800 leading-relaxed font-medium\">" + scriptData.step1 + "</p>" +
+          "</div>" +
+
+          "<div class=\"p-4 sm:p-5 rounded-xl bg-[#e6f4f1]/60 border-l-4 border-[#134e4a]\">" +
+            "<div class=\"flex items-center space-x-2 text-[#134e4a] font-bold text-sm mb-2.5\">" +
+              "<span class=\"px-2 py-0.5 rounded bg-white text-xs border border-teal-200\">2단계</span>" +
+              "<span>비난 없는 공감 및 탐색 질문 3가지</span>" +
+            "</div>" +
+            "<ul class=\"space-y-2\">" + questionsHtml + "</ul>" +
+            obsTipHtml +
+          "</div>" +
+
+          "<div class=\"p-4 sm:p-5 rounded-xl bg-[#faf8f5] border-l-4 border-teal-600\">" +
+            "<div class=\"flex items-center space-x-2 text-teal-800 font-bold text-sm mb-2\">" +
+              "<span class=\"px-2 py-0.5 rounded bg-[#e6f4f1] text-xs\">3단계</span>" +
+              "<span>긍정적 지지 및 다음 약속</span>" +
+            "</div>" +
+            "<p class=\"text-sm sm:text-base text-slate-800 leading-relaxed font-medium\">" + scriptData.step3 + "</p>" +
+          "</div>";
+
+        // ② 금기 화법 (DON'T & DO) 렌더링
+        var dontDoList = buildDontDoList(crises, personality);
+        var dontDoBody = document.getElementById("dontDoTableBody");
+        var rowsHtml = "";
+        for (var d = 0; d < dontDoList.length; d++) {
+          rowsHtml += "<tr class=\"hover:bg-slate-50/80\">" +
+            "<td class=\"py-3.5 px-4 text-slate-700 bg-rose-50/30 border-r border-slate-200 align-top leading-relaxed\">" +
+              "<span class=\"text-rose-600 font-semibold mr-1\">×</span>" + dontDoList[d].dont +
+            "</td>" +
+            "<td class=\"py-3.5 px-4 text-slate-800 bg-teal-50/20 align-top leading-relaxed font-medium\">" +
+              "<span class=\"text-[#0f4c5c] font-bold mr-1\">○</span>" + dontDoList[d].do +
+            "</td>" +
+          "</tr>";
+        }
+        dontDoBody.innerHTML = rowsHtml;
+
+        // ③ 교내 지원 부서 및 비교과 프로그램 연계 처방전 렌더링
+        var programs = buildProgramRecommendations(crises, grade);
+        var programBody = document.getElementById("programCardBody");
+        var progHtml = "";
+        for (var p = 0; p < programs.length; p++) {
+          progHtml += "<div class=\"p-4 sm:p-5 rounded-xl border border-slate-200 bg-[#faf8f5] space-y-2.5\">" +
+            "<div class=\"flex flex-wrap items-center justify-between gap-2\">" +
+              "<span class=\"inline-flex items-center px-3 py-1 rounded-full text-xs font-bold " + programs[p].badgeColor + "\">" +
+                "<i class=\"fa-solid fa-building-columns mr-1.5\"></i>" + programs[p].dept +
+              "</span>" +
+              "<span class=\"text-xs font-semibold text-teal-700\">추천 연계 인프라 #" + (p + 1) + "</span>" +
+            "</div>" +
+            "<h4 class=\"text-base font-bold text-slate-900\">" + programs[p].name + "</h4>" +
+            "<p class=\"text-xs sm:text-sm text-slate-600 leading-relaxed\">" + programs[p].desc + "</p>" +
+            "<div class=\"bg-white p-3.5 rounded-lg border border-teal-100 text-xs sm:text-sm text-[#0f4c5c] leading-relaxed\">" +
+              "<strong class=\"block text-xs text-teal-700 mb-1\"><i class=\"fa-solid fa-comment-dots mr-1\"></i>교수님 권유 안내 멘트:</strong>" +
+              programs[p].mentorScript +
+            "</div>" +
+          "</div>";
+        }
+        programBody.innerHTML = progHtml;
+
+        // ④ 상담일지 초안 생성 및 주입
+        var draftLog = buildCounselingLogDraft(grade, crises, personality, obs, programs);
+        document.getElementById("counselingLogText").value = draftLog;
+
+        // 결과 영역 표시 및 부드러운 스크롤
+        resultSection.classList.remove("hidden");
+        setTimeout(function () {
+          resultSection.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 80);
+      });
+
+      // [화법 복사] 버튼 이벤트
+      copyScriptBtn.addEventListener("click", function () {
+        var scriptData = buildEmpathyScript(
+          state.selectedGrade,
+          state.selectedCrises,
+          state.selectedPersonality,
+          observationInput.value
+        );
+        var plainScript = "[지도학생 면담 3단계 공감 화법 스크립트 - 광주보건대학교 AI대학혁신본부]\n\n" +
+          "■ 1단계 - 마음 열기 (Ice-breaking & 라포 형성)\n" + scriptData.step1 + "\n\n" +
+          "■ 2단계 - 비난 없는 공감 및 탐색 질문\n" +
+          "1) " + scriptData.questions[0] + "\n" +
+          "2) " + scriptData.questions[1] + "\n" +
+          "3) " + scriptData.questions[2] + "\n\n" +
+          "■ 3단계 - 긍정적 지지 및 다음 약속\n" + scriptData.step3;
+
+        copyTextToClipboard(plainScript, "3단계 공감 화법 스크립트가 클립보드에 복사되었습니다.");
+      });
+
+      // [상담일지 초안 복사] 버튼 이벤트
+      copyLogBtn.addEventListener("click", function () {
+        var logContent = document.getElementById("counselingLogText").value;
+        copyTextToClipboard(logContent, "학사행정시스템용 상담일지 초안이 복사되었습니다.");
+      });
+
+      // [면담 준비지 인쇄 / PDF 저장] 버튼 이벤트
+      printGuideBtn.addEventListener("click", function () {
+        window.print();
+      });
+    })();
+  </script>
+</body>
+</html>

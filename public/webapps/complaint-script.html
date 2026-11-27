@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>학내 민원 및 학부모 문의 응대 스크립트 매니저 - 광주보건대학교 AI대학혁신본부</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- PDF.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <!-- Google Fonts: Pretendard / Noto Sans KR / Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Noto Sans KR', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #f8fafc;
+      color: #0f172a;
+      word-break: keep-all;
+    }
+    .script-card {
+      transition: all 0.2s ease;
+    }
+    .script-card:hover {
+      box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.06), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    @media print {
+      body {
+        background-color: #ffffff !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .print-only-full {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+      }
+      .script-card {
+        break-inside: avoid;
+        border: 1px solid #cbd5e1 !important;
+        box-shadow: none !important;
+        margin-bottom: 14px !important;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-blue-100 selection:text-blue-900">
+
+  <!-- 1. 웹 앱 실행 시 최우선 '최신 규정 버전 확인' 안내 팝업(모달) -->
+  <div id="startupModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/65 backdrop-blur-sm p-4 no-print" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden transform transition-all">
+      <div class="bg-slate-900 px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-amber-400/20 text-amber-300 text-sm font-bold">!</span>
+          <h2 id="modalTitle" class="text-white font-bold text-base sm:text-lg tracking-tight">최신 규정 버전 확인 안내</h2>
+        </div>
+        <span class="text-xs font-medium text-slate-300 bg-slate-800 px-2.5 py-1 rounded-md">광주보건대학교 AI대학혁신본부</span>
+      </div>
+      <div class="p-6 sm:p-7">
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 sm:p-5 mb-5">
+          <p class="text-slate-800 text-sm sm:text-base leading-relaxed font-medium">
+            ⚠️ <strong class="text-amber-900">안내:</strong> 민원 응대의 정확성을 위해 업로드하실 <span class="underline decoration-amber-400 decoration-2 underline-offset-4 font-semibold">학칙, 장학 규정, 등록금 규정</span>이 현재 시행 중인 <strong class="text-blue-700">'최신 개정 버전'</strong>인지 대학 홈페이지(규정집)에서 먼저 확인하신 후 이용해 주세요.
+          </p>
+        </div>
+        <ul class="text-xs sm:text-sm text-slate-600 space-y-2 mb-6 pl-1">
+          <li class="flex items-start gap-2">
+            <span class="text-blue-600 font-bold mt-0.5">•</span>
+            <span>개정 전 구(舊) 규정으로 안내할 경우 민원 분쟁 및 행정 오류의 원인이 될 수 있습니다.</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-blue-600 font-bold mt-0.5">•</span>
+            <span>업로드된 규정 파일은 외부 서버로 전송되지 않고 <strong>현재 PC 브라우저 내부(localStorage)</strong>에만 안전하게 보관됩니다.</span>
+          </li>
+        </ul>
+        <button id="confirmModalBtn" type="button" class="w-full py-3.5 px-5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold rounded-xl shadow-md hover:shadow-lg transition-all text-sm sm:text-base flex items-center justify-center gap-2 cursor-pointer">
+          <span>확인했습니다 (시작하기)</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 토스트 알림 컨테이너 -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none no-print"></div>
+
+  <!-- 상단 고정 '최신 규정 적용 여부 확인 필수' 안내 배너 -->
+  <div class="bg-amber-50 border-b border-amber-200 px-4 py-2 text-center no-print">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-xs sm:text-sm text-amber-900 font-medium">
+      <span class="inline-flex items-center px-2 py-0.5 rounded bg-amber-200/80 text-amber-950 font-bold text-xs">최신 규정 적용 여부 확인 필수</span>
+      <span>민원 응대 전 업로드된 학칙·장학·등록금 규정이 현재 시행 중인 최신 개정 버전인지 반드시 확인하시기 바랍니다.</span>
+    </div>
+  </div>
+
+  <!-- 2. 최상단 기관 브랜딩 및 타이틀 헤더 영역 -->
+  <header class="bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 text-white border-b border-slate-700 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-7 sm:pt-5 sm:pb-9">
+      <!-- 우측 상단 기관 브랜딩 (명확한 오른쪽 정렬) -->
+      <div class="w-full flex justify-end mb-4" style="justify-content: flex-end; text-align: right;">
+        <div class="inline-flex items-center gap-2 bg-slate-800/90 border border-slate-600/80 rounded-full px-4 py-1.5 shadow-sm">
+          <span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
+          <span class="text-xs sm:text-sm font-bold tracking-wide text-blue-100">광주보건대학교 AI대학혁신본부</span>
+        </div>
+      </div>
+
+      <!-- 메인 타이틀 & 서브 설명 -->
+      <div class="max-w-4xl">
+        <div class="inline-flex items-center gap-1.5 text-blue-300 text-xs sm:text-sm font-semibold mb-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+          <span>대학 행정·교직원 맞춤형 민원 소통 지원 시스템</span>
+        </div>
+        <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white leading-tight mb-3">
+          학내 민원 및 학부모 문의 응대 스크립트 매니저
+        </h1>
+        <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+          학칙·규정 PDF를 업로드하고 민원 상황을 입력하면 감정을 다독이는 정중하고 명확한 규정 안내 스크립트를 만들어 드립니다
+        </p>
+      </div>
+    </div>
+  </header>
+
+  <!-- 메인 콘텐츠 영역 -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+
+    <!-- 3. 규정 문서 직접 업로드 및 민원 상황 입력 패널 (2단 구성) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8 no-print">
+
+      <!-- [좌측 패널 - 기준 규정 직접 업로드 영역 (5칸)] -->
+      <section class="lg:col-span-5 bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col overflow-hidden">
+        <div class="bg-slate-50 border-b border-slate-200 px-5 py-4 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="flex items-center justify-center w-6 h-6 rounded-lg bg-slate-800 text-white text-xs font-bold">1</span>
+            <h2 class="font-bold text-slate-800 text-base">기준 규정 직접 업로드</h2>
+          </div>
+          <span class="text-xs font-medium text-slate-500">PDF · TXT 지원</span>
+        </div>
+
+        <div class="p-5 flex-grow flex flex-col justify-between space-y-4">
+          <div>
+            <!-- 드래그 앤 드롭 업로드 박스 -->
+            <div id="dropZone" class="border-2 border-dashed border-slate-300 hover:border-blue-500 bg-slate-50/70 hover:bg-blue-50/40 rounded-xl p-5 text-center transition-all cursor-pointer group">
+              <input type="file" id="fileInput" accept=".pdf,.txt" multiple class="hidden">
+              <div class="w-11 h-11 rounded-full bg-blue-100 text-blue-600 mx-auto mb-3 flex items-center justify-center group-hover:scale-105 transition-transform">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+              </div>
+              <p class="text-sm font-bold text-slate-700 mb-1">학칙·장학·등록금 규정 파일을 드래그하거나 클릭하여 선택</p>
+              <p class="text-xs text-slate-500">다수 파일 동시 업로드 가능 · 브라우저 내 안전 저장(localStorage)</p>
+            </div>
+
+            <!-- 파싱 진행 상태 표시기 -->
+            <div id="uploadProgress" class="hidden mt-3 bg-blue-50 border border-blue-200 rounded-xl p-3 flex items-center gap-3">
+              <svg class="animate-spin h-4 w-4 text-blue-600 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <span id="uploadProgressText" class="text-xs font-medium text-blue-800">규정 문서를 분석하고 조항을 추출하는 중입니다...</span>
+            </div>
+
+            <!-- 샘플 규정 데이터 자동 로드 버튼 -->
+            <div class="mt-3 flex items-center justify-between gap-2">
+              <button id="loadSampleRegBtn" type="button" class="w-full py-2.5 px-3 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-xl text-xs sm:text-sm font-semibold transition-colors flex items-center justify-center gap-1.5 cursor-pointer">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                <span>샘플 규정 데이터 자동 로드 (테스트용)</span>
+              </button>
+            </div>
+
+            <!-- 업로드된 파일 목록 -->
+            <div class="mt-4">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-slate-600 uppercase tracking-wider">등록된 규정 문서 (<span id="docCount">0</span>건)</span>
+                <button id="clearAllDocsBtn" type="button" class="text-xs text-slate-400 hover:text-red-600 transition-colors hidden cursor-pointer">전체 삭제</button>
+              </div>
+              <div id="uploadedDocsList" class="space-y-2 max-h-64 overflow-y-auto custom-scrollbar pr-1">
+                <!-- 동적 파일 리스트 렌더링 -->
+              </div>
+            </div>
+          </div>
+
+          <!-- 규정 조항 미리보기 안내 -->
+          <div class="bg-slate-50 rounded-xl p-3.5 border border-slate-200/80 text-xs text-slate-600 leading-relaxed">
+            <p class="font-semibold text-slate-700 mb-1">💡 조항 자동 매칭 안내</p>
+            <p>업로드된 문서 내 <code class="bg-white px-1.5 py-0.5 rounded border border-slate-200 text-slate-800 font-mono">제○조</code> 형식의 조문과 핵심 키워드를 자동 분석하여 민원 유형에 가장 적합한 근거 조항을 스크립트 2단계에 삽입합니다.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- [우측 패널 - 민원 상황 상세 입력 영역 (7칸)] -->
+      <section class="lg:col-span-7 bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col overflow-hidden">
+        <div class="bg-slate-50 border-b border-slate-200 px-5 py-4 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="flex items-center justify-center w-6 h-6 rounded-lg bg-blue-600 text-white text-xs font-bold">2</span>
+            <h2 class="font-bold text-slate-800 text-base">민원 상황 상세 입력</h2>
+          </div>
+          <button id="fillSampleComplaintBtn" type="button" class="text-xs font-semibold text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 border border-blue-200 px-3 py-1.5 rounded-lg transition-colors cursor-pointer">
+            ✨ 샘플 민원 사례 채우기
+          </button>
+        </div>
+
+        <div class="p-5 space-y-5 flex-grow">
+          <!-- 1) 민원인 유형 선택 -->
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-2">① 민원인 유형</label>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2" id="complainantGroup">
+              <button type="button" data-group="complainant" data-value="parent" class="option-chip active-chip py-2.5 px-3 rounded-xl border text-xs sm:text-sm font-semibold text-left sm:text-center transition-all cursor-pointer bg-blue-600 text-white border-blue-600 shadow-sm">
+                학부모 (자녀 관련 항의·문의)
+              </button>
+              <button type="button" data-group="complainant" data-value="student" class="option-chip py-2.5 px-3 rounded-xl border text-xs sm:text-sm font-semibold text-left sm:text-center transition-all cursor-pointer bg-white text-slate-700 border-slate-200 hover:border-blue-300">
+                재학생·휴학생 (본인 문의)
+              </button>
+              <button type="button" data-group="complainant" data-value="external" class="option-chip py-2.5 px-3 rounded-xl border text-xs sm:text-sm font-semibold text-left sm:text-center transition-all cursor-pointer bg-white text-slate-700 border-slate-200 hover:border-blue-300">
+                외부인·기타
+              </button>
+            </div>
+          </div>
+
+          <!-- 2) 응대 채널 선택 -->
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-2">② 응대 채널</label>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2" id="channelGroup">
+              <button type="button" data-group="channel" data-value="phone" class="option-chip active-chip py-2.5 px-3 rounded-xl border text-xs sm:text-sm font-semibold text-left sm:text-center transition-all cursor-pointer bg-blue-600 text-white border-blue-600 shadow-sm">
+                📞 전화 응대용 (구어체 대사)
+              </button>
+              <button type="button" data-group="channel" data-value="inperson" class="option-chip py-2.5 px-3 rounded-xl border text-xs sm:text-sm font-semibold text-left sm:text-center transition-all cursor-pointer bg-white text-slate-700 border-slate-200 hover:border-blue-300">
+                🤝 대면 상담용
+              </button>
+              <button type="button" data-group="channel" data-value="written" class="option-chip py-2.5 px-3 rounded-xl border text-xs sm:text-sm font-semibold text-left sm:text-center transition-all cursor-pointer bg-white text-slate-700 border-slate-200 hover:border-blue-300">
+                ✉️ 이메일·게시판 공식 답변글
+              </button>
+            </div>
+          </div>
+
+          <!-- 3) 민원 분야 선택 칩 -->
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-2">③ 민원 분야</label>
+            <div class="flex flex-wrap gap-2" id="categoryGroup">
+              <button type="button" data-group="category" data-value="scholarship" class="option-chip active-chip py-2 px-3.5 rounded-xl border text-xs sm:text-sm font-semibold transition-all cursor-pointer bg-slate-800 text-white border-slate-800 shadow-sm">
+                장학금 탈락·선발 기준
+              </button>
+              <button type="button" data-group="category" data-value="grade" class="option-chip py-2 px-3.5 rounded-xl border text-xs sm:text-sm font-semibold transition-all cursor-pointer bg-white text-slate-700 border-slate-200 hover:border-slate-400">
+                성적 평가·이의제기
+              </button>
+              <button type="button" data-group="category" data-value="tuition" class="option-chip py-2 px-3.5 rounded-xl border text-xs sm:text-sm font-semibold transition-all cursor-pointer bg-white text-slate-700 border-slate-200 hover:border-slate-400">
+                등록금 납부·반환
+              </button>
+              <button type="button" data-group="category" data-value="attendance" class="option-chip py-2 px-3.5 rounded-xl border text-xs sm:text-sm font-semibold transition-all cursor-pointer bg-white text-slate-700 border-slate-200 hover:border-slate-400">
+                출석·학사경고·유급
+              </button>
+              <button type="button" data-group="category" data-value="leave" class="option-chip py-2 px-3.5 rounded-xl border text-xs sm:text-sm font-semibold transition-all cursor-pointer bg-white text-slate-700 border-slate-200 hover:border-slate-400">
+                휴학·복학·자퇴
+              </button>
+            </div>
+          </div>
+
+          <!-- 4) 민원인의 감정 온도 선택 -->
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-2">④ 민원인의 감정 온도</label>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2" id="emotionGroup">
+              <button type="button" data-group="emotion" data-value="calm" class="option-chip py-2.5 px-3 rounded-xl border text-xs sm:text-sm font-semibold transition-all cursor-pointer bg-white text-slate-700 border-slate-200 hover:border-emerald-400">
+                🟢 단순 문의 (차분함)
+              </button>
+              <button type="button" data-group="emotion" data-value="upset" class="option-chip active-chip py-2.5 px-3 rounded-xl border text-xs sm:text-sm font-semibold transition-all cursor-pointer bg-amber-500 text-white border-amber-500 shadow-sm">
+                🟡 억울함·속상함 호소
+              </button>
+              <button type="button" data-group="emotion" data-value="angry" class="option-chip py-2.5 px-3 rounded-xl border text-xs sm:text-sm font-semibold transition-all cursor-pointer bg-white text-slate-700 border-slate-200 hover:border-rose-400">
+                🔴 격앙됨·강한 항의
+              </button>
+            </div>
+          </div>
+
+          <!-- 5) 구체적인 민원 요지 입력창 -->
+          <div>
+            <label for="complaintInput" class="block text-xs font-bold text-slate-700 mb-2">⑤ 구체적인 민원 요지 및 핵심 쟁점</label>
+            <textarea id="complaintInput" rows="3" class="w-full rounded-xl border border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 p-3.5 text-sm text-slate-800 placeholder-slate-400 transition-all resize-y" placeholder="예: 평점이 3.48인데 소수점 차이로 성적장학금에서 탈락했다며 학부모님이 강하게 항의하시는 상황"></textarea>
+          </div>
+        </div>
+      </section>
+
+      <!-- 하단 대형 실행 버튼 (전체 너비) -->
+      <div class="lg:col-span-12">
+        <button id="generateScriptBtn" type="button" class="w-full py-4 px-6 bg-gradient-to-r from-slate-900 via-blue-900 to-blue-800 hover:from-slate-800 hover:to-blue-700 active:scale-[0.995] text-white font-bold text-base sm:text-lg rounded-2xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-3 cursor-pointer">
+          <svg class="w-6 h-6 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+          <span>규정 근거 기반 정중한 응대 스크립트 생성하기</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 4. 생성된 4단계 실전 응대 스크립트 결과 영역 -->
+    <div id="resultSection" class="hidden space-y-6 print-only-full">
+      <!-- 결과 헤더 & 메타 배지 -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <div class="flex flex-wrap items-center gap-2 mb-1.5" id="resultMetaBadges">
+            <!-- 동적 조건 배지 -->
+          </div>
+          <h2 class="text-xl sm:text-2xl font-bold text-slate-900">맞춤형 민원 응대 실전 스크립트</h2>
+          <p class="text-xs sm:text-sm text-slate-500 mt-1">광주보건대학교 행정 응대 가이드 · 감정 완충 후 규정 원칙을 안내하는 4단계 표준 구조입니다.</p>
+        </div>
+
+        <!-- 상단 빠른 복사/인쇄 버튼 -->
+        <div class="flex items-center gap-2.5 shrink-0 no-print">
+          <button type="button" onclick="copyFullScript()" class="py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs sm:text-sm rounded-xl shadow-sm transition-colors flex items-center gap-1.5 cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+            <span>응대 스크립트 전체 복사</span>
+          </button>
+          <button type="button" onclick="window.print()" class="py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-xs sm:text-sm rounded-xl border border-slate-300 transition-colors flex items-center gap-1.5 cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+            <span>인쇄 / PDF 저장</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 4단계 스크립트 카드 컨테이너 -->
+      <div class="grid grid-cols-1 gap-5">
+
+        <!-- ① [1단계 - 감정 수용 및 쿠션 화법 (공감)] -->
+        <article class="script-card bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+          <div class="bg-blue-50/80 border-b border-blue-100 px-5 py-3.5 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <span class="px-2.5 py-1 rounded-lg bg-blue-600 text-white text-xs font-bold">1단계</span>
+              <h3 class="font-bold text-slate-900 text-sm sm:text-base">감정 수용 및 쿠션 화법 (공감 · 방어벽 완화)</h3>
+            </div>
+            <span class="text-xs font-medium text-blue-700 hidden sm:inline">핵심 목표: 경청과 정서적 지지 표현</span>
+          </div>
+          <div class="p-5 sm:p-6">
+            <div id="stage1Content" class="text-slate-800 text-sm sm:text-base leading-relaxed whitespace-pre-line font-normal"></div>
+          </div>
+        </article>
+
+        <!-- ② [2단계 - 업로드된 규정 근거 명확 안내] -->
+        <article class="script-card bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+          <div class="bg-slate-800 text-white px-5 py-3.5 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <span class="px-2.5 py-1 rounded-lg bg-blue-500 text-white text-xs font-bold">2단계</span>
+              <h3 class="font-bold text-white text-sm sm:text-base">업로드된 규정 근거 명확 안내 (원칙 설명)</h3>
+            </div>
+            <span class="text-xs font-medium text-slate-300 hidden sm:inline">핵심 목표: 객관적 조항 근거 제시</span>
+          </div>
+          <div class="p-5 sm:p-6 space-y-4">
+            <div id="stage2Content" class="text-slate-800 text-sm sm:text-base leading-relaxed whitespace-pre-line"></div>
+
+            <!-- [매칭된 규정 원문 확인 박스] -->
+            <div class="bg-slate-50 border-l-4 border-blue-600 rounded-r-xl p-4 sm:p-5 border-y border-r border-slate-200">
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                <span class="inline-flex items-center gap-1.5 text-xs font-bold text-blue-800 bg-blue-100 px-2.5 py-1 rounded-md">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                  <span>매칭된 규정 원문 확인 박스</span>
+                </span>
+                <span id="matchedSourceLabel" class="text-xs font-semibold text-slate-500"></span>
+              </div>
+              <div id="matchedClauseText" class="text-xs sm:text-sm text-slate-700 leading-relaxed font-medium whitespace-pre-line bg-white p-3.5 rounded-lg border border-slate-200/80"></div>
+            </div>
+          </div>
+        </article>
+
+        <!-- ③ [3단계 - 대안 및 차선책 제시] -->
+        <article class="script-card bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+          <div class="bg-emerald-50/80 border-b border-emerald-100 px-5 py-3.5 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <span class="px-2.5 py-1 rounded-lg bg-emerald-600 text-white text-xs font-bold">3단계</span>
+              <h3 class="font-bold text-slate-900 text-sm sm:text-base">대안 및 차선책 제시 (건설적 해결 방향 안내)</h3>
+            </div>
+            <span class="text-xs font-medium text-emerald-700 hidden sm:inline">핵심 목표: 상실감 완화 및 후속 절차 안내</span>
+          </div>
+          <div class="p-5 sm:p-6">
+            <div id="stage3Content" class="text-slate-800 text-sm sm:text-base leading-relaxed whitespace-pre-line"></div>
+          </div>
+        </article>
+
+        <!-- ④ [4단계 - 정중한 마무리 및 담당자 보호 멘트] -->
+        <article class="script-card bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+          <div class="bg-slate-100 border-b border-slate-200 px-5 py-3.5 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <span class="px-2.5 py-1 rounded-lg bg-slate-700 text-white text-xs font-bold">4단계</span>
+              <h3 class="font-bold text-slate-900 text-sm sm:text-base">정중한 마무리 및 추가 문의처 안내</h3>
+            </div>
+            <span class="text-xs font-medium text-slate-600 hidden sm:inline">핵심 목표: 품격 있는 응대 종료</span>
+          </div>
+          <div class="p-5 sm:p-6 space-y-4">
+            <div id="stage4Content" class="text-slate-800 text-sm sm:text-base leading-relaxed whitespace-pre-line"></div>
+
+            <!-- 교직원 보호용 정중한 경고 멘트 (격앙됨·강한 항의 선택 시 활성화) -->
+            <div id="staffProtectionBox" class="hidden bg-rose-50 border border-rose-200 rounded-xl p-4 sm:p-5">
+              <div class="flex items-center gap-2 text-rose-800 font-bold text-xs sm:text-sm mb-1.5">
+                <svg class="w-4 h-4 text-rose-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                <span>[교직원 보호 안내] 폭언·욕설·협박 지속 시 정중한 응대 종료 고지 멘트</span>
+              </div>
+              <p id="staffProtectionText" class="text-xs sm:text-sm text-rose-950 font-medium leading-relaxed"></p>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- 하단 결과 활용 버튼 바 -->
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2 no-print">
+        <button type="button" onclick="copyFullScript()" class="w-full sm:w-auto py-3.5 px-7 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+          <span>응대 스크립트 전체 복사</span>
+        </button>
+        <button type="button" onclick="window.print()" class="w-full sm:w-auto py-3.5 px-7 bg-white hover:bg-slate-50 text-slate-800 font-bold text-sm rounded-xl border border-slate-300 shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+          <span>인쇄 / PDF 저장</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 5. 개인정보보호법 준수 주의 배너 (항상 하단 표시) -->
+    <section class="mt-8 bg-slate-900 text-slate-100 rounded-2xl p-5 sm:p-6 border border-slate-700 shadow-sm">
+      <div class="flex items-start gap-3.5">
+        <div class="w-9 h-9 rounded-xl bg-blue-500/20 border border-blue-400/30 flex items-center justify-center text-blue-300 shrink-0 mt-0.5">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+        </div>
+        <div>
+          <h3 class="text-sm sm:text-base font-bold text-white mb-1">개인정보보호법 준수 및 학생 본인 확인 주의 안내</h3>
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            성인(만 19세 이상) 재학생의 <strong class="text-blue-300">성적·장학 수혜 내역·등록금 납부·학적 세부 정보</strong>는 「개인정보 보호법」에 따라 학생 본인의 사전 동의 없이 제3자(학부모·가족 포함)에게 직접 열람하거나 상세 내용을 제공할 수 없습니다. 학부모 문의 응대 시에는 <strong class="text-white">일반적인 학칙 및 규정 기준 위주로 안내</strong>하시고, 개별 학생의 구체적 조회가 필요한 경우 반드시 학생 본인의 유선·서면 동의 및 본인 확인 절차를 거쳐 주시기 바랍니다.
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 푸터 -->
+  <footer class="bg-white border-t border-slate-200 py-5 px-4 text-center text-xs text-slate-500 no-print">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+      <span>© 광주보건대학교 AI대학혁신본부 · 학내 민원 및 학부모 문의 응대 스크립트 매니저</span>
+      <span>본 도구는 교직원의 행정 민원 소통 지원을 위해 제작되었습니다.</span>
+    </div>
+  </footer>
+
+  <!-- 자바스크립트 로직 (주의: 백틱 기호 절대 사용 금지, 일반 따옴표와 + 연산자만 사용) -->
+  <script>
+    // PDF.js 워커 경로 설정
+    if (typeof pdfjsLib !== 'undefined') {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
+
+    // 로컬 스토리지 키 상수
+    var STORAGE_KEY = 'gwu_complaint_regulations_v1';
+
+    // 애플리케이션 상태 객체
+    var appState = {
+      complainant: 'parent',
+      channel: 'phone',
+      category: 'scholarship',
+      emotion: 'upset',
+      regulations: []
+    };
+
+    // 기본 샘플 규정 데이터 (파일 없이도 즉시 테스트 가능)
+    var SAMPLE_REGULATIONS = [
+      {
+        id: 'sample_scholarship_reg',
+        name: '장학규정(샘플_최신개정판).pdf',
+        uploadedAt: '샘플 기본 데이터',
+        text: '장학규정\n' +
+          '제12조(성적우수장학금 선발 기준 및 평점 산정) ① 성적우수장학금은 직전 학기 15학점 이상을 이수하고, 평점평균이 3.50 이상인 재학생 중에서 학과(부)별 배정 예산 범위 내 성적 석차순으로 선발한다.\n' +
+          '② 평점평균은 소수점 둘째 자리까지 산출하며, 셋째 자리 이하는 반올림하지 않고 절사한다.\n' +
+          '③ 직전 학기 F학점이 있거나 학칙에 의한 징계 처분을 받은 자는 선발 대상에서 제외한다.\n' +
+          '제15조(장학금 중복 수혜 제한 및 교내외 장학 안내) 등록금 범위 내에서 국가장학금 및 교내 복지·근로장학금을 신청할 수 있으며, 가계곤란 학생을 위한 면학장학금은 별도 심사를 통해 선발한다.'
+      },
+      {
+        id: 'sample_grade_reg',
+        name: '학업성적처리규정(샘플_최신개정판).pdf',
+        uploadedAt: '샘플 기본 데이터',
+        text: '학업성적처리규정\n' +
+          '제18조(성적 평가 및 이의신청 절차) ① 학생은 매 학기 성적 공시 기간(공시일로부터 5일 이내)에 본인의 성적을 열람하고, 성적 산출에 착오가 있다고 판단될 경우 담당 교원에게 공식 이의신청을 할 수 있다.\n' +
+          '② 담당 교원은 객관적 평가 근거(출석부, 시험답안지, 과제물 등)를 확인하여 정정 사유가 명백한 경우에만 증빙서류를 첨부하여 교무처에 성적 정정을 신청한다.\n' +
+          '③ 단순한 장학금 탈락 구제, 취업 지원, 졸업 사정 등의 개인적 사유로 인한 성적 정정은 엄격히 금지한다.'
+      },
+      {
+        id: 'sample_tuition_reg',
+        name: '등록금에_관한_규정(샘플_최신개정판).pdf',
+        uploadedAt: '샘플 기본 데이터',
+        text: '등록금에 관한 규정\n' +
+          '제9조(등록금의 반환 기준) ① 이미 납부한 등록금은 다음 각 호의 반환 사유가 발생한 날을 기준으로 반환한다.\n' +
+          '1. 학기 개시일 전일까지 반환 사유가 발생한 경우: 이미 납부한 등록금 전액\n' +
+          '2. 학기 개시일부터 30일까지: 등록금의 6분의 5 해당액\n' +
+          '3. 학기 개시일에서 30일이 지난 날부터 60일까지: 등록금의 3분의 2 해당액\n' +
+          '4. 학기 개시일에서 60일이 지난 날부터 90일까지: 등록금의 2분의 1 해당액\n' +
+          '5. 학기 개시일에서 90일이 지난 날: 반환하지 아니함\n' +
+          '② 제1항의 반환 기준일은 학생이 자퇴원서 또는 미복학 제적 관련 서류를 공식 접수한 날을 기준으로 산정한다.'
+      },
+      {
+        id: 'sample_academic_rules',
+        name: '광주보건대학교_학칙(샘플_최신개정판).pdf',
+        uploadedAt: '샘플 기본 데이터',
+        text: '학칙\n' +
+          '제22조(휴학 및 복학) ① 질병, 가사, 기타 부득이한 사유로 4주 이상 수강할 수 없을 때에는 소정의 휴학원서를 제출하여 총장의 허가를 받아 휴학할 수 있다.\n' +
+          '② 일반휴학 기간은 1회에 1년(2개 학기) 이내로 하며, 재학 중 통산 2년(4개 학기)을 초과할 수 없다. 다만, 병역 의무 이행을 위한 입대휴학 기간은 통산 기간에 산입하지 아니한다.\n' +
+          '제25조(자퇴) 자퇴하고자 하는 자는 본인과 보호자가 연서한 자퇴원서를 제출하여 총장의 허가를 받아야 한다.\n' +
+          '제34조(출석 의무 및 학사경고·유급) ① 각 교과목의 출석 시수는 매 학기 총 수업시간수의 4분의 3 이상이어야 하며, 출석 미달 시 해당 교과목 성적은 F학점으로 처리한다.\n' +
+          '② 매 학기 성적 평점평균이 1.75 미만인 자에게는 학사경고를 과하며, 연속 3회 학사경고를 받은 자는 학칙에 따라 제적될 수 있다.'
+      }
+    ];
+
+    // 민원 분야별 샘플 민원 사례 텍스트
+    var SAMPLE_COMPLAINTS = {
+      scholarship: '직전 학기 평점이 3.48인데 0.02점 차이로 성적우수장학금에서 탈락했다며, 반올림을 해주거나 예외로 선발해 달라고 학부모님이 강하게 항의하시는 상황입니다.',
+      grade: '전공 과목 시험 점수는 나쁘지 않았는데 최종 등급이 B+로 나왔다며, 성적장학금 기준을 맞추기 위해 A0로 정정해 달라고 문의하는 상황입니다.',
+      tuition: '학기 초에 개인 사정으로 자퇴를 신청했는데 왜 등록금 전액이 환불되지 않고 일부 공제 후 반환되는지 납득하기 어렵다며 문의하는 상황입니다.',
+      attendance: '질병으로 결석이 조금 있었는데 출석 미달로 F학점이 부여되어 장학금 및 평점에 불이익이 생겼다며 구제 방법을 요청하는 상황입니다.',
+      leave: '일반휴학 통산 기간을 이미 다 사용했는데 개인 사정으로 한 학기 더 휴학을 연장할 수 있는지, 미복학 시 어떻게 처리되는지 문의하는 상황입니다.'
+    };
+
+    // 민원 분야별 검색 키워드 및 조항 패턴
+    var CATEGORY_KEYWORDS = {
+      scholarship: ['장학', '성적우수', '평점', '선발', '수혜', '반올림', '절사', '제12조'],
+      grade: ['성적', '이의신청', '정정', '평가', '공시', '등급', '제18조'],
+      tuition: ['등록금', '반환', '환불', '납부', '개시일', '6분의 5', '제9조'],
+      attendance: ['출석', '유급', '학사경고', '수업시간', 'F학점', '결석', '제34조'],
+      leave: ['휴학', '복학', '자퇴', '제적', '일반휴학', '입대휴학', '제22조', '제25조']
+    };
+
+    // 초기화 함수
+    document.addEventListener('DOMContentLoaded', function() {
+      initStartupModal();
+      loadRegulationsFromStorage();
+      bindOptionChips();
+      bindFileUploadEvents();
+      bindActionButtons();
+    });
+
+    // 1. 시작 모달 제어
+    function initStartupModal() {
+      var modal = document.getElementById('startupModal');
+      var confirmBtn = document.getElementById('confirmModalBtn');
+      if (confirmBtn && modal) {
+        confirmBtn.addEventListener('click', function() {
+          modal.classList.add('hidden');
+          showToast('최신 규정 확인이 완료되었습니다. 규정을 업로드하거나 샘플을 로드해 주세요.', 'info');
+        });
+      }
+    }
+
+    // 토스트 메시지 표시 함수
+    function showToast(message, type) {
+      var container = document.getElementById('toastContainer');
+      if (!container) return;
+
+      var bgClass = 'bg-slate-900 text-white border-slate-700';
+      if (type === 'success') {
+        bgClass = 'bg-emerald-800 text-white border-emerald-600';
+      } else if (type === 'warning') {
+        bgClass = 'bg-amber-800 text-white border-amber-600';
+      } else if (type === 'error') {
+        bgClass = 'bg-rose-800 text-white border-rose-600';
+      }
+
+      var toast = document.createElement('div');
+      toast.className = 'px-4 py-3 rounded-xl shadow-lg border text-xs sm:text-sm font-medium flex items-center gap-2 transition-all duration-300 transform translate-y-2 opacity-0 ' + bgClass;
+      toast.textContent = message;
+
+      container.appendChild(toast);
+
+      // 애니메이션 진입
+      setTimeout(function() {
+        toast.classList.remove('translate-y-2', 'opacity-0');
+      }, 20);
+
+      // 3.2초 후 제거
+      setTimeout(function() {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(function() {
+          if (toast.parentNode) {
+            toast.parentNode.removeChild(toast);
+          }
+        }, 300);
+      }, 3200);
+    }
+
+    // 로컬 스토리지에서 규정 불러오기
+    function loadRegulationsFromStorage() {
+      try {
+        var saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          var parsed = JSON.parse(saved);
+          if (Array.isArray(parsed)) {
+            appState.regulations = parsed;
+          }
+        }
+      } catch (e) {
+        appState.regulations = [];
+      }
+      renderRegulationList();
+    }
+
+    // 로컬 스토리지에 규정 저장하기
+    function saveRegulationsToStorage() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState.regulations));
+      } catch (e) {
+        showToast('브라우저 저장 공간(localStorage) 용량이 부족하여 일부 파일이 저장되지 않았습니다.', 'warning');
+      }
+      renderRegulationList();
+    }
+
+    // 업로드된 규정 목록 UI 렌더링
+    function renderRegulationList() {
+      var listEl = document.getElementById('uploadedDocsList');
+      var countEl = document.getElementById('docCount');
+      var clearBtn = document.getElementById('clearAllDocsBtn');
+
+      if (!listEl || !countEl) return;
+
+      countEl.textContent = String(appState.regulations.length);
+
+      if (appState.regulations.length === 0) {
+        if (clearBtn) clearBtn.classList.add('hidden');
+        listEl.innerHTML =
+          '<div class="text-center py-6 px-3 rounded-xl border border-dashed border-slate-200 bg-slate-50/50">' +
+            '<p class="text-xs text-slate-500 font-medium">아직 업로드된 규정 파일이 없습니다.</p>' +
+            '<p class="text-[11px] text-slate-400 mt-1">PDF/TXT 파일을 올리거나 상단 [샘플 규정 데이터 자동 로드]를 눌러주세요.</p>' +
+          '</div>';
+        return;
+      }
+
+      if (clearBtn) clearBtn.classList.remove('hidden');
+
+      var html = '';
+      for (var i = 0; i < appState.regulations.length; i++) {
+        var doc = appState.regulations[i];
+        var articleMatches = doc.text.match(/제\s*\d+\s*조/g);
+        var articleCount = articleMatches ? articleMatches.length : 0;
+        var charCount = doc.text.length;
+
+        html +=
+          '<div class="flex items-center justify-between gap-2 p-3 rounded-xl bg-slate-50 border border-slate-200 hover:border-blue-300 transition-colors">' +
+            '<div class="min-w-0 flex-1">' +
+              '<div class="flex items-center gap-1.5">' +
+                '<span class="inline-block w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>' +
+                '<p class="text-xs sm:text-sm font-bold text-slate-800 truncate" title="' + escapeHtml(doc.name) + '">' + escapeHtml(doc.name) + '</p>' +
+              '</div>' +
+              '<div class="flex items-center gap-2 mt-1 text-[11px] text-slate-500">' +
+                '<span class="bg-white px-1.5 py-0.5 rounded border border-slate-200 font-medium text-blue-700">추출 조항 약 ' + articleCount + '개</span>' +
+                '<span>' + charCount.toLocaleString() + '자</span>' +
+              '</div>' +
+            '</div>' +
+            '<button type="button" onclick="deleteRegulation(\'' + escapeHtml(doc.id) + '\')" class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors shrink-0 cursor-pointer" title="문서 삭제">' +
+              '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>' +
+            '</button>' +
+          '</div>';
+      }
+      listEl.innerHTML = html;
+    }
+
+    // 개별 규정 삭제
+    function deleteRegulation(id) {
+      var filtered = [];
+      for (var i = 0; i < appState.regulations.length; i++) {
+        if (appState.regulations[i].id !== id) {
+          filtered.push(appState.regulations[i]);
+        }
+      }
+      appState.regulations = filtered;
+      saveRegulationsToStorage();
+      showToast('선택한 규정 문서가 목록에서 삭제되었습니다.', 'info');
+    }
+
+    // HTML 이스케이프 유틸리티
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    // 파일 업로드 및 드래그 앤 드롭 이벤트 바인딩
+    function bindFileUploadEvents() {
+      var dropZone = document.getElementById('dropZone');
+      var fileInput = document.getElementById('fileInput');
+
+      if (!dropZone || !fileInput) return;
+
+      dropZone.addEventListener('click', function() {
+        fileInput.click();
+      });
+
+      dropZone.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        dropZone.classList.add('border-blue-500', 'bg-blue-50');
+      });
+
+      dropZone.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        dropZone.classList.remove('border-blue-500', 'bg-blue-50');
+      });
+
+      dropZone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        dropZone.classList.remove('border-blue-500', 'bg-blue-50');
+        if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+          handleFiles(e.dataTransfer.files);
+        }
+      });
+
+      fileInput.addEventListener('change', function(e) {
+        if (e.target && e.target.files && e.target.files.length > 0) {
+          handleFiles(e.target.files);
+          fileInput.value = '';
+        }
+      });
+    }
+
+    // 다수 파일 비동기 처리 (PDF 및 TXT)
+    async function handleFiles(fileList) {
+      var progressBox = document.getElementById('uploadProgress');
+      var progressText = document.getElementById('uploadProgressText');
+
+      if (progressBox) progressBox.classList.remove('hidden');
+
+      var successCount = 0;
+
+      for (var i = 0; i < fileList.length; i++) {
+        var file = fileList[i];
+        var fileName = file.name || '무제_규정문서';
+        var lowerName = fileName.toLowerCase();
+
+        if (progressText) {
+          progressText.textContent = '"' + fileName + '" 문서 텍스트 추출 중... (' + (i + 1) + '/' + fileList.length + ')';
+        }
+
+        try {
+          var extractedText = '';
+          if (lowerName.endsWith('.pdf')) {
+            extractedText = await extractTextFromPDF(file);
+          } else if (lowerName.endsWith('.txt')) {
+            extractedText = await extractTextFromTXT(file);
+          } else {
+            showToast('"' + fileName + '"은(는) 지원하지 않는 형식입니다. PDF 또는 TXT 파일을 올려주세요.', 'warning');
+            continue;
+          }
+
+          if (extractedText && extractedText.trim().length > 10) {
+            // 동일 파일명이 있으면 덮어쓰기
+            var newList = [];
+            for (var j = 0; j < appState.regulations.length; j++) {
+              if (appState.regulations[j].name !== fileName) {
+                newList.push(appState.regulations[j]);
+              }
+            }
+            newList.unshift({
+              id: 'doc_' + Date.now() + '_' + i,
+              name: fileName,
+              uploadedAt: new Date().toLocaleDateString('ko-KR'),
+              text: extractedText.trim()
+            });
+            appState.regulations = newList;
+            successCount++;
+          } else {
+            showToast('"' + fileName + '"에서 텍스트를 추출하지 못했습니다. 스캔 이미지 PDF인지 확인해 주세요.', 'warning');
+          }
+        } catch (err) {
+          showToast('"' + fileName + '" 처리 중 오류가 발생했습니다.', 'error');
+        }
+      }
+
+      if (progressBox) progressBox.classList.add('hidden');
+
+      if (successCount > 0) {
+        saveRegulationsToStorage();
+        showToast(successCount + '건의 규정 문서가 성공적으로 등록되었습니다.', 'success');
+      }
+    }
+
+    // PDF.js를 이용한 PDF 텍스트 파싱
+    async function extractTextFromPDF(file) {
+      if (typeof pdfjsLib === 'undefined') {
+        throw new Error('PDF.js 라이브러리가 로드되지 않았습니다.');
+      }
+      var arrayBuffer = await file.arrayBuffer();
+      var loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+      var pdf = await loadingTask.promise;
+      var fullText = '';
+
+      for (var pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+        var page = await pdf.getPage(pageNum);
+        var textContent = await page.getTextContent();
+        var pageItems = textContent.items || [];
+        var pageStr = '';
+        for (var k = 0; k < pageItems.length; k++) {
+          pageStr += pageItems[k].str + ' ';
+        }
+        fullText += pageStr + '\n';
+      }
+      return fullText;
+    }
+
+    // TXT 파일 텍스트 읽기
+    function extractTextFromTXT(file) {
+      return new Promise(function(resolve, reject) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          resolve(e.target.result || '');
+        };
+        reader.onerror = function() {
+          reject(new Error('TXT 파일 읽기 실패'));
+        };
+        reader.readAsText(file, 'UTF-8');
+      });
+    }
+
+    // 선택 칩(라디오 버튼 역할) 이벤트 바인딩
+    function bindOptionChips() {
+      var chips = document.querySelectorAll('.option-chip');
+      for (var i = 0; i < chips.length; i++) {
+        chips[i].addEventListener('click', function() {
+          var group = this.getAttribute('data-group');
+          var value = this.getAttribute('data-value');
+          appState[group] = value;
+
+          // 같은 그룹 내 버튼 스타일 초기화
+          var siblings = document.querySelectorAll('.option-chip[data-group="' + group + '"]');
+          for (var j = 0; j < siblings.length; j++) {
+            siblings[j].className = 'option-chip py-2.5 px-3 rounded-xl border text-xs sm:text-sm font-semibold transition-all cursor-pointer bg-white text-slate-700 border-slate-200 hover:border-blue-300';
+            if (group === 'category') {
+              siblings[j].className = 'option-chip py-2 px-3.5 rounded-xl border text-xs sm:text-sm font-semibold transition-all cursor-pointer bg-white text-slate-700 border-slate-200 hover:border-slate-400';
+            }
+          }
+
+          // 활성 버튼 스타일 적용
+          if (group === 'category') {
+            this.className = 'option-chip active-chip py-2 px-3.5 rounded-xl border text-xs sm:text-sm font-semibold transition-all cursor-pointer bg-slate-800 text-white border-slate-800 shadow-sm';
+          } else if (group === 'emotion') {
+            if (value === 'calm') {
+              this.className = 'option-chip active-chip py-2.5 px-3 rounded-xl border text-xs sm:text-sm font-semibold transition-all cursor-pointer bg-emerald-600 text-white border-emerald-600 shadow-sm';
+            } else if (value === 'upset') {
+              this.className = 'option-chip active-chip py-2.5 px-3 rounded-xl border text-xs sm:text-sm font-semibold transition-all cursor-pointer bg-amber-500 text-white border-amber-500 shadow-sm';
+            } else {
+              this.className = 'option-chip active-chip py-2.5 px-3 rounded-xl border text-xs sm:text-sm font-semibold transition-all cursor-pointer bg-rose-600 text-white border-rose-600 shadow-sm';
+            }
+          } else {
+            this.className = 'option-chip active-chip py-2.5 px-3 rounded-xl border text-xs sm:text-sm font-semibold transition-all cursor-pointer bg-blue-600 text-white border-blue-600 shadow-sm';
+          }
+        });
+      }
+    }
+
+    // 주요 액션 버튼 이벤트 바인딩
+    function bindActionButtons() {
+      // 샘플 규정 자동 로드
+      var loadSampleBtn = document.getElementById('loadSampleRegBtn');
+      if (loadSampleBtn) {
+        loadSampleBtn.addEventListener('click', function() {
+          var existingNames = {};
+          for (var i = 0; i < appState.regulations.length; i++) {
+            existingNames[appState.regulations[i].name] = true;
+          }
+          var added = 0;
+          for (var j = 0; j < SAMPLE_REGULATIONS.length; j++) {
+            if (!existingNames[SAMPLE_REGULATIONS[j].name]) {
+              appState.regulations.push(SAMPLE_REGULATIONS[j]);
+              added++;
+            }
+          }
+          saveRegulationsToStorage();
+          if (added > 0) {
+            showToast('학칙·장학·성적·등록금 샘플 규정 ' + added + '종이 로드되었습니다.', 'success');
+          } else {
+            showToast('이미 샘플 규정 데이터가 모두 로드되어 있습니다.', 'info');
+          }
+        });
+      }
+
+      // 전체 규정 삭제
+      var clearAllBtn = document.getElementById('clearAllDocsBtn');
+      if (clearAllBtn) {
+        clearAllBtn.addEventListener('click', function() {
+          appState.regulations = [];
+          saveRegulationsToStorage();
+          showToast('저장된 모든 규정 문서가 삭제되었습니다.', 'info');
+        });
+      }
+
+      // 샘플 민원 사례 채우기
+      var fillSampleBtn = document.getElementById('fillSampleComplaintBtn');
+      if (fillSampleBtn) {
+        fillSampleBtn.addEventListener('click', function() {
+          var inputEl = document.getElementById('complaintInput');
+          var cat = appState.category || 'scholarship';
+          if (inputEl) {
+            inputEl.value = SAMPLE_COMPLAINTS[cat] || SAMPLE_COMPLAINTS.scholarship;
+            inputEl.focus();
+            showToast('선택하신 민원 분야에 맞는 대표 민원 사례를 입력했습니다.', 'info');
+          }
+        });
+      }
+
+      // 스크립트 생성 메인 버튼
+      var generateBtn = document.getElementById('generateScriptBtn');
+      if (generateBtn) {
+        generateBtn.addEventListener('click', function() {
+          generateResponseScript();
+        });
+      }
+    }
+
+    // 업로드된 규정에서 민원 분야 및 내용과 가장 연관성 높은 조항 추출 엔진
+    function findMatchingRegulationClause(category, userSummary) {
+      var docs = appState.regulations;
+      var autoLoaded = false;
+
+      // 업로드된 규정이 없으면 샘플 규정을 임시 참조하여 안내
+      if (!docs || docs.length === 0) {
+        docs = SAMPLE_REGULATIONS;
+        autoLoaded = true;
+      }
+
+      var keywords = CATEGORY_KEYWORDS[category] || [];
+      // 사용자 입력 텍스트에서 2글자 이상 주요 단어 추가 추출
+      var extraWords = [];
+      if (userSummary) {
+        var tokens = userSummary.replace(/[^가-힣a-zA-Z0-9\s]/g, ' ').split(/\s+/);
+        for (var t = 0; t < tokens.length; t++) {
+          if (tokens[t].length >= 2) {
+            extraWords.push(tokens[t]);
+          }
+        }
+      }
+
+      var bestMatch = {
+        score: -1,
+        docName: docs[0].name,
+        clauseText: '',
+        articleTitle: '관련 학칙 및 대학 규정',
+        isFallbackSample: autoLoaded
+      };
+
+      for (var i = 0; i < docs.length; i++) {
+        var doc = docs[i];
+        var rawText = doc.text;
+
+        // 문서를 '제○조' 단위로 분할
+        var parts = rawText.split(/(?=제\s*\d+\s*조)/g);
+        if (parts.length <= 1) {
+          // 조항 구분이 없으면 줄바꿈/문단 단위로 분할
+          parts = rawText.split(/\n{2,}/);
+        }
+
+        for (var j = 0; j < parts.length; j++) {
+          var chunk = parts[j].trim();
+          if (chunk.length < 15) continue;
+
+          var score = 0;
+          // 분야 핵심 키워드 가중치
+          for (var k = 0; k < keywords.length; k++) {
+            if (chunk.indexOf(keywords[k]) !== -1) {
+              score += 10;
+            }
+          }
+          // 민원 요지 단어 가중치
+          for (var w = 0; w < extraWords.length; w++) {
+            if (chunk.indexOf(extraWords[w]) !== -1) {
+              score += 4;
+            }
+          }
+          // 조항 번호(제○조)가 명시된 조문에 보너스 점수
+          var artMatch = chunk.match(/제\s*\d+\s*조\s*\([^)]+\)|제\s*\d+\s*조/);
+          if (artMatch) {
+            score += 5;
+          }
+
+          if (score > bestMatch.score) {
+            bestMatch.score = score;
+            bestMatch.docName = doc.name;
+            // 너무 긴 경우 핵심 550자 내외로 깔끔하게 정돈
+            bestMatch.clauseText = chunk.length > 580 ? chunk.substring(0, 580) + '...' : chunk;
+            bestMatch.articleTitle = artMatch ? artMatch[0].replace(/\s+/g, ' ') : '관련 규정 조항';
+          }
+        }
+      }
+
+      // 매칭된 조항이 전혀 없으면 첫 문서 요약 반환
+      if (!bestMatch.clauseText && docs.length > 0) {
+        bestMatch.clauseText = docs[0].text.substring(0, 350) + '...';
+      }
+
+      return bestMatch;
+    }
+
+    // 4단계 실전 민원 응대 스크립트 조립 엔진
+    function generateResponseScript() {
+      var summaryInput = document.getElementById('complaintInput');
+      var userSummary = summaryInput ? summaryInput.value.trim() : '';
+
+      if (!userSummary) {
+        // 입력이 비어있을 경우 현재 선택 카테고리의 기본 예시로 자동 보완 안내
+        userSummary = SAMPLE_COMPLAINTS[appState.category] || '해당 사안에 대한 규정 기준 및 예외 적용 가능 여부 문의';
+        if (summaryInput) {
+          summaryInput.value = userSummary;
+        }
+        showToast('민원 요지가 비어 있어 선택하신 분야의 기본 사례를 기준으로 스크립트를 생성했습니다.', 'info');
+      }
+
+      var match = findMatchingRegulationClause(appState.category, userSummary);
+
+      // 호칭 설정
+      var honorific = '학부모님(어머님/아버님)';
+      var studentRef = '자녀분(학생)';
+      if (appState.complainant === 'student') {
+        honorific = '학생';
+        studentRef = '본인';
+      } else if (appState.complainant === 'external') {
+        honorific = '선생님(민원인님)';
+        studentRef = '해당 학생';
+      }
+
+      // 채널별 말투 가이드
+      var channelPrefix = '';
+      var channelSignOff = '';
+      if (appState.channel === 'phone') {
+        channelPrefix = '[전화 응대 가이드: 차분하고 따뜻한 중저음 톤으로, 민원인의 말을 끊지 않고 끝까지 경청한 뒤 응답]\n\n';
+        channelSignOff = '오늘 전화 주셔서 감사합니다. 남은 하루도 평안하게 보내시길 바랍니다. 지금까지 광주보건대학교 담당자였습니다.';
+      } else if (appState.channel === 'inperson') {
+        channelPrefix = '[대면 상담 가이드: 밝고 정중한 표정으로 눈을 맞추며 고개를 끄덕이고, 준비된 규정집 출력물을 함께 보며 안내]\n\n';
+        channelSignOff = '바쁘신 걸음으로 직접 방문해 주셔서 감사합니다. 조심히 돌아가시기 바라며, 추가 궁금하신 점이 있으시면 언제든 연락 주십시오.';
+      } else {
+        channelPrefix = '안녕하십니까. 광주보건대학교 학생·학사 행정 담당 부서입니다.\n우리 대학 교육과 학생 지원에 깊은 관심을 갖고 소중한 의견을 주신 데 진심으로 감사드립니다.\n\n';
+        channelSignOff = '\n위 안내 사항 외에 추가로 궁금하신 점이 있으시면 담당 부서로 문의해 주시면 성심껏 안내해 드리겠습니다.\n감사합니다.\n\n- 광주보건대학교 담당 부서 드림 -';
+      }
+
+      // 1단계: 감정 수용 및 쿠션 화법
+      var stage1 = buildStage1(honorific, studentRef, appState.category, appState.emotion, appState.channel, channelPrefix);
+
+      // 2단계: 업로드된 규정 근거 명확 안내
+      var stage2 = buildStage2(honorific, studentRef, appState.category, match, appState.channel);
+
+      // 3단계: 대안 및 차선책 제시
+      var stage3 = buildStage3(honorific, studentRef, appState.category, appState.channel);
+
+      // 4단계: 정중한 마무리 및 교직원 보호 멘트
+      var stage4 = buildStage4(honorific, appState.category, channelSignOff);
+
+      // DOM 업데이트
+      document.getElementById('stage1Content').textContent = stage1;
+      document.getElementById('stage2Content').textContent = stage2;
+
+      var sourceLabel = match.docName + ' · ' + match.articleTitle;
+      if (match.isFallbackSample) {
+        sourceLabel += ' (※ 업로드 파일 없음: 기본 샘플 규정 참조됨)';
+      }
+      document.getElementById('matchedSourceLabel').textContent = sourceLabel;
+      document.getElementById('matchedClauseText').textContent = match.clauseText;
+
+      document.getElementById('stage3Content').textContent = stage3;
+      document.getElementById('stage4Content').textContent = stage4;
+
+      // 격앙됨·강한 항의 선택 시 교직원 보호 멘트 박스 표시
+      var protectionBox = document.getElementById('staffProtectionBox');
+      var protectionText = document.getElementById('staffProtectionText');
+      if (appState.emotion === 'angry') {
+        protectionBox.classList.remove('hidden');
+        protectionText.textContent =
+          '"' + honorific + ', 속상하신 마음은 충분히 이해하오나, 폭언이나 욕설, 인격 모독성 발언이 계속될 경우에는 「산업안전보건법」 및 우리 대학 민원 응대 매뉴얼에 따라 부득이하게 상담(통화)을 종료할 수밖에 없습니다. 차분히 말씀해 주시면 규정에 따라 성실히 안내해 드리겠습니다."';
+      } else {
+        protectionBox.classList.add('hidden');
+      }
+
+      // 메타 배지 업데이트
+      renderResultMetaBadges();
+
+      // 결과 영역 표시 및 부드러운 스크롤 이동
+      var resultSection = document.getElementById('resultSection');
+      resultSection.classList.remove('hidden');
+      resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      showToast('4단계 맞춤형 민원 응대 스크립트가 생성되었습니다.', 'success');
+    }
+
+    // 1단계 생성 함수
+    function buildStage1(honorific, studentRef, category, emotion, channel, prefix) {
+      var coreEmpathy = '';
+
+      if (category === 'scholarship') {
+        coreEmpathy = '"' + honorific + ', ' + studentRef + '께서 한 학기 동안 성실히 학업에 임하며 좋은 결과를 기대하셨을 텐데, 근소한 차이로 장학금 대상에서 제외되어 상심과 아쉬움이 크실 마음에 깊이 공감합니다."';
+      } else if (category === 'grade') {
+        coreEmpathy = '"' + honorific + ', 한 학기 동안 ' + studentRef + '께서 수업과 시험을 준비하며 기울인 노력과 열정을 생각하면, 기대했던 성적과 차이가 있어 속상하고 답답하신 마음이 충분히 이해됩니다."';
+      } else if (category === 'tuition') {
+        coreEmpathy = '"' + honorific + ', 어려운 결정 끝에 학적 변동을 진행하시면서 등록금 반환 금액에 차이가 발생해 경제적·심적으로 부담과 아쉬움이 크실 마음에 충분히 공감합니다."';
+      } else if (category === 'attendance') {
+        coreEmpathy = '"' + honorific + ', 불가피한 사정으로 출석이나 학업 관리에 어려움을 겪으시면서 성적 및 학사 처리 결과로 인해 걱정이 많으실 마음에 깊이 공감합니다."';
+      } else {
+        coreEmpathy = '"' + honorific + ', 학업 계획과 진로를 고민하며 휴학·복학 또는 학적 변동을 준비하시는 과정에서 절차와 기준 때문에 막막하고 염려되시는 마음에 충분히 공감합니다."';
+      }
+
+      var emotionAddon = '';
+      if (emotion === 'calm') {
+        emotionAddon = '\n\n"바쁘신 중에 정확한 확인을 위해 먼저 문의해 주셔서 감사합니다. 대학의 공식 기준을 알기 쉽게 차근차근 설명해 드리겠습니다."';
+      } else if (emotion === 'upset') {
+        emotionAddon = '\n\n"저 역시 현장에서 학생들의 노력을 가까이서 지켜보는 입장으로서 안타까운 마음이 큽니다. 말씀하신 사정을 충분히 이해하며, 대학이 어떤 원칙으로 처리하고 있는지 투명하게 말씀드리겠습니다."';
+      } else {
+        emotionAddon = '\n\n"그동안 얼마나 속상하고 답답하셨으면 이렇게 직접 목소리를 내셨을지 그 심정을 무겁게 받아들이고 있습니다. 먼저 마음을 조금만 가라앉히시고 제 설명을 잠시만 들어주시면 감사하겠습니다."';
+      }
+
+      return prefix + coreEmpathy + emotionAddon;
+    }
+
+    // 2단계 생성 함수
+    function buildStage2(honorific, studentRef, category, match, channel) {
+      var cleanDocTitle = match.docName.replace(/\.[^/.]+$/, '').replace(/\(샘플_최신개정판\)/g, '');
+      var bridge = '';
+
+      if (category === 'scholarship') {
+        bridge = '"' + honorific + ', 다만 장학금은 모든 재학생에게 동일한 잣대와 공정한 기회로 배분되어야 하는 공적 재원인 만큼, 대학은 사전에 공고된 [' + cleanDocTitle + ' ' + match.articleTitle + ']에 따라 엄격하게 선발하고 있습니다.\n\n' +
+          '해당 규정에 명시된 바와 같이 이수학점 및 평점평균 기준(소수점 절사 원칙 포함)을 충족한 학생 중에서 예산 범위 내 석차순으로 자동 산정되기 때문에, 안타깝게도 소수점 차이로 기준에 미달한 경우 담당 부서나 위원회가 임의로 반올림하거나 예외를 적용하기가 어렵습니다. 이 점 너그러운 양해를 부탁드립니다."';
+      } else if (category === 'grade') {
+        bridge = '"' + honorific + ', 대학의 성적 평가는 공정성과 객관성을 최우선으로 하여 [' + cleanDocTitle + ' ' + match.articleTitle + ']에 의거해 운영되고 있습니다.\n\n' +
+          '규정상 성적 정정은 공시 기간 내 공식 이의신청을 통해 출석·시험·과제 산출에 명백한 객관적 착오가 확인된 경우에만 가능하며, 장학금 수혜나 개인 사정을 이유로 성적을 상향 정정하는 것은 교육부 지침 및 학칙상 엄격히 금지되어 있어 예외 처리가 어려운 점 양해 부탁드립니다."';
+      } else if (category === 'tuition') {
+        bridge = '"' + honorific + ', 등록금 반환은 임의로 산정되는 것이 아니라 교육부 「대학 등록금에 관한 규칙」 및 우리 대학 [' + cleanDocTitle + ' ' + match.articleTitle + ']에 정해진 법정 일수 기준에 따라 처리됩니다.\n\n' +
+          '학기 개시일 이후 경과 일수에 따라 반환 비율(6분의 5, 3분의 2, 2분의 1 등)이 일괄 적용되므로, 학기 개시 후 일정 기간이 경과한 시점에서는 규정상 전액 반환이나 임의 감면이 어려운 점 깊은 이해를 구합니다."';
+      } else if (category === 'attendance') {
+        bridge = '"' + honorific + ', 우리 대학은 수업의 내실화와 학점 인정의 공정성을 위해 [' + cleanDocTitle + ' ' + match.articleTitle + ']에서 총 수업시간수의 4분의 3 이상 출석을 필수 이수 요건으로 규정하고 있습니다.\n\n' +
+          '출석 시수 미달 시에는 규정상 해당 교과목 성적이 자동으로 F학점으로 처리되며, 사후에 임의로 출석을 인정하거나 성적을 부여할 수 없도록 엄격히 관리되고 있습니다."';
+      } else {
+        bridge = '"' + honorific + ', 학적 변동(휴학·복학·자퇴)은 학생의 수학 연한과 학적 관리의 형평성을 위해 [' + cleanDocTitle + ' ' + match.articleTitle + ']에 정해진 기간과 절차에 따라 허가되고 있습니다.\n\n' +
+          '규정에서 정한 통산 휴학 연한 및 제출 서류 요건을 초과하거나 미비할 경우 전산 및 학칙상 승인이 제한되므로, 예외 적용이 어려운 점 양해해 주시기 바랍니다."';
+      }
+
+      return bridge;
+    }
+
+    // 3단계 생성 함수
+    function buildStage3(honorific, studentRef, category, channel) {
+      if (category === 'scholarship') {
+        return '"비록 이번 학기 성적우수장학금은 규정상 아쉽게 되었지만, ' + studentRef + '께서 지원하실 수 있는 다른 장학 제도를 함께 안내해 드리고 싶습니다.\n\n' +
+          '① 교내 면학(복지)장학금, 근로장학금, 마일리지·비교과 프로그램 장학금 등 성적 외 요건으로 선발하는 다양한 교내 장학금이 운영되고 있습니다.\n' +
+          '② 또한 한국장학재단의 국가장학금(Ⅰ·Ⅱ유형) 및 다자녀·국가근로장학금 신청 일정을 확인하시면 실질적인 등록금 부담을 덜 수 있습니다.\n' +
+          '③ 다음 학기 성적장학금 선발 시 불이익이 없도록 이번 학기 이수학점(15학점 이상)과 평점 관리 기준을 미리 안내해 드리겠습니다."';
+      } else if (category === 'grade') {
+        return '"성적 산출 과정에 대해 궁금하신 점이 남지 않도록 공식적인 확인 절차를 안내해 드리겠습니다.\n\n' +
+          '① 성적 공시 기간 중이시라면 학생포털 시스템을 통해 담당 교수님께 성적 산출 내역(시험·과제 점수 반영 비율) 열람 및 공식 이의신청을 진행하실 수 있습니다.\n' +
+          '② 만약 채점 누락이나 입력 오류 등 객관적인 증빙이 확인될 경우에는 규정에 따라 정당한 성적 정정 절차가 진행됩니다.\n' +
+          '③ 아울러 다음 학기 학습법 특강이나 교수학습지원센터의 튜터링 프로그램을 활용하시면 학업 성취도를 높이는 데 큰 도움을 받으실 수 있습니다."';
+      } else if (category === 'tuition') {
+        return '"등록금과 관련하여 경제적 부담을 완화하거나 절차를 원활히 진행하실 수 있는 방법을 안내해 드리겠습니다.\n\n' +
+          '① 반환 금액 산정 기준일(서류 공식 접수일)이 늦어질수록 반환 비율이 줄어들 수 있으므로, 학적 변동을 확정하셨다면 지체 없이 온라인 또는 방문으로 서류를 접수하시는 것이 유리합니다.\n' +
+          '② 만약 학업을 계속 이어가실 계획이라면 등록금 분할납부 제도나 한국장학재단 학자금 대출·국가장학금 연계 지원 제도를 활용하실 수 있도록 상세히 안내해 드리겠습니다."';
+      } else if (category === 'attendance') {
+        return '"현재 상황에서 학업 불이익을 최소화하고 향후 학사 일정을 회복할 수 있는 방안을 안내해 드리겠습니다.\n\n' +
+          '① 만약 법정 전염병, 직계가족 경조사, 병역 등 학칙이 인정하는 공결 사유에 해당하는 증빙서류가 있다면 지정 기한 내 공결 신청서를 제출하여 출석 인정을 받으실 수 있습니다.\n' +
+          '② 이미 F학점으로 확정된 과목은 다음 학기 또는 계절학기를 통해 재이수하시면 기존 성적을 대체하여 평점평균을 회복하실 수 있습니다.\n' +
+          '③ 학사경고 대상자인 경우 교내 학생상담센터 및 학습지원 프로그램을 이수하시면 학사 관리에 실질적인 도움을 받으실 수 있습니다."';
+      } else {
+        return '"학업을 중단하지 않고 원만하게 학사 일정을 이어가실 수 있도록 다음 절차를 안내해 드리겠습니다.\n\n' +
+          '① 질병이나 부득이한 사유가 객관적 진단서 등으로 소명되는 경우, 일반휴학 외에 특별휴학(질병휴학 등) 적용 가능 여부를 학사 담당자와 구체적으로 상담받으실 수 있습니다.\n' +
+          '② 복학 예정 학기에는 복학 신청 기간 내에 수강신청 및 등록을 완료하시면 미복학 제적을 예방할 수 있으며, 시간제 등록이나 지도교수 상담을 통해 맞춤형 학업 설계를 지원해 드리고 있습니다."';
+      }
+    }
+
+    // 4단계 생성 함수
+    function buildStage4(honorific, category, channelSignOff) {
+      var deptName = '학생·학사 행정 담당 부서';
+      if (category === 'scholarship') {
+        deptName = '학생취업처 장학담당 부서';
+      } else if (category === 'grade' || category === 'attendance' || category === 'leave') {
+        deptName = '교무처 학사지원팀 및 소속 학과 사무실';
+      } else if (category === 'tuition') {
+        deptName = '사무처 재무·등록 담당 부서';
+      }
+
+      return '"다시 한번 ' + honorific + '의 너그러운 이해에 깊이 감사드립니다. 우리 대학은 앞으로도 모든 학생이 공정한 기준 아래 학업에 전념할 수 있도록 최선을 다하겠습니다.\n\n' +
+        '추가로 세부 일정이나 서류 절차가 궁금하실 경우, [' + deptName + ']로 연락 주시면 친절하고 정확하게 안내해 드리겠습니다.\n\n' +
+        channelSignOff + '"';
+    }
+
+    // 결과 메타 배지 렌더링
+    function renderResultMetaBadges() {
+      var container = document.getElementById('resultMetaBadges');
+      if (!container) return;
+
+      var compMap = { parent: '민원인: 학부모', student: '민원인: 재학생·휴학생', external: '민원인: 외부인·기타' };
+      var chanMap = { phone: '채널: 전화 응대', inperson: '채널: 대면 상담', written: '채널: 이메일·게시판' };
+      var catMap = {
+        scholarship: '분야: 장학금 탈락·기준',
+        grade: '분야: 성적 평가·이의제기',
+        tuition: '분야: 등록금 납부·반환',
+        attendance: '분야: 출석·학사경고·유급',
+        leave: '분야: 휴학·복학·자퇴'
+      };
+      var emoMap = {
+        calm: { text: '감정온도: 차분함', cls: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
+        upset: { text: '감정온도: 억울함·속상함', cls: 'bg-amber-100 text-amber-800 border-amber-200' },
+        angry: { text: '감정온도: 격앙됨·강한 항의', cls: 'bg-rose-100 text-rose-800 border-rose-200' }
+      };
+
+      var emoObj = emoMap[appState.emotion] || emoMap.upset;
+
+      container.innerHTML =
+        '<span class="px-2.5 py-1 rounded-md text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">' + compMap[appState.complainant] + '</span>' +
+        '<span class="px-2.5 py-1 rounded-md text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">' + chanMap[appState.channel] + '</span>' +
+        '<span class="px-2.5 py-1 rounded-md text-xs font-semibold bg-slate-800 text-white">' + catMap[appState.category] + '</span>' +
+        '<span class="px-2.5 py-1 rounded-md text-xs font-semibold border ' + emoObj.cls + '">' + emoObj.text + '</span>';
+    }
+
+    // 전체 스크립트 클립보드 복사 (iFrame 호환 document.execCommand 활용)
+    function copyFullScript() {
+      var s1 = document.getElementById('stage1Content').textContent;
+      var s2 = document.getElementById('stage2Content').textContent;
+      var src = document.getElementById('matchedSourceLabel').textContent;
+      var clause = document.getElementById('matchedClauseText').textContent;
+      var s3 = document.getElementById('stage3Content').textContent;
+      var s4 = document.getElementById('stage4Content').textContent;
+
+      var fullText =
+        '[광주보건대학교 AI대학혁신본부 - 학내 민원 및 학부모 문의 응대 스크립트]\n' +
+        '====================================================================\n\n' +
+        '① [1단계 - 감정 수용 및 쿠션 화법 (공감)]\n' +
+        s1 + '\n\n' +
+        '--------------------------------------------------------------------\n' +
+        '② [2단계 - 업로드된 규정 근거 명확 안내]\n' +
+        s2 + '\n\n' +
+        '[근거 규정 원문: ' + src + ']\n' +
+        clause + '\n\n' +
+        '--------------------------------------------------------------------\n' +
+        '③ [3단계 - 대안 및 차선책 제시]\n' +
+        s3 + '\n\n' +
+        '--------------------------------------------------------------------\n' +
+        '④ [4단계 - 정중한 마무리 및 추가 안내]\n' +
+        s4 + '\n';
+
+      if (appState.emotion === 'angry') {
+        var prot = document.getElementById('staffProtectionText').textContent;
+        fullText += '\n[교직원 보호 안내 - 폭언·욕설 지속 시 고지 멘트]\n' + prot + '\n';
+      }
+
+      var textArea = document.createElement('textarea');
+      textArea.value = fullText;
+      textArea.style.position = 'fixed';
+      textArea.style.left = '-9999px';
+      document.body.appendChild(textArea);
+      textArea.select();
+
+      try {
+        var successful = document.execCommand('copy');
+        if (successful) {
+          showToast('전체 4단계 응대 스크립트가 클립보드에 복사되었습니다.', 'success');
+        } else {
+          showToast('복사에 실패했습니다. 텍스트를 직접 선택하여 복사해 주세요.', 'warning');
+        }
+      } catch (err) {
+        showToast('복사 중 오류가 발생했습니다.', 'error');
+      }
+
+      document.body.removeChild(textArea);
+    }
+  </script>
+</body>
+</html>

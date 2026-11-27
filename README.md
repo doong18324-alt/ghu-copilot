@@ -33,6 +33,14 @@ npm run dev
 npm run server
 ```
 
+## 앱마켓에 웹앱 올리기
+
+1. 하나의 HTML 파일로 된 웹앱을 `public/webapps/` 에 영문 파일명으로 넣습니다(예: `press-notice.html`).
+2. `src/data/webapps.js` 의 `WEBAPPS` 목록에 한 줄을 추가합니다(제목, 설명, 대상 역할, 분야, 검색어, 주의 문구).
+3. 대상 역할에 넣은 학생·교수·직원 웹앱 화면과 앱마켓(`#/market`)에 자동으로 나타납니다.
+
+올리기 전에 입력 내용을 외부 서버로 보내지 않는지(`fetch`, API 키 포함 여부)를 확인합니다.
+
 ## 실제 운영 전에 꼭 할 일
 
 1. 학교 통합인증(SSO) 연결: `server/auth.js`의 `sso` 부분 구현

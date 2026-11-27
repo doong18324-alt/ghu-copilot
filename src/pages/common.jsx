@@ -119,6 +119,7 @@ export function Login() {
           <Link to="/about">본부 소개</Link>
           <Link to="/news">성과 소식</Link>
           <Link to="/recruit">프로그램 모집</Link>
+          <Link to="/market">앱마켓</Link>
         </div>
       </div>
     </div>

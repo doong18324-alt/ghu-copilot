@@ -1,0 +1,1797 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>가족 맞춤형 안전 홈 안마 &amp; 지압 가이드</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --green-dark: #2E6F40;
+      --green-mid: #3E8B54;
+      --green-light: #E8F3EC;
+      --green-border: #C4DFCE;
+      --ivory-bg: #FAF9F5;
+      --card-bg: #FFFFFF;
+      --text-main: #222B24;
+      --text-sub: #536257;
+      --text-muted: #758479;
+      --warn-bg: #FFF7ED;
+      --warn-border: #FDBA74;
+      --warn-text: #9A3412;
+      --danger-bg: #FEF2F2;
+      --danger-border: #FCA5A5;
+      --danger-text: #991B1B;
+      --shadow-sm: 0 2px 8px rgba(46, 111, 64, 0.06);
+      --shadow-md: 0 8px 24px rgba(46, 111, 64, 0.10);
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Malgun Gothic', sans-serif;
+      background-color: var(--ivory-bg);
+      color: var(--text-main);
+      line-height: 1.65;
+      padding-bottom: 130px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* 상단 헤더 */
+    .app-header {
+      background: linear-gradient(135deg, #2E6F40 0%, #3E8B54 100%);
+      color: #FFFFFF;
+      padding: 20px 20px 44px;
+      text-align: center;
+      border-bottom-left-radius: 28px;
+      border-bottom-right-radius: 28px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .header-top-org {
+      max-width: 960px;
+      margin: 0 auto 10px;
+      text-align: right;
+    }
+
+    .header-top-org span {
+      display: inline-block;
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: #E8F3EC;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      padding: 4px 12px;
+      border-radius: 999px;
+      letter-spacing: -0.01em;
+    }
+
+    .app-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.18);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 5px 14px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+      letter-spacing: -0.01em;
+    }
+
+    .app-header h1 {
+      font-size: clamp(1.45rem, 3.5vw, 2rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+
+    .app-header p {
+      font-size: 0.95rem;
+      color: #E8F3EC;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    /* 메인 컨테이너 */
+    .container {
+      max-width: 960px;
+      margin: -24px auto 0;
+      padding: 0 16px;
+    }
+
+    /* 카드 공통 */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--green-border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.12rem;
+      font-weight: 700;
+      color: var(--green-dark);
+      margin-bottom: 14px;
+    }
+
+    .section-title .step-pill {
+      background: var(--green-light);
+      color: var(--green-dark);
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--green-border);
+    }
+
+    .sub-hint {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: -8px;
+      margin-bottom: 14px;
+    }
+
+    .form-group {
+      margin-bottom: 24px;
+    }
+
+    .form-group:last-of-type {
+      margin-bottom: 16px;
+    }
+
+    /* 선택 버튼 그리드 */
+    .btn-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .choice-btn {
+      appearance: none;
+      border: 1.5px solid #D5E2D9;
+      background-color: #FAF9F5;
+      color: var(--text-main);
+      padding: 11px 16px;
+      border-radius: var(--radius-md);
+      font-size: 0.93rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 44px;
+      font-family: inherit;
+    }
+
+    .choice-btn:hover {
+      border-color: var(--green-mid);
+      background-color: #F1F8F3;
+    }
+
+    .choice-btn.active {
+      background-color: var(--green-dark);
+      border-color: var(--green-dark);
+      color: #FFFFFF;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(46, 111, 64, 0.22);
+    }
+
+    /* 기저질환 안전 체크 버튼 특별 스타일 */
+    .disease-panel {
+      background-color: #F6FAF7;
+      border: 1.5px solid var(--green-border);
+      border-radius: var(--radius-md);
+      padding: 18px;
+    }
+
+    .disease-btn.active {
+      background-color: #B45309;
+      border-color: #B45309;
+      color: #FFFFFF;
+      box-shadow: 0 4px 12px rgba(180, 83, 9, 0.22);
+    }
+
+    .disease-btn[data-value="none"].active {
+      background-color: var(--green-dark);
+      border-color: var(--green-dark);
+      color: #FFFFFF;
+    }
+
+    /* 증상 드롭다운 */
+    .select-wrap {
+      position: relative;
+    }
+
+    .symptom-select {
+      width: 100%;
+      padding: 13px 16px;
+      border-radius: var(--radius-md);
+      border: 1.5px solid #D5E2D9;
+      background-color: #FAF9F5;
+      color: var(--text-main);
+      font-size: 0.96rem;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      min-height: 48px;
+      transition: border-color 0.2s;
+    }
+
+    .symptom-select:focus {
+      outline: none;
+      border-color: var(--green-dark);
+      background-color: #FFFFFF;
+    }
+
+    /* 대형 실행 버튼 */
+    .generate-btn {
+      width: 100%;
+      padding: 17px 24px;
+      margin-top: 8px;
+      border: none;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, #2E6F40 0%, #235731 100%);
+      color: #FFFFFF;
+      font-size: 1.08rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 6px 18px rgba(46, 111, 64, 0.28);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .generate-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 22px rgba(46, 111, 64, 0.35);
+    }
+
+    .generate-btn:active {
+      transform: translateY(0);
+    }
+
+    /* 인라인 알림 메시지 박스 (alert() 대체) */
+    .inline-notice {
+      display: none;
+      background-color: var(--danger-bg);
+      border: 1.5px solid var(--danger-border);
+      color: var(--danger-text);
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 0.92rem;
+      font-weight: 600;
+      margin-top: 12px;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .inline-notice.show {
+      display: flex;
+    }
+
+    /* 결과 대시보드 영역 */
+    #resultDashboard {
+      display: none;
+      animation: fadeIn 0.35s ease;
+    }
+
+    #resultDashboard.visible {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 상단 안전 주의 배너 */
+    .safety-banner {
+      border-radius: var(--radius-lg);
+      padding: 22px 24px;
+      margin-bottom: 20px;
+      border: 2px solid var(--warn-border);
+      background-color: var(--warn-bg);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .safety-banner.level-critical {
+      border-color: var(--danger-border);
+      background-color: var(--danger-bg);
+    }
+
+    .safety-banner.level-safe {
+      border-color: var(--green-border);
+      background-color: var(--green-light);
+    }
+
+    .safety-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px dashed rgba(0, 0, 0, 0.12);
+    }
+
+    .safety-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--warn-text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .safety-banner.level-critical .safety-title {
+      color: var(--danger-text);
+    }
+
+    .safety-banner.level-safe .safety-title {
+      color: var(--green-dark);
+    }
+
+    .intensity-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      background: #FFFFFF;
+      border: 1.5px solid currentColor;
+    }
+
+    .intensity-very-soft { color: #B91C1C; }
+    .intensity-soft { color: #B45309; }
+    .intensity-normal { color: #2E6F40; }
+
+    .safety-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .safety-list li {
+      position: relative;
+      padding-left: 22px;
+      font-size: 0.94rem;
+      color: var(--text-main);
+    }
+
+    .safety-list li::before {
+      content: "⚠️";
+      position: absolute;
+      left: 0;
+      top: 0;
+      font-size: 0.85rem;
+    }
+
+    .safety-banner.level-safe .safety-list li::before {
+      content: "✅";
+    }
+
+    .excluded-box {
+      margin-top: 14px;
+      background: rgba(255, 255, 255, 0.78);
+      border-radius: var(--radius-sm);
+      padding: 12px 15px;
+      font-size: 0.89rem;
+    }
+
+    .excluded-box strong {
+      color: #991B1B;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    /* 요약 메타 바 */
+    .summary-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+      align-items: center;
+    }
+
+    .meta-tag {
+      background: #FFFFFF;
+      border: 1px solid var(--green-border);
+      color: var(--green-dark);
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 0.84rem;
+      font-weight: 600;
+    }
+
+    /* 지압점 아이템 카드 */
+    .acupoint-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+      margin-top: 12px;
+    }
+
+    .acupoint-item {
+      background: var(--ivory-bg);
+      border: 1px solid var(--green-border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+    }
+
+    .acupoint-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .acupoint-name {
+      font-size: 1.02rem;
+      font-weight: 700;
+      color: var(--green-dark);
+    }
+
+    .acupoint-part {
+      font-size: 0.78rem;
+      background: var(--green-light);
+      color: var(--green-dark);
+      padding: 2px 9px;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+
+    .acupoint-desc {
+      font-size: 0.91rem;
+      color: var(--text-main);
+      margin-bottom: 10px;
+    }
+
+    .acupoint-time {
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: var(--green-dark);
+      background: #FFFFFF;
+      padding: 7px 10px;
+      border-radius: 8px;
+      border: 1px dashed var(--green-border);
+    }
+
+    /* 2단계 마사지 순서 + 타이머 */
+    .massage-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .m-step {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      background: var(--ivory-bg);
+      padding: 15px 16px;
+      border-radius: var(--radius-md);
+      border: 1px solid #E2ECE5;
+    }
+
+    .m-step-num {
+      flex-shrink: 0;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--green-dark);
+      color: #FFFFFF;
+      font-weight: 700;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 2px;
+    }
+
+    .m-step-content h4 {
+      font-size: 0.98rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 4px;
+    }
+
+    .m-step-content p {
+      font-size: 0.92rem;
+      color: var(--text-sub);
+    }
+
+    /* 내장 지압 타이머 위젯 */
+    .timer-widget {
+      background: linear-gradient(135deg, #E8F3EC 0%, #F4F9F6 100%);
+      border: 1.5px solid var(--green-border);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+    }
+
+    .timer-top {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .timer-label {
+      font-weight: 700;
+      color: var(--green-dark);
+      font-size: 0.98rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .timer-display {
+      font-size: 1.55rem;
+      font-weight: 700;
+      color: var(--green-dark);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .timer-status {
+      font-size: 0.86rem;
+      color: var(--text-sub);
+      margin-bottom: 10px;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 10px;
+      background: #D3E5D9;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--green-dark);
+      transition: width 0.2s linear;
+    }
+
+    .timer-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .t-btn {
+      padding: 10px 16px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--green-dark);
+      background: #FFFFFF;
+      color: var(--green-dark);
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+      min-height: 42px;
+    }
+
+    .t-btn.primary {
+      background: var(--green-dark);
+      color: #FFFFFF;
+    }
+
+    .t-btn.stop {
+      border-color: #DC2626;
+      color: #DC2626;
+    }
+
+    .t-btn:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+
+    /* 3단계 스트레칭 카드 */
+    .stretch-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 14px;
+    }
+
+    .stretch-card {
+      background: var(--ivory-bg);
+      border: 1px solid var(--green-border);
+      border-radius: var(--radius-md);
+      padding: 18px;
+    }
+
+    .stretch-badge {
+      display: inline-block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--green-dark);
+      background: var(--green-light);
+      padding: 3px 10px;
+      border-radius: 999px;
+      margin-bottom: 8px;
+    }
+
+    .stretch-card h4 {
+      font-size: 1.02rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--text-main);
+    }
+
+    .stretch-card p {
+      font-size: 0.92rem;
+      color: var(--text-sub);
+      margin-bottom: 10px;
+    }
+
+    .stretch-safe-note {
+      font-size: 0.83rem;
+      color: var(--green-dark);
+      background: #FFFFFF;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border-left: 3px solid var(--green-dark);
+    }
+
+    /* 하단 액션 버튼 그룹 */
+    .action-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 8px;
+      margin-bottom: 24px;
+    }
+
+    .action-btn {
+      flex: 1 1 200px;
+      padding: 14px 20px;
+      border-radius: var(--radius-md);
+      font-size: 0.96rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 48px;
+      transition: all 0.18s;
+    }
+
+    .btn-copy {
+      background: #FFFFFF;
+      color: var(--green-dark);
+      border: 2px solid var(--green-dark);
+    }
+
+    .btn-copy:hover {
+      background: var(--green-light);
+    }
+
+    .btn-print {
+      background: var(--green-dark);
+      color: #FFFFFF;
+      border: 2px solid var(--green-dark);
+    }
+
+    .btn-print:hover {
+      background: #235731;
+    }
+
+    /* 토스트 알림 */
+    .toast {
+      position: fixed;
+      bottom: 105px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #1F2937;
+      color: #FFFFFF;
+      padding: 12px 22px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s ease;
+      z-index: 1000;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* 하단 고정 의료적 면책 및 응급 중단 푸터 */
+    .medical-footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #1F2D23;
+      color: #E8F3EC;
+      padding: 12px 16px;
+      font-size: 0.8rem;
+      line-height: 1.48;
+      border-top: 2px solid var(--green-mid);
+      z-index: 900;
+    }
+
+    .medical-footer-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .medical-footer strong {
+      color: #FDE68A;
+    }
+
+    /* 인쇄 전용 스타일 */
+    @media print {
+      body {
+        background: #FFFFFF;
+        padding-bottom: 20px;
+      }
+      #inputPanel,
+      .timer-widget,
+      .action-bar,
+      .toast {
+        display: none !important;
+      }
+      .app-header {
+        background: #2E6F40 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        padding: 20px;
+        border-radius: 0;
+      }
+      .container {
+        margin-top: 16px;
+      }
+      #resultDashboard {
+        display: block !important;
+      }
+      .card, .safety-banner {
+        box-shadow: none;
+        break-inside: avoid;
+      }
+      .medical-footer {
+        position: static;
+        background: #F3F4F6 !important;
+        color: #111827 !important;
+        border-top: 1px solid #9CA3AF;
+        margin-top: 20px;
+      }
+      .medical-footer strong {
+        color: #991B1B !important;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .card {
+        padding: 18px 16px;
+      }
+      .choice-btn {
+        font-size: 0.88rem;
+        padding: 10px 13px;
+      }
+      .medical-footer {
+        font-size: 0.74rem;
+        padding: 10px 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 상단 헤더 -->
+  <header class="app-header">
+    <div class="header-top-org">
+      <span>광주보건대학교 AI대학혁신본부</span>
+    </div>
+    <div class="app-badge">🌿 질환 안전 필터 기반 맞춤 홈 케어</div>
+    <h1>가족 맞춤형 안전 홈 안마 &amp; 지압 가이드</h1>
+    <p>가족의 통증 부위와 관절염·기저질환을 체크하면, 위험 부위와 무리한 동작을 자동으로 제외하고 안전한 지압·마사지·스트레칭을 안내합니다.</p>
+  </header>
+
+  <main class="container">
+    <!-- 1. 상단 가족 상태 및 기저질환 체크 패널 -->
+    <section id="inputPanel" class="card" aria-label="가족 상태 및 기저질환 선택 패널">
+      <!-- 대상 가족 선택 (단일) -->
+      <div class="form-group">
+        <div class="section-title">
+          <span class="step-pill">선택 1</span>
+          <span>대상 가족 구성원</span>
+        </div>
+        <div class="btn-grid" id="familyGroup">
+          <button type="button" class="choice-btn active" data-value="부모님(고령층)">👵 부모님(고령층)</button>
+          <button type="button" class="choice-btn" data-value="배우자·성인">🧑 배우자·성인</button>
+          <button type="button" class="choice-btn" data-value="수험생·청소년">🎒 수험생·청소년</button>
+        </div>
+      </div>
+
+      <!-- 통증·뭉침 호소 부위 선택 (복수) -->
+      <div class="form-group">
+        <div class="section-title">
+          <span class="step-pill">선택 2</span>
+          <span>통증·뭉침 호소 부위 (복수 선택 가능)</span>
+        </div>
+        <div class="btn-grid" id="partGroup">
+          <button type="button" class="choice-btn active" data-value="뒷목·승모근">뒷목·승모근</button>
+          <button type="button" class="choice-btn" data-value="어깨·날개뼈">어깨·날개뼈</button>
+          <button type="button" class="choice-btn" data-value="허리·골반">허리·골반</button>
+          <button type="button" class="choice-btn" data-value="무릎·다리">무릎·다리</button>
+          <button type="button" class="choice-btn" data-value="종아리·발바닥">종아리·발바닥</button>
+          <button type="button" class="choice-btn" data-value="손목·손가락·팔뚝">손목·손가락·팔뚝</button>
+          <button type="button" class="choice-btn" data-value="눈·관자놀이(두통)">눈·관자놀이(두통)</button>
+        </div>
+      </div>
+
+      <!-- 증상 양상 선택 드롭다운 -->
+      <div class="form-group">
+        <div class="section-title">
+          <span class="step-pill">선택 3</span>
+          <span>현재 느끼는 증상 양상</span>
+        </div>
+        <div class="select-wrap">
+          <select id="symptomSelect" class="symptom-select" aria-label="증상 양상 선택">
+            <option value="단순 근육 뭉침·뻐근함">단순 근육 뭉침·뻐근함</option>
+            <option value="장시간 앉아있어 묵직함">장시간 앉아있어 묵직함</option>
+            <option value="오래 서 있어서 붓고 당김">오래 서 있어서 붓고 당김</option>
+            <option value="관절 주변이 뻣뻣하고 시큰거림">관절 주변이 뻣뻣하고 시큰거림</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 필수 안전 체크 - 보유 기저질환 선택 (복수) -->
+      <div class="form-group">
+        <div class="section-title">
+          <span class="step-pill">필수 안전 체크</span>
+          <span>보유 기저질환 선택 (복수 선택 가능)</span>
+        </div>
+        <p class="sub-hint">관절염 및 기저질환을 선택하시면 금기 부위·혈자리·무리한 스트레칭이 자동으로 제외됩니다.</p>
+        <div class="disease-panel">
+          <div class="btn-grid" id="diseaseGroup">
+            <button type="button" class="choice-btn disease-btn active" data-value="none">✅ 없음(건강함)</button>
+            <button type="button" class="choice-btn disease-btn" data-value="osteoarthritis">🦴 퇴행성 관절염 (무릎·손가락·척추 등)</button>
+            <button type="button" class="choice-btn disease-btn" data-value="rheumatoid">🔥 류마티스 관절염 (염증성 관절 질환)</button>
+            <button type="button" class="choice-btn disease-btn" data-value="osteoporosis">🦴 골다공증</button>
+            <button type="button" class="choice-btn disease-btn" data-value="disc">⚡ 허리·목 디스크(추간판 탈출증)</button>
+            <button type="button" class="choice-btn disease-btn" data-value="hypertension">❤️ 고혈압·심혈관 질환</button>
+            <button type="button" class="choice-btn disease-btn" data-value="diabetes">🩸 당뇨병(말초신경병증/혈관 취약)</button>
+            <button type="button" class="choice-btn disease-btn" data-value="varicose">🦵 하지정맥류·혈전 위험</button>
+            <button type="button" class="choice-btn disease-btn" data-value="pregnancy">🤰 임신 중</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 인라인 경고 알림 -->
+      <div id="validationNotice" class="inline-notice" role="alert">
+        <span>⚠️</span>
+        <span id="validationText">최소 1개 이상의 통증·뭉침 호소 부위를 선택해 주세요.</span>
+      </div>
+
+      <!-- 하단 대형 실행 버튼 -->
+      <button type="button" id="generateBtn" class="generate-btn">
+        <span>🛡️</span>
+        <span>질환 안전 필터 적용 홈 안마 가이드 생성</span>
+      </button>
+    </section>
+
+    <!-- 3. 하단 케어 가이드 결과 대시보드 UI -->
+    <section id="resultDashboard" aria-live="polite">
+      <!-- 선택 요약 스트립 -->
+      <div id="summaryStrip" class="summary-strip"></div>
+
+      <!-- 최상단 안전 주의 배너 -->
+      <div id="safetyBanner" class="safety-banner">
+        <div class="safety-header">
+          <div class="safety-title" id="safetyBannerTitle">🛡️ 맞춤형 질환 안전 주의사항</div>
+          <div class="intensity-badge" id="intensityBadge">권장 압박 강도: 보통</div>
+        </div>
+        <ul class="safety-list" id="safetyWarningsList"></ul>
+        <div class="excluded-box" id="excludedActionsBox" style="display: none;">
+          <strong>🚫 안전 필터에 의해 자동 제외된 위험 동작·부위:</strong>
+          <span id="excludedActionsText"></span>
+        </div>
+      </div>
+
+      <!-- 1단계: 준비 및 핵심 지압점 -->
+      <div class="card">
+        <div class="section-title">
+          <span class="step-pill">1단계</span>
+          <span>준비 및 안전 필터 통과 핵심 지압점</span>
+        </div>
+        <p class="sub-hint" id="step1Intro">손을 따뜻하게 비빈 뒤, 뼈나 관절 마디가 아닌 주변 근육 오목한 부위를 엄지 지문 부위로 지그시 눌러주세요.</p>
+        <div class="acupoint-grid" id="acupointGrid"></div>
+      </div>
+
+      <!-- 2단계: 단계별 마사지 순서 + 내장 지압 타이머 -->
+      <div class="card">
+        <div class="section-title">
+          <span class="step-pill">2단계</span>
+          <span>보호자 맞춤 단계별 마사지 순서</span>
+        </div>
+        <p class="sub-hint" id="step2Intro">보호자는 어깨 힘을 빼고 체중을 살짝 실어, 받는 분의 내쉬는 호흡에 맞춰 천천히 진행하세요.</p>
+        <div class="massage-steps" id="massageStepsList"></div>
+
+        <!-- 내장형 5초 / 10초 지압 타이머 -->
+        <div class="timer-widget" aria-label="내장 지압 타이머">
+          <div class="timer-top">
+            <div class="timer-label">⏱️ 내장 지압 타이머 (알람 비프음 지원)</div>
+            <div class="timer-display" id="timerDisplay">준비 완료</div>
+          </div>
+          <div class="timer-status" id="timerStatus">지압점을 지그시 누르며 아래 5초 또는 10초 버튼을 눌러 시간을 측정하세요.</div>
+          <div class="progress-track">
+            <div class="progress-fill" id="timerProgress"></div>
+          </div>
+          <div class="timer-controls">
+            <button type="button" class="t-btn primary" onclick="startAcuTimer(5)">▶ 5초 지압 타이머</button>
+            <button type="button" class="t-btn primary" onclick="startAcuTimer(10)">▶ 10초 지압 타이머</button>
+            <button type="button" class="t-btn stop" onclick="stopAcuTimer()">■ 정지</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3단계: 관절 무리 없는 마무리 스트레칭 -->
+      <div class="card">
+        <div class="section-title">
+          <span class="step-pill">3단계</span>
+          <span>관절 무리 없는 안전 마무리 스트레칭 (2가지)</span>
+        </div>
+        <p class="sub-hint" id="step3Intro">반동을 주지 말고 통증이 없는 편안한 범위까지만 천천히 늘려주세요.</p>
+        <div class="stretch-grid" id="stretchGrid"></div>
+      </div>
+
+      <!-- 하단 편의 기능 버튼 -->
+      <div class="action-bar">
+        <button type="button" id="copyGuideBtn" class="action-btn btn-copy">
+          <span>📋</span>
+          <span>가이드 내용 복사</span>
+        </button>
+        <button type="button" id="printGuideBtn" class="action-btn btn-print">
+          <span>🖨️</span>
+          <span>인쇄 / PDF 저장</span>
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <!-- 복사 완료 알림 토스트 -->
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <!-- 4. 의료적 면책 및 응급 중단 안전장치 고정 푸터 -->
+  <footer class="medical-footer">
+    <div class="medical-footer-inner">
+      <span>🩺</span>
+      <div>
+        <strong>[의료적 면책 및 즉시 중단 안내]</strong> 본 가이드는 가정 내 일시적 피로 완화를 위한 일반 건강 정보이며 의학적 치료나 물리치료를 대체할 수 없습니다. <strong>관절 부위에 열감·부종이 있거나 마사지 도중 저림·날카로운 통증이 발생하면 즉시 중단하고 전문 의료진의 진료를 받으시기 바랍니다.</strong>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    /* =========================================================================
+       1. 데이터 베이스: 경혈(지압점) 및 부위별 안전 스트레칭 정의
+       ========================================================================= */
+    const ACUPOINT_DB = {
+      "뒷목·승모근": [
+        {
+          id: "pungji",
+          name: "풍지혈 (風池穴)",
+          part: "뒷목·승모근",
+          location: "귀 뒤쪽 튀어나온 뼈(유양돌기)와 뒷목 중앙 머리카락이 끝나는 지점 사이의 오목하게 들어간 곳",
+          guide: "양손 엄지손가락 지문 부위를 대고 머리 중심 방향을 향해 지그시 위로 밀어 올리듯 압박합니다.",
+          time: "5초 지그시 누르고 3초 휴식 × 3회",
+          jointDirect: false,
+          contraPregnancy: false
+        },
+        {
+          id: "gyeonjeong",
+          name: "견정혈 (肩井穴)",
+          part: "뒷목·승모근",
+          location: "고개를 숙였을 때 목 뒤 가장 튀어나온 뼈와 어깨 끝(견봉)을 이은 선의 정중앙(승모근 가장 두툼한 부위)",
+          guide: "보호자가 뒤에서 양손 검지·중지·약지를 모아 아래 방향으로 수직으로 부드럽게 눌러줍니다.",
+          time: "5초 지그시 누르고 3초 휴식 × 3회",
+          jointDirect: false,
+          contraPregnancy: true // 임신 중 강한 자극 주의 혈자리로 필터링 대상
+        },
+        {
+          id: "hu계_neck",
+          name: "후계혈 (後溪穴)",
+          part: "뒷목·승모근",
+          location: "주먹을 가볍게 쥐었을 때 새끼손가락 바깥쪽 손바닥 주름 끝부분의 도톰한 살 부위",
+          guide: "목과 승모근 긴장을 원격으로 풀어주는 안전 혈자리로, 반대편 엄지로 둥글게 원을 그리듯 지압합니다.",
+          time: "5초 지그시 누르고 3초 휴식 × 3회",
+          jointDirect: false,
+          contraPregnancy: false
+        }
+      ],
+      "어깨·날개뼈": [
+        {
+          id: "cheonjong",
+          name: "천종혈 (天宗穴)",
+          part: "어깨·날개뼈",
+          location: "등 뒤 날개뼈(견갑골)의 정중앙에 오목하게 파인 지점 (누르면 뻐근하고 시원한 느낌이 드는 곳)",
+          guide: "날개뼈 뼈 능선을 피해서 중앙 근육 부위를 엄지손가락으로 지그시 누릅니다.",
+          time: "5초 지그시 누르고 3초 휴식 × 3회",
+          jointDirect: false,
+          contraPregnancy: false
+        },
+        {
+          id: "gyeonu",
+          name: "견우혈 주변 삼각근",
+          part: "어깨·날개뼈",
+          location: "팔을 옆으로 살짝 들었을 때 어깨 끝 앞쪽에 생기는 오목한 지점 바로 아래 삼각근 윗부분",
+          guide: "어깨 관절 뼈 자체를 누르지 말고 바깥쪽 삼각근 근육을 손바닥으로 감싸 지그시 눌러줍니다.",
+          time: "5초 지그시 누르고 3초 휴식 × 3회",
+          jointDirect: true, // 관절염 시 주변 근육으로 치환 안내
+          altText: "어깨 관절 홈 대신 팔 바깥쪽 위팔 근육(삼각근 중앙)을 손바닥으로 부드럽게 감싸 압박합니다.",
+          contraPregnancy: false
+        }
+      ],
+      "허리·골반": [
+        {
+          id: "sinsu",
+          name: "신수혈 (腎兪穴)",
+          part: "허리·골반",
+          location: "배꼽 높이의 등 뒤 척추뼈 중심에서 양옆으로 손가락 두 마디(약 3~4cm) 떨어진 기립근 부위",
+          guide: "절대 가운데 척추 뼈를 누르지 말고, 양옆 기립근 근육을 양손 엄지로 나란히 지그시 눌러줍니다.",
+          time: "5초 지그시 누르고 3초 휴식 × 3회",
+          jointDirect: false,
+          contraPregnancy: true // 임신 중 허리 강압 제외 대상
+        },
+        {
+          id: "hwando",
+          name: "환도혈 (環跳穴)",
+          part: "허리·골반",
+          location: "옆으로 누웠을 때 엉덩이 바깥쪽 가장 오목하게 들어가는 지점(고관절 뒤쪽 엉덩이 근육 중앙)",
+          guide: "보호자가 손바닥 뒤꿈치(수근부)나 주먹을 가볍게 쥐고 엉덩이 큰 근육을 지그시 압박합니다.",
+          time: "5초 지그시 누르고 3초 휴식 × 3회",
+          jointDirect: false,
+          contraPregnancy: false
+        },
+        {
+          id: "wihyang",
+          name: "위중혈 (委中穴)",
+          part: "허리·골반",
+          location: "무릎 뒤쪽 접히는 오금 주름의 정중앙 부위 (허리 긴장을 풀어주는 대표 원격 혈자리)",
+          guide: "무릎을 살짝 구부린 상태에서 양손 중지로 오금 중앙을 아주 부드럽게 지압합니다.",
+          time: "5초 지그시 누르고 3초 휴식 × 3회",
+          jointDirect: false,
+          contraPregnancy: false
+        }
+      ],
+      "무릎·다리": [
+        {
+          id: "joksamni",
+          name: "족삼리혈 (足三里穴)",
+          part: "무릎·다리",
+          location: "무릎 바깥쪽 아래 오목한 곳에서 손가락 네 마디만큼 아래로 내려온 정강이 뼈 바깥쪽 근육",
+          guide: "무릎 관절에서 떨어진 아래쪽 근육 부위이므로 관절염이 있어도 안전하게 지압할 수 있습니다.",
+          time: "5초 지그시 누르고 3초 휴식 × 3회",
+          jointDirect: false,
+          contraPregnancy: false
+        },
+        {
+          id: "hyeolhae",
+          name: "혈해혈 (血海穴)",
+          part: "무릎·다리",
+          location: "무릎뼈(슬개골) 안쪽 윗모서리에서 허벅지 방향으로 손가락 세 마디(약 4~5cm) 올라간 허벅지 근육 부위",
+          guide: "무릎 뼈가 아닌 허벅지 안쪽 큰 근육을 엄지손가락으로 지그시 눌러 다리 피로를 풉니다.",
+          time: "5초 지그시 누르고 3초 휴식 × 3회",
+          jointDirect: false,
+          contraPregnancy: false
+        },
+        {
+          id: "yangneungcheon",
+          name: "양릉천혈 (陽陵泉穴)",
+          part: "무릎·다리",
+          location: "무릎 바깥쪽 아래에 만져지는 둥근 뼈(비골두) 바로 앞쪽 아래 오목한 근육 부위",
+          guide: "뼈 돌기 위를 피해서 앞쪽 아래 근육 결을 따라 지그시 눌러줍니다.",
+          time: "5초 지그시 누르고 3초 휴식 × 3회",
+          jointDirect: false,
+          contraPregnancy: false
+        }
+      ],
+      "종아리·발바닥": [
+        {
+          id: "seungsan",
+          name: "승산혈 (承山穴)",
+          part: "종아리·발바닥",
+          location: "발뒤꿈치를 들었을 때 종아리 알통 근육 아래쪽에 '사람 인(人)' 자 모양으로 갈라지는 정중앙",
+          guide: "종아리 뒤쪽 중앙을 양손 엄지로 포개어 심장 방향을 향해 지그시 눌러줍니다.",
+          time: "5초 지그시 누르고 3초 휴식 × 3회",
+          jointDirect: false,
+          contraPregnancy: false
+        },
+        {
+          id: "yongcheon",
+          name: "용천혈 (湧泉穴)",
+          part: "종아리·발바닥",
+          location: "발가락을 오므렸을 때 발바닥 앞쪽 3분의 1 지점 중앙에 가장 오목하게 들어가는 곳",
+          guide: "양손 엄지손가락으로 발바닥 중앙을 지그시 눌러 전신 피로와 발바닥 당김을 완화합니다.",
+          time: "5초 지그시 누르고 3초 휴식 × 3회",
+          jointDirect: false,
+          contraPregnancy: false
+        },
+        {
+          id: "sameumgyo",
+          name: "삼음교혈 (三陰交穴)",
+          part: "종아리·발바닥",
+          location: "안쪽 복사뼈 중심에서 손가락 네 마디만큼 위로 올라간 정강이 뼈 뒤쪽 경계면",
+          guide: "다리 붓기 완화에 좋으나, 임신 중에는 자궁 수축 유발 우려로 자동 제외됩니다.",
+          time: "5초 지그시 누르고 3초 휴식 × 3회",
+          jointDirect: false,
+          contraPregnancy: true
+        }
+      ],
+      "손목·손가락·팔뚝": [
+        {
+          id: "hapgok",
+          name: "합곡혈 (合谷穴)",
+          part: "손목·손가락·팔뚝",
+          location: "엄지손가락과 검지손가락 뼈가 만나는 손등 쪽 오목한 부위에서 검지 뼈 쪽으로 살짝 치우친 곳",
+          guide: "반대편 엄지와 검지로 집게처럼 잡고 지그시 눌러 손과 팔의 뻐근함을 풀어줍니다.",
+          time: "5초 지그시 누르고 3초 휴식 × 3회",
+          jointDirect: false,
+          contraPregnancy: true // 임신 중 대표 금기 혈자리
+        },
+        {
+          id: "susamni",
+          name: "수삼리혈 (手三里穴)",
+          part: "손목·손가락·팔뚝",
+          location: "팔꿈치를 구부렸을 때 바깥쪽 주름 끝에서 손목 방향으로 손가락 세 마디 내려온 팔뚝 근육",
+          guide: "손목이나 손가락 관절을 직접 건드리지 않고 팔뚝 큰 근육을 풀어주어 관절염에도 매우 안전합니다.",
+          time: "5초 지그시 누르고 3초 휴식 × 3회",
+          jointDirect: false,
+          contraPregnancy: false
+        },
+        {
+          id: "naegwan",
+          name: "내관혈 (內關穴)",
+          part: "손목·손가락·팔뚝",
+          location: "손바닥을 위로 향했을 때 손목 가로 주름 정중앙에서 팔꿈치 쪽으로 손가락 세 마디 내려온 두 힘줄 사이",
+          guide: "손목 뼈 관절 아래쪽 팔뚝 힘줄 사이를 엄지로 부드럽게 지그시 눌러줍니다.",
+          time: "5초 지그시 누르고 3초 휴식 × 3회",
+          jointDirect: false,
+          contraPregnancy: false
+        }
+      ],
+      "눈·관자놀이(두통)": [
+        {
+          id: "taeyang",
+          name: "태양혈 (太陽穴)",
+          part: "눈·관자놀이(두통)",
+          location: "눈꼬리와 눈썹 바깥쪽 끝 사이의 중간 지점에서 귀 쪽으로 살짝 이동한 관자놀이 오목한 곳",
+          guide: "관자놀이 뼈가 얇으므로 약지나 중지 지문 부위로 아주 부드럽게 원을 그리듯 눌러줍니다.",
+          time: "5초 지그시 누르고 3초 휴식 × 3회",
+          jointDirect: false,
+          contraPregnancy: false
+        },
+        {
+          id: "chanjuk",
+          name: "찬죽혈 (攢竹穴)",
+          part: "눈·관자놀이(두통)",
+          location: "양쪽 눈썹 안쪽 끝머리의 살짝 오목하게 들어간 부위",
+          guide: "안구를 누르지 않도록 주의하며 엄지나 검지 끝으로 눈썹 안쪽 뼈 테두리를 위로 밀듯 지압합니다.",
+          time: "5초 지그시 누르고 3초 휴식 × 3회",
+          jointDirect: false,
+          contraPregnancy: false
+        }
+      ]
+    };
+
+    /* 부위별 안전한 마무리 스트레칭 데이터 */
+    const STRETCH_DB = {
+      "뒷목·승모근": [
+        {
+          title: "의자에 앉아 귀-어깨 멀어지기 목 옆선 늘리기",
+          desc: "의자에 허리를 세우고 앉아 한 손은 의자 좌판을 잡고, 반대쪽 손으로 머리 옆을 가볍게 감싸 통증 없는 범위까지만 천천히 옆으로 기울입니다. (좌우 각 10초 유지)",
+          safeNote: "목 디스크·고혈압 안전: 고개를 뒤로 젖히거나 회전하지 않고 정면을 본 채 옆으로만 부드럽게 늘립니다.",
+          tags: ["low_impact", "no_head_drop", "no_twist"]
+        },
+        {
+          title: "양팔 날개뼈 모으기 가슴 열기 호흡",
+          desc: "편안히 앉은 자세에서 팔꿈치를 90도로 구부려 옆구리에 붙이고, 숨을 들이마시며 양쪽 날개뼈가 등 뒤에서 가볍게 만나도록 가슴을 활짝 폈다가 내쉬며 힘을 뺍니다. (5회 반복)",
+          safeNote: "관절염·골다공증 안전: 목과 척추에 압박을 주지 않고 승모근 긴장만 안전하게 이완합니다.",
+          tags: ["low_impact", "no_head_drop", "no_twist"]
+        }
+      ],
+      "어깨·날개뼈": [
+        {
+          title: "수건 잡고 어깨 앞뒤 부드럽게 열기",
+          desc: "수건 양끝을 어깨너비보다 넓게 잡고, 팔꿈치를 편 채 통증이 없는 높이(눈높이 정도)까지만 천천히 들어 올렸다가 내립니다. (5회 반복)",
+          safeNote: "어깨 관절 안전: 팔을 머리 뒤까지 무리하게 꺾지 않고 통증 없는 가동 범위 내에서만 움직입니다.",
+          tags: ["low_impact", "no_head_drop", "no_twist"]
+        },
+        {
+          title: "앉아서 반대팔 가슴 앞으로 가볍게 당기기",
+          desc: "한쪽 팔을 가슴 앞으로 수평으로 뻗고, 반대쪽 팔뚝으로 팔꿈치 위쪽(위팔 근육)을 감싸 몸쪽으로 지그시 당겨 날개뼈 뒤쪽을 늘립니다. (좌우 각 10초)",
+          safeNote: "관절 직접 압박 제외: 팔꿈치 관절이 아닌 위팔 근육 부위를 받쳐 안전하게 스트레칭합니다.",
+          tags: ["low_impact", "no_head_drop", "no_twist"]
+        }
+      ],
+      "허리·골반": [
+        {
+          title: "누워서 한쪽 무릎 가슴 쪽으로 가볍게 당기기",
+          desc: "바닥이나 침대에 편히 누운 상태에서 한쪽 다리는 펴고, 반대쪽 무릎 뒤(허벅지 뒤쪽)를 양손으로 감싸 가슴 쪽으로 당길 수 있는 만큼만 부드럽게 당깁니다. (좌우 각 10초)",
+          safeNote: "디스크·퇴행성 관절염 안전: 무릎 뼈 위가 아닌 허벅지 뒤쪽을 잡아 무릎 관절 압박을 차단합니다.",
+          tags: ["low_impact", "no_head_drop", "no_twist"]
+        },
+        {
+          title: "누워서 골반 좌우 살랑살랑 기울이기 (골반 틸팅)",
+          desc: "무릎을 세우고 편히 누운 자세에서 허리를 과도하게 비틀지 말고, 골반을 위아래로 살짝 말아 올렸다가 바닥에 내려놓는 미세 움직임을 8회 반복합니다.",
+          safeNote: "골다공증·허리 디스크 안전: 허리 비틀기와 과도한 굴곡을 완전히 배제한 코어 이완 동작입니다.",
+          tags: ["low_impact", "no_head_drop", "no_twist"]
+        }
+      ],
+      "무릎·다리": [
+        {
+          title: "의자에 앉아 발끝 당기며 다리 펴기 (대퇴사두근 이완)",
+          desc: "의자에 깊숙이 앉아 한쪽 다리를 바닥과 수평이 되도록 천천히 펴고, 발끝을 몸쪽으로 당긴 채 5초간 유지 후 천천히 내립니다. (좌우 각 5회)",
+          safeNote: "퇴행성 관절염 특화 안전: 체중 부하 없이 허벅지 앞근육을 강화해 무릎 관절 부담을 줄여줍니다.",
+          tags: ["low_impact", "no_head_drop", "no_twist"]
+        },
+        {
+          title: "누워서 허벅지 뒤쪽(햄스트링) 수건 스트레칭",
+          desc: "편히 누운 상태에서 발바닥에 긴 수건을 걸고, 무릎을 살짝 구부린 채 다리를 천장 방향으로 들어 올려 허벅지 뒤쪽이 기분 좋게 당기는 지점에서 10초 유지합니다.",
+          safeNote: "관절 하중 제로: 쪼그려 앉기나 과도한 무릎 굴곡 없이 다리 뒷근육 전체를 이완합니다.",
+          tags: ["low_impact", "no_head_drop", "no_twist"]
+        }
+      ],
+      "종아리·발바닥": [
+        {
+          title: "앉거나 누워서 발목 펌핑(발끝 당기고 밀기)",
+          desc: "다리를 편히 뻗고 발끝을 정강이 쪽으로 5초간 지그시 당겼다가, 다시 발등이 펴지도록 5초간 천천히 밀어줍니다. (10회 반복)",
+          safeNote: "하지정맥류·당뇨병 안전: 혈관 압박 없이 종아리 근육의 펌프 작용을 도와 붓기와 당김을 해소합니다.",
+          tags: ["low_impact", "no_head_drop", "no_twist"]
+        },
+        {
+          title: "발가락 가위바위보 & 발목 천천히 원 그리기",
+          desc: "의자에 앉아 발을 바닥에서 살짝 떼고 발가락을 오므렸다 활짝 펴기를 5회 반복한 뒤, 발목으로 큰 원을 안팎으로 5바퀴씩 천천히 그립니다.",
+          safeNote: "발바닥 근막 이완: 체중을 싣지 않고 발바닥 아치와 발목 관절을 부드럽게 풀어줍니다.",
+          tags: ["low_impact", "no_head_drop", "no_twist"]
+        }
+      ],
+      "손목·손가락·팔뚝": [
+        {
+          title: "손가락 부채꼴 펼치기 & 부드러운 손목 웨이브",
+          desc: "양손을 가슴 앞으로 뻗어 다섯 손가락을 5초간 활짝 폈다가 힘을 빼고, 손목을 위아래로 물결치듯 부드럽게 흔들어 줍니다. (5회 반복)",
+          safeNote: "손가락 관절염 안전: 손가락 마디를 꺾거나 강하게 뒤로 젖히지 않는 무부하 이완 동작입니다.",
+          tags: ["low_impact", "no_head_drop", "no_twist"]
+        },
+        {
+          title: "팔뚝 안팎 가볍게 비틀어 늘리기",
+          desc: "팔꿈치를 옆구리에 가볍게 대고 손바닥이 하늘을 보게 했다가 바닥을 보게 천천히 회전하며 팔뚝 근육의 긴장을 풀어줍니다. (8회 반복)",
+          safeNote: "손목 꺾기 제외: 손목 관절 각도를 무리하게 꺾지 않고 전완근만 안전하게 이완합니다.",
+          tags: ["low_impact", "no_head_drop", "no_twist"]
+        }
+      ],
+      "눈·관자놀이(두통)": [
+        {
+          title: "손바닥 온기 눈 덮기 (파밍 이완법)",
+          desc: "양손바닥을 10초간 빠르게 비벼 따뜻하게 만든 뒤, 눈을 감고 손바닥 오목한 부분으로 눈 위를 닿을 듯 말 듯 부드럽게 감싸고 깊게 심호흡합니다. (15초 유지)",
+          safeNote: "고혈압·눈 피로 안전: 안구 압박 없이 따뜻한 온기와 어둠으로 시신경과 관자놀이 긴장을 풀어줍니다.",
+          tags: ["low_impact", "no_head_drop", "no_twist"]
+        },
+        {
+          title: "턱관절 힘 빼고 어금니 살짝 띄우기 호흡",
+          desc: "입술은 가볍게 다물고 위아래 어금니 사이가 2mm 정도 떨어지도록 턱의 힘을 뺀 상태에서, 코로 4초 들이마시고 입으로 6초 내쉽니다. (5회 반복)",
+          safeNote: "관자놀이 두통 완화: 측두근(관자놀이 근육)과 연결된 턱관절의 무의식적 긴장을 안전하게 해소합니다.",
+          tags: ["low_impact", "no_head_drop", "no_twist"]
+        }
+      ]
+    };
+
+    /* =========================================================================
+       2. UI 인터랙션 초기화 (단일 선택 / 복수 선택 / 기저질환 '없음' 상호배타 로직)
+       ========================================================================= */
+    // 대상 가족 (단일 선택)
+    document.querySelectorAll("#familyGroup .choice-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("#familyGroup .choice-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+      });
+    });
+
+    // 통증 부위 (복수 선택)
+    document.querySelectorAll("#partGroup .choice-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        btn.classList.toggle("active");
+        hideValidationNotice();
+      });
+    });
+
+    // 보유 기저질환 (복수 선택 + '없음(건강함)' 자동 상호 해제 연동)
+    const diseaseBtns = document.querySelectorAll("#diseaseGroup .disease-btn");
+    const noneDiseaseBtn = document.querySelector('#diseaseGroup .disease-btn[data-value="none"]');
+
+    diseaseBtns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const val = btn.dataset.value;
+        if (val === "none") {
+          // '없음' 클릭 시 다른 모든 질환 해제 후 '없음' 활성화
+          diseaseBtns.forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+        } else {
+          // 특정 질환 클릭 시 '없음' 자동 해제
+          noneDiseaseBtn.classList.remove("active");
+          btn.classList.toggle("active");
+
+          // 만약 모든 질환이 해제되어 아무것도 선택되지 않았다면 자동으로 '없음' 재활성화
+          const anyActive = Array.from(diseaseBtns).some(b => b.classList.contains("active"));
+          if (!anyActive) {
+            noneDiseaseBtn.classList.add("active");
+          }
+        }
+      });
+    });
+
+    function showValidationNotice(msg) {
+      const box = document.getElementById("validationNotice");
+      document.getElementById("validationText").textContent = msg;
+      box.classList.add("show");
+    }
+
+    function hideValidationNotice() {
+      document.getElementById("validationNotice").classList.remove("show");
+    }
+
+    /* =========================================================================
+       3. 핵심 안전 필터링 및 케어 프로토콜 생성 엔진
+       ========================================================================= */
+    document.getElementById("generateBtn").addEventListener("click", generateCareGuide);
+
+    function generateCareGuide() {
+      const familyBtn = document.querySelector("#familyGroup .choice-btn.active");
+      const family = familyBtn ? familyBtn.dataset.value : "부모님(고령층)";
+
+      const selectedParts = Array.from(document.querySelectorAll("#partGroup .choice-btn.active")).map(b => b.dataset.value);
+      if (selectedParts.length === 0) {
+        showValidationNotice("최소 1개 이상의 통증·뭉침 호소 부위를 선택해 주세요.");
+        return;
+      }
+      hideValidationNotice();
+
+      const symptom = document.getElementById("symptomSelect").value;
+      const selectedDiseases = Array.from(document.querySelectorAll("#diseaseGroup .disease-btn.active")).map(b => b.dataset.value);
+      const isHealthy = selectedDiseases.includes("none");
+
+      // 질환 플래그 추출
+      const hasOA = selectedDiseases.includes("osteoarthritis"); // 퇴행성 관절염
+      const hasRA = selectedDiseases.includes("rheumatoid");     // 류마티스 관절염
+      const hasOsteo = selectedDiseases.includes("osteoporosis");// 골다공증
+      const hasDisc = selectedDiseases.includes("disc");         // 허리·목 디스크
+      const hasHTN = selectedDiseases.includes("hypertension");  // 고혈압·심혈관
+      const hasDM = selectedDiseases.includes("diabetes");       // 당뇨병
+      const hasVaricose = selectedDiseases.includes("varicose"); // 하지정맥류
+      const hasPreg = selectedDiseases.includes("pregnancy");    // 임신 중
+
+      // 1) 압박 강도 결정 ('아주 약함' > '약함' > '보통')
+      let intensity = "보통";
+      if (family === "부모님(고령층)" || hasOsteo || hasDisc || hasOA || hasHTN) {
+        intensity = "약함";
+      }
+      if (hasRA || hasDM || hasVaricose || hasPreg) {
+        intensity = "아주 약함";
+      }
+
+      // 2) 질환별 안전 경고 및 자동 제외 동작 목록 생성
+      const warnings = [];
+      const excludedActions = [];
+      let bannerLevel = "level-safe";
+
+      if (isHealthy && family !== "부모님(고령층)") {
+        warnings.push("기저질환이 없는 상태로, 호흡에 맞춰 기분 좋은 '보통' 강도로 부드럽게 이완해 주세요.");
+      }
+      if (family === "부모님(고령층)") {
+        warnings.push("고령층 보호 케어 적용: 근막과 피부가 얇으므로 팔꿈치나 딱딱한 안마 도구를 쓰지 말고 손바닥과 손가락 지문 부위만 사용하세요.");
+        if (bannerLevel === "level-safe") bannerLevel = "level-warn";
+      }
+
+      if (hasOA) {
+        bannerLevel = "level-warn";
+        warnings.push("[퇴행성 관절염 필터] 무릎 뼈·손가락 마디·척추 관절 위를 직접 누르거나 꺾지 마세요. 관절 위·아래의 큰 주변 근육만 부드럽게 풀어줍니다.");
+        excludedActions.push("관절 마디 직접 압박 및 꺾기", "체중 부하가 큰 쪼그려 앉기", "과도한 관절 굴곡 스트레칭");
+      }
+
+      if (hasRA) {
+        bannerLevel = "level-critical";
+        warnings.push("[류마티스 관절염 긴급 필터] 관절이 붓고 열감이 있는 급성 염증기에는 마사지와 온찜질을 전면 중단하세요! 통증이 없는 안정기에도 관절 압박 없이 아주 가벼운 피부 쓸어내리기(림프 순환 수준)만 허용됩니다.");
+        excludedActions.push("급성 염증기 마사지 및 온찜질", "관절 부위 지압 압박", "강한 주무르기(림프 쓸어내리기로 대체됨)");
+      }
+
+      if (hasOsteo || hasDisc) {
+        bannerLevel = "level-warn";
+        warnings.push("[골다공증·디스크 필터] 등 가운데 척추 뼈를 직접 누르지 마세요. 척추 양옆 근육만 '약한 압력'으로 부드럽게 이완합니다.");
+        excludedActions.push("척추 뼈 직접 압박", "허리·목 비틀기 동작", "상체를 깊이 숙이는 과도한 굴곡 스트레칭");
+      }
+
+      if (hasHTN) {
+        bannerLevel = "level-warn";
+        warnings.push("[고혈압·심혈관 필터] 목 앞쪽과 옆쪽(경동맥 부위)을 강하게 누르지 마세요. 지압 중 어지럼증이나 두근거림이 있으면 즉시 중단합니다.");
+        excludedActions.push("목 앞·옆 경동맥 부위 압박", "머리를 심장보다 낮게 숙이는 스트레칭");
+      }
+
+      if (hasDM) {
+        bannerLevel = "level-critical";
+        warnings.push("[당뇨병 말초신경 보호 필터] 통증·압력 감각이 무뎌져 멍이나 미세 피부 손상이 생길 수 있습니다. 안마기·지압봉 사용을 금하고 맨손으로 아주 약하게만 만져주세요.");
+        excludedActions.push("딱딱한 지압 도구·안마기 사용", "발바닥·종아리 강압 마사지");
+      }
+
+      if (hasVaricose) {
+        bannerLevel = "level-critical";
+        warnings.push("[하지정맥류·혈전 안전 필터] 종아리 혈관이 튀어나온 부위를 직접 문지르거나 강하게 주무르지 마세요. 발끝에서 심장 방향으로 가볍게 쓸어올리기만 허용됩니다.");
+        excludedActions.push("종아리 혈관 부위 직접 문지르기·강압 주무르기");
+      }
+
+      if (hasPreg) {
+        bannerLevel = "level-critical";
+        warnings.push("[임신 중 안전 필터] 자궁 수축을 유발할 수 있는 합곡혈·삼음교혈·견정혈 및 허리 강압 혈자리를 자동 제외했습니다. 옆으로 눕거나 의자에 기대어 아주 가볍게 진행하세요.");
+        excludedActions.push("합곡혈·삼음교혈·견정혈·신수혈 지압", "복부 및 허리 강압 자극");
+      }
+
+      if (symptom === "관절 주변이 뻣뻣하고 시큰거림") {
+        warnings.push("[증상 맞춤 안내] 관절 주변이 시큰거릴 때는 관절 틈새를 누르지 말고, 관절 위쪽 근육(허벅지·팔뚝·승모근)을 따뜻하게 쓸어주어 혈류를 먼저 높여주세요.");
+      }
+
+      // 3) 요약 스트립 렌더링
+      const summaryStrip = document.getElementById("summaryStrip");
+      const diseaseNames = Array.from(document.querySelectorAll("#diseaseGroup .disease-btn.active"))
+        .map(b => b.textContent.replace(/^[^\s]+\s/, ""));
+      summaryStrip.innerHTML = `
+        <span class="meta-tag">대상: ${family}</span>
+        <span class="meta-tag">부위: ${selectedParts.join(", ")}</span>
+        <span class="meta-tag">증상: ${symptom}</span>
+        <span class="meta-tag">안전 필터: ${diseaseNames.join(", ")}</span>
+      `;
+
+      // 4) 상단 안전 배너 렌더링
+      const safetyBanner = document.getElementById("safetyBanner");
+      safetyBanner.className = `safety-banner ${bannerLevel}`;
+
+      const badge = document.getElementById("intensityBadge");
+      badge.textContent = `권장 압박 강도: ${intensity}`;
+      badge.className = "intensity-badge " + (
+        intensity === "아주 약함" ? "intensity-very-soft" :
+        intensity === "약함" ? "intensity-soft" : "intensity-normal"
+      );
+
+      const warningsList = document.getElementById("safetyWarningsList");
+      warningsList.innerHTML = warnings.map(w => `<li>${w}</li>`).join("");
+
+      const excludedBox = document.getElementById("excludedActionsBox");
+      if (excludedActions.length > 0) {
+        excludedBox.style.display = "block";
+        document.getElementById("excludedActionsText").textContent = [...new Set(excludedActions)].join(" / ");
+      } else {
+        excludedBox.style.display = "none";
+      }
+
+      // 5) 1단계: 핵심 지압점 필터링 및 렌더링
+      const acupointGrid = document.getElementById("acupointGrid");
+      const filteredPoints = [];
+
+      selectedParts.forEach(part => {
+        const points = ACUPOINT_DB[part] || [];
+        points.forEach(pt => {
+          // 임신 중 금기 혈자리 자동 제외
+          if (hasPreg && pt.contraPregnancy) {
+            return;
+          }
+          // 퇴행성/류마티스 관절염 시 관절 인접 혈자리는 주변 근육 가이드로 변환
+          let displayGuide = pt.guide;
+          let displayTime = pt.time;
+
+          if ((hasOA || hasRA) && pt.jointDirect && pt.altText) {
+            displayGuide = pt.altText;
+          }
+          if (hasRA) {
+            displayGuide = "관절 및 피부를 꾹 누르지 말고, 손바닥 전체로 해당 부위 위를 깃털처럼 가볍게 쓸어내리며 림프 순환만 유도하세요.";
+            displayTime = "압박 금지 · 10초간 아주 가볍게 쓸어내리기 × 3회";
+          } else if (hasDM || hasVaricose) {
+            if (part === "종아리·발바닥" || part === "무릎·다리") {
+              displayGuide = "강한 지압 대신 엄지 지문으로 피부 표면을 지그시 대고 5초간 온기만 전달하듯 가볍게 머물러 주세요.";
+              displayTime = "아주 약한 압력으로 5초 머무르기 × 3회";
+            }
+          }
+
+          filteredPoints.push({
+            ...pt,
+            displayGuide,
+            displayTime
+          });
+        });
+      });
+
+      acupointGrid.innerHTML = filteredPoints.map(pt => `
+        <article class="acupoint-item">
+          <div class="acupoint-header">
+            <span class="acupoint-name">${pt.name}</span>
+            <span class="acupoint-part">${pt.part}</span>
+          </div>
+          <p class="acupoint-desc"><strong>📍 위치:</strong> ${pt.location}</p>
+          <p class="acupoint-desc"><strong>🤲 방법:</strong> ${pt.displayGuide}</p>
+          <div class="acupoint-time">⏱️ ${pt.displayTime}</div>
+        </article>
+      `).join("");
+
+      // 6) 2단계: 보호자 맞춤 단계별 마사지 순서 생성 (질환 필터 반영)
+      const massageStepsList = document.getElementById("massageStepsList");
+      const stepsData = buildMassageSteps({
+        selectedParts,
+        symptom,
+        intensity,
+        hasOA,
+        hasRA,
+        hasOsteo,
+        hasDisc,
+        hasHTN,
+        hasDM,
+        hasVaricose,
+        hasPreg
+      });
+
+      massageStepsList.innerHTML = stepsData.map((st, idx) => `
+        <div class="m-step">
+          <div class="m-step-num">${idx + 1}</div>
+          <div class="m-step-content">
+            <h4>${st.title}</h4>
+            <p>${st.desc}</p>
+          </div>
+        </div>
+      `).join("");
+
+      // 7) 3단계: 관절 무리 없는 마무리 스트레칭 2가지 선택 및 출력
+      const stretchGrid = document.getElementById("stretchGrid");
+      const candidateStretches = [];
+      selectedParts.forEach(part => {
+        const list = STRETCH_DB[part] || [];
+        list.forEach(item => candidateStretches.push({ part, ...item }));
+      });
+
+      // 가장 안전하고 대표적인 2가지 스트레칭 선별
+      const finalStretches = candidateStretches.slice(0, 2);
+      stretchGrid.innerHTML = finalStretches.map((st, idx) => `
+        <article class="stretch-card">
+          <span class="stretch-badge">추천 스트레칭 ${idx + 1} · ${st.part}</span>
+          <h4>${st.title}</h4>
+          <p>${st.desc}</p>
+          <div class="stretch-safe-note">🛡️ ${st.safeNote}</div>
+        </article>
+      `).join("");
+
+      // 결과 대시보드 표시 및 스크롤 이동
+      const dashboard = document.getElementById("resultDashboard");
+      dashboard.classList.add("visible");
+      dashboard.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function buildMassageSteps(ctx) {
+      const partLabel = ctx.selectedParts.join(", ");
+
+      // 1단계 준비 및 자세
+      let step1 = `받는 분이 편안히 기대어 앉거나 옆으로 눕도록 자세를 잡습니다. 보호자는 손을 10초간 비벼 따뜻하게 만든 뒤, "${partLabel}" 주변에 손바닥을 가만히 얹고 3회 함께 천천히 깊게 호흡을 맞춥니다.`;
+      if (ctx.hasPreg) {
+        step1 = `임신 중이므로 엎드리지 말고 쿠션을 안고 옆으로 눕거나 의자에 편안히 기댄 자세를 취합니다. 보호자는 손을 따뜻하게 데운 뒤 "${partLabel}" 위에 가볍게 손을 얹어 호흡을 맞춥니다.`;
+      }
+
+      // 2단계 쓸어내리기 (이완)
+      let step2 = `손바닥 전체를 밀착해 근육 결을 따라 위에서 아래로, 또는 심장 방향을 향해 5~6회 부드럽게 쓸어내리며 피부와 겉근육의 긴장을 풀어줍니다.`;
+      if (ctx.hasVaricose) {
+        step2 = `[하지정맥류 안전 변형] 종아리 혈관 부위를 직접 문지르지 말고, 발목에서 허벅지(심장 방향) 쪽으로 손바닥 전체를 이용해 깃털처럼 가볍게 쓸어올리기만 8회 반복합니다.`;
+      } else if (ctx.hasRA) {
+        step2 = `[류마티스 안전 변형] 관절 부위를 피해서 관절 위·아래 피부 표면을 림프 순환 방향으로 아주 가볍게 쓸어내리기만 8회 반복합니다. (열감·부종 시 즉시 중단)`;
+      }
+
+      // 3단계 주무르기 (질환에 따라 생략 또는 변형)
+      let step3 = `엄지와 나머지 네 손가락을 넓게 벌려 뼈가 아닌 두툼한 근육 부위만 스펀지를 쥐었다 펴듯 '${ctx.intensity}' 강도로 천천히 주물러 줍니다.`;
+      if (ctx.hasRA || ctx.hasVaricose || ctx.hasDM) {
+        step3 = `[안전 필터 적용 - 강한 주무르기 생략] 피부·혈관·관절 보호를 위해 비틀거나 강하게 주무르는 동작은 생략하고, 손바닥 지문 부위로 근육을 지그시 감싸 3초간 머물렀다 떼는 '온기 압박'으로 대체합니다.`;
+      } else if (ctx.hasOA) {
+        step3 = `[퇴행성 관절염 안전 변형] 무릎·손가락·척추 관절 마디는 건너뛰고, 관절 위쪽과 아래쪽의 큰 근육 부위만 손바닥과 엄지로 부드럽게 주물러 줍니다.`;
+      }
+
+      // 4단계 지압하기 + 타이머 연동
+      let step4 = `위 1단계에서 안내된 안전 핵심 지압점을 찾아 엄지 지문 부위로 수직으로 지그시 누릅니다. 아래 [5초/10초 지압 타이머]를 눌러 5초간 압박 후 3초 휴식하는 방식으로 3회 반복하세요. (권장 강도: ${ctx.intensity})`;
+      if (ctx.hasRA) {
+        step4 = `[류마티스 안전 변형] 통증이 없는 안정기라 하더라도 꾹 누르는 지압 대신, 지압점 위에 손가락 지문을 가볍게 얹고 5초간 미세하게 원을 그리며 이완한 뒤 3초 휴식합니다.`;
+      }
+
+      return [
+        { title: "자세 잡기 및 보호자 손 온기·호흡 맞추기", desc: step1 },
+        { title: "근육 결 따라 부드럽게 쓸어내리기 (준비 이완)", desc: step2 },
+        { title: "관절 제외 주변 큰 근육 이완하기", desc: step3 },
+        { title: "핵심 지압점 지그시 누르기 (내장 타이머 활용)", desc: step4 }
+      ];
+    }
+
+    /* =========================================================================
+       4. 내장 지압 타이머 (Web Audio API 비프음 + 카운트다운 프로그레스 바)
+       ========================================================================= */
+    let timerInterval = null;
+    let audioCtx = null;
+
+    function playBeep(freq = 660, duration = 0.16, type = "sine") {
+      try {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === "suspended") {
+          audioCtx.resume();
+        }
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {
+        // 오디오 차단 환경에서도 시각적 타이머는 정상 작동
+      }
+    }
+
+    function startAcuTimer(seconds) {
+      stopAcuTimer(false);
+      const display = document.getElementById("timerDisplay");
+      const status = document.getElementById("timerStatus");
+      const progress = document.getElementById("timerProgress");
+
+      let remaining = seconds;
+      playBeep(587.33, 0.14); // 시작 알림음 (D5)
+      display.textContent = `${remaining}초`;
+      status.textContent = `지금 지압점을 지그시 누르며 함께 숨을 내쉬세요... (${seconds}초 지압 중)`;
+      progress.style.width = "100%";
+
+      timerInterval = setInterval(() => {
+        remaining -= 1;
+        if (remaining > 0) {
+          display.textContent = `${remaining}초`;
+          progress.style.width = `${(remaining / seconds) * 100}%`;
+          if (remaining <= 2) {
+            playBeep(523.25, 0.08); // 마무리 카운트 틱음
+          }
+        } else {
+          clearInterval(timerInterval);
+          timerInterval = null;
+          display.textContent = "완료! 3초 휴식";
+          status.textContent = "✅ 지압 완료! 손의 힘을 천천히 빼고 3초간 편안히 쉬어주세요.";
+          progress.style.width = "0%";
+          // 완료 2연속 비프음
+          playBeep(783.99, 0.15);
+          setTimeout(() => playBeep(1046.5, 0.25), 180);
+        }
+      }, 1000);
+    }
+
+    function stopAcuTimer(resetText = true) {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      if (resetText) {
+        document.getElementById("timerDisplay").textContent = "정지됨";
+        document.getElementById("timerStatus").textContent = "지압점을 지그시 누르며 아래 5초 또는 10초 버튼을 눌러 시간을 측정하세요.";
+        document.getElementById("timerProgress").style.width = "0%";
+      }
+    }
+
+    /* =========================================================================
+       5. 가이드 내용 복사 및 인쇄 / PDF 저장 기능
+       ========================================================================= */
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      setTimeout(() => {
+        toast.classList.remove("show");
+      }, 2600);
+    }
+
+    document.getElementById("copyGuideBtn").addEventListener("click", () => {
+      const meta = Array.from(document.querySelectorAll("#summaryStrip .meta-tag")).map(el => el.textContent).join(" | ");
+      const intensity = document.getElementById("intensityBadge").textContent;
+      const warnings = Array.from(document.querySelectorAll("#safetyWarningsList li")).map(li => `- ${li.textContent}`).join("\n");
+      const excludedBox = document.getElementById("excludedActionsBox");
+      const excludedText = excludedBox.style.display !== "none"
+        ? `\n[자동 제외된 위험 동작]\n- ${document.getElementById("excludedActionsText").textContent}\n`
+        : "";
+
+      const points = Array.from(document.querySelectorAll("#acupointGrid .acupoint-item")).map(card => {
+        const name = card.querySelector(".acupoint-name").textContent;
+        const part = card.querySelector(".acupoint-part").textContent;
+        const descs = Array.from(card.querySelectorAll(".acupoint-desc")).map(p => p.textContent).join(" / ");
+        const time = card.querySelector(".acupoint-time").textContent;
+        return `• ${name} [${part}]\n  ${descs}\n  ${time}`;
+      }).join("\n\n");
+
+      const steps = Array.from(document.querySelectorAll("#massageStepsList .m-step")).map((st, i) => {
+        const title = st.querySelector("h4").textContent;
+        const desc = st.querySelector("p").textContent;
+        return `${i + 1}. ${title}: ${desc}`;
+      }).join("\n");
+
+      const stretches = Array.from(document.querySelectorAll("#stretchGrid .stretch-card")).map((sc, i) => {
+        const title = sc.querySelector("h4").textContent;
+        const desc = sc.querySelector("p").textContent;
+        const note = sc.querySelector(".stretch-safe-note").textContent;
+        return `${i + 1}. ${title}\n  ${desc}\n  (${note})`;
+      }).join("\n\n");
+
+      const fullText = `[가족 맞춤형 안전 홈 안마 & 지압 가이드]\n${meta}\n${intensity}\n\n[안전 주의사항]\n${warnings}${excludedText}\n[1단계: 핵심 지압점]\n${points}\n\n[2단계: 단계별 마사지 순서]\n${steps}\n\n[3단계: 관절 무리 없는 마무리 스트레칭]\n${stretches}\n\n※ 본 가이드는 가정 내 일시적 피로 완화를 위한 일반 건강 정보이며 의학적 치료나 물리치료를 대체할 수 없습니다.`;
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(fullText)
+          .then(() => showToast("✅ 맞춤 홈 안마 가이드가 클립보드에 복사되었습니다!"))
+          .catch(() => fallbackCopy(fullText));
+      } else {
+        fallbackCopy(fullText);
+      }
+    });
+
+    function fallbackCopy(text) {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand("copy");
+        showToast("✅ 맞춤 홈 안마 가이드가 클립보드에 복사되었습니다!");
+      } catch (err) {
+        showToast("⚠️ 복사에 실패했습니다. 화면을 인쇄하거나 PDF로 저장해 주세요.");
+      }
+      document.body.removeChild(ta);
+    }
+
+    document.getElementById("printGuideBtn").addEventListener("click", () => {
+      window.print();
+    });
+
+    // 초기 진입 시 기본 선택 상태로 1회 자동 생성하여 즉시 미리보기 제공
+    window.addEventListener("DOMContentLoaded", () => {
+      generateCareGuide();
+    });
+  </script>
+</body>
+</html>

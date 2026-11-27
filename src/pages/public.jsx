@@ -20,6 +20,7 @@ export function PublicLayout() {
           <NavLink to="/about">본부 소개</NavLink>
           <NavLink to="/news">성과 소식</NavLink>
           <NavLink to="/recruit">프로그램 모집</NavLink>
+          <NavLink to="/market">앱마켓</NavLink>
         </nav>
         <Link to="/start" className="btn primary" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }}>시작하기</Link>
       </header>
