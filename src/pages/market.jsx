@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useParams, useSearchParams, Navigate } from 'react-router-dom'
 import { Card, Empty, PageHead } from '../components/ui.jsx'
 import { useStored } from '../lib/store.js'
-import { WEBAPPS, MARKET_ROLES, CATEGORIES, appUrl, appById, searchApps } from '../data/webapps.js'
+import { WEBAPPS, MARKET_ROLES, CATEGORIES, appUrl, appById, searchApps, NATIVE_IDS } from '../data/webapps.js'
 
 /* GHU 바이탈 앱마켓: 구성원이 만든 웹앱을 모아 찾고 바로 실행합니다. */
 
@@ -23,6 +23,10 @@ function RoleBadges({ app }) {
 function useRecent() { return useStored('webapps:recent', []) }
 function OpenButton({ app, primary = true, label = '열기' }) {
   const [, setRecent] = useRecent()
+  const remember = () => setRecent(r => [app.id, ...r.filter(x => x !== app.id)].slice(0, 6))
+  if (NATIVE_IDS.includes(app.id)) {
+    return <Link to={`/run/${app.id}`} className={primary ? 'btn primary app-open' : 'btn app-open'} onClick={remember}>{label}</Link>
+  }
   return (
     <a href={appUrl(app)} target="_blank" rel="noopener" className={primary ? 'btn primary app-open' : 'btn app-open'}
       onClick={() => setRecent(r => [app.id, ...r.filter(x => x !== app.id)].slice(0, 6))}
@@ -123,7 +127,7 @@ export function AppDetail() {
         <AppIcon app={app} size={96} />
         <div className="stack" style={{ gap: 12, minWidth: 0 }}>
           <h1 className="page-title">{app.title}</h1>
-          <span className="row" style={{ gap: 6 }}><span className="badge">{app.category}</span><RoleBadges app={app} /><span className="badge">{app.version}</span></span>
+          <span className="row" style={{ gap: 6 }}><span className="badge">{app.category}</span><RoleBadges app={app} /><span className="badge">{app.version}</span>{NATIVE_IDS.includes(app.id) && <span className="badge green">바이탈 버전</span>}</span>
           <p style={{ margin: 0, fontSize: 17, lineHeight: 1.65 }}>{app.summary}</p>
           <div className="row"><OpenButton app={app} label="앱 열기" /></div>
         </div>
@@ -134,7 +138,7 @@ export function AppDetail() {
         </Card>
         <Card title="이용 전 확인">
           <ul className="dot-list">
-            <li>입력한 내용은 서버로 보내지 않고 이 브라우저 안에서만 처리합니다.</li>
+            <li>입력한 내용은 서버로 보내지 않고 이 브라우저 안에서만 처리합니다.{NATIVE_IDS.includes(app.id) && ' 지후 AI로 다듬기를 누를 때만 개인정보를 가린 뒤 교내 AI 서버로 보냅니다.'}</li>
             {app.stored && <li>올린 파일과 설정은 이 기기의 브라우저에 저장됩니다. 공용 PC에서는 사용 후 지워 주세요.</li>}
             <li>결과는 참고용 초안입니다. 사실과 수치는 원문과 담당자가 확인합니다.</li>
             {app.caution && <li><b>{app.caution}</b></li>}

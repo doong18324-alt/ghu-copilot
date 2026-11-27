@@ -9,6 +9,7 @@ import { AdminHome, Models, Users, Connection } from './pages/admin.jsx'
 import { PublicLayout, Root, Home, About, Showcase, Article, Recruit } from './pages/public.jsx'
 import { Resume } from './pages/resume.jsx'
 import { AppMarket, AppDetail, RoleApps } from './pages/market.jsx'
+import { RunApp } from './pages/run.jsx'
 import { GuidePublic, FaqPage, PromptLibrary, ManualLibrary } from './pages/library.jsx'
 
 export default function App() {
@@ -29,6 +30,7 @@ export default function App() {
         <Route path="/guide" element={<GuidePublic />} />
         <Route path="/guide/:tab" element={<GuidePublic />} />
         <Route path="/faq" element={<FaqPage />} />
+        <Route path="/run/:id" element={<RunApp />} />
       </Route>
 
       <Route path="/staff" element={<Layout />}>

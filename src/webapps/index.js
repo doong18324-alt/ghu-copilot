@@ -1,0 +1,8 @@
+import { lazy } from 'react'
+
+// 바이탈 디자인으로 다시 만든 웹앱입니다. 여기 없는 앱은 기존 HTML 파일(public/webapps)을 새 탭으로 엽니다.
+export const NATIVE = {
+  'press-notice': lazy(() => import('./press-notice.jsx')),
+  'toast-maker': lazy(() => import('./toast-maker.jsx')),
+  'mind-rest': lazy(() => import('./mind-rest.jsx')),
+}

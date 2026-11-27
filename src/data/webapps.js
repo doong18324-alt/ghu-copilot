@@ -59,7 +59,7 @@ export const WEBAPPS = [
   {
     id: 'press-notice', icon: '📰', tone: 'blue', version: 'V2',
     title: '보도자료·공지사항 자동 작성',
-    summary: '육하원칙만 입력하면 언론 배포용 보도자료와 교내 공지문 초안을 함께 만듭니다.',
+    summary: '육하원칙만 입력하면 보도자료, 교내 공지, 알림 문자 초안을 함께 만듭니다.',
     roles: ['staff', 'faculty'], category: '행정·문서',
     tags: ['보도자료', '공지', '공지사항', '홍보', '행사', '육하원칙', '5W1H'],
     features: ['보도자료·공지문 양식 선택', '담당자 인용 코멘트', '문서 톤 선택'],
@@ -145,6 +145,8 @@ export const WEBAPPS = [
 ]
 
 export const appUrl = a => `./webapps/${a.id}.html`
+// 바이탈 디자인으로 다시 만든 앱(src/webapps/index.js에 등록)은 이 목록에 있습니다.
+export const NATIVE_IDS = ['press-notice', 'toast-maker', 'mind-rest']
 export const appById = id => WEBAPPS.find(a => a.id === id)
 
 // 띄어쓰기·대소문자와 관계없이 제목, 설명, 태그, 기능에서 찾습니다.
