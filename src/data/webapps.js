@@ -27,6 +27,24 @@ export const WEBAPPS = [
     caution: '시제품입니다. 건강관리·교육·선별 목적이며 진단이나 치료를 대신하지 않습니다. 데이터는 이 기기 브라우저에만 저장됩니다.',
   },
   {
+    id: 'ipe-conference', mono: '다학제', tone: 'blue', version: 'V1', isNew: true,
+    title: '다학제 케이스 컨퍼런스: 내 직종 자리에서 회의하기',
+    summary: '가상 사례 회의에서 간호·물리치료·영양·사회복지·치위생·임상병리·운동처방 가운데 한 자리를 맡아 세 라운드 발언하고, 다른 직종의 질문에 답하며 통합 돌봄 계획을 만듭니다.',
+    roles: ['student', 'faculty'], category: '학습·국가고시',
+    tags: ['다학제', 'IPE', '전문직간 교육', '팀기반학습', '케이스 컨퍼런스', '사례회의', '통합 돌봄', '간호', '물리치료', '영양', '사회복지', '치위생', '임상병리', '운동처방', '협력'],
+    features: ['고관절 골절 퇴원, 뇌졸중 삼킴장애, 당뇨병 생활습관 3개 가상 사례', '사정 소견 → 우선 문제와 목표 → 중재와 협력 요청 3라운드', '직종별 핵심 항목 확인과 모범 발언 비교', '다른 직종이 던지는 질문에 답하기', '통합 돌봄 계획 내려받기'],
+    caution: '교육용 가상 사례입니다. 핵심 항목 확인은 낱말 기준의 연습용이며, 수치와 기준은 교재와 최신 지침으로 확인합니다.',
+  },
+  {
+    id: 'surface-anatomy', mono: '해부', tone: 'red', version: 'V1', isNew: true,
+    title: '체표 해부 AR: 내 몸 위에 뼈·근육·촉진점 겹쳐 보기',
+    summary: '카메라에 비친 내 몸 위에 뼈 분절, 근육 위치, 촉진 지점을 겹쳐 보여 주고, 관절 각도에 따라 지금 쓰이는 근육을 알려 줍니다.',
+    roles: ['student', 'faculty'], category: '학습·국가고시',
+    tags: ['해부학', '체표해부', '촉진', 'AR', '증강현실', '운동학', '근육', '뼈', '관절각도', '카메라', '물리치료', '운동처방', '스포츠의학'],
+    features: ['뼈 분절, 근육 위치, 촉진 지점 겹쳐 보기(선택)', '팔꿈치·어깨·엉덩관절·무릎 각도 실시간 표시', '팔 굽히기, 팔 옆으로 들기, 쪼그려 앉기 때 주로 쓰이는 근육 강조', '앞·뒤 카메라 전환, 영상은 저장·전송하지 않음'],
+    caution: '근육과 촉진 지점은 관절 위치로 계산한 학습용 근사 위치입니다. 처음 켤 때 인식 모델(약 수 MB)을 내려받습니다.',
+  },
+  {
     id: 'privacy-shield', mono: '가림', tone: 'red', version: 'V1', isNew: true,
     title: '개인정보 가명처리기: AI에 넣기 전에 가리기',
     summary: '이름·학번·연락처·계좌·등록번호를 찾아 "학생A", "[전화1]"로 바꾸고, AI 결과를 붙여 넣으면 원래 값으로 되돌립니다.',
@@ -215,7 +233,7 @@ export const WEBAPPS = [
 
 export const appUrl = a => `./webapps/${a.id}.html`
 // 바이탈 디자인으로 다시 만든 앱(src/webapps/index.js에 등록)은 이 목록에 있습니다.
-export const NATIVE_IDS = ['press-notice', 'toast-maker', 'mind-rest', 'advising-guide', 'rules-chatbot', 'complaint-script', 'easy-explainer', 'license-cbt', 'admission-studio', 'career-clinic', 'home-massage', 'diet-planner', 'pet-signal', 'voucher-checker', 'future-strategy', 'privacy-shield', 'item-analysis', 'grading-helper', 'reflection-journal', 'lecture-cqi', 'senior-fitness', 'vital-oncare']
+export const NATIVE_IDS = ['press-notice', 'toast-maker', 'mind-rest', 'advising-guide', 'rules-chatbot', 'complaint-script', 'easy-explainer', 'license-cbt', 'admission-studio', 'career-clinic', 'home-massage', 'diet-planner', 'pet-signal', 'voucher-checker', 'future-strategy', 'privacy-shield', 'item-analysis', 'grading-helper', 'reflection-journal', 'lecture-cqi', 'senior-fitness', 'vital-oncare', 'ipe-conference', 'surface-anatomy']
 export const appById = id => WEBAPPS.find(a => a.id === id)
 
 // 띄어쓰기·대소문자와 관계없이 제목, 설명, 태그, 기능에서 찾습니다.

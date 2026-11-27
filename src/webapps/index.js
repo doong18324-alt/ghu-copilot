@@ -24,4 +24,6 @@ export const NATIVE = {
   'lecture-cqi': lazy(() => import('./lecture-cqi.jsx')),
   'senior-fitness': lazy(() => import('./senior-fitness.jsx')),
   'vital-oncare': lazy(() => import('./vital-oncare.jsx')),
+  'ipe-conference': lazy(() => import('./ipe-conference.jsx')),
+  'surface-anatomy': lazy(() => import('./surface-anatomy.jsx')),
 }
