@@ -47,7 +47,7 @@ function AppCard({ app, detail = true }) {
       {!detail && app.caution && <p className="app-caution">{app.caution}</p>}
       <div className="store-card-foot">
         <OpenButton app={app} />
-        {isNative(app) ? <span className="ed-new">바이탈판</span> : <span className="ed-old">이전판 · 새 탭</span>}
+        {app.isNew ? <span className="ed-new">새로 나옴</span> : isNative(app) ? <span className="ed-old">{app.version}</span> : <span className="ed-old">이전판 · 새 탭</span>}
       </div>
     </article>
   )
@@ -55,9 +55,9 @@ function AppCard({ app, detail = true }) {
 
 // 앱스토어 '투데이'처럼 새로 바뀐 앱을 크게 소개합니다.
 const FEATURED = [
-  ['license-cbt', '문제은행이 새로 바뀌었습니다', '10개 직종 과목별로 풀고, 문제지와 해설을 내려받습니다.'],
-  ['admission-studio', '성인학습자 홍보까지', '학과를 고르면 공개 정보가 채워지고, 독자에 맞춘 카드뉴스가 나옵니다.'],
-  ['rules-chatbot', '규정은 조항으로 답합니다', '학칙 PDF를 올리면 질문에 맞는 조항을 찾아 보여 줍니다.'],
+  ['privacy-shield', 'AI에 넣기 전에 가리세요', '이름·학번·연락처를 가명으로 바꾸고, AI 답은 원래 이름으로 되돌립니다.'],
+  ['item-analysis', '시험이 끝나면 문항부터', '응답표를 붙여 넣으면 난이도·변별도·신뢰도를 바로 계산합니다.'],
+  ['admission-studio', '홍보 영상 자막까지', '학과를 고르면 카드뉴스, 숏폼 자막, 엔딩 카드, 게시 문구가 함께 나옵니다.'],
 ]
 
 function Featured() {
@@ -123,7 +123,7 @@ export function AppMarket() {
     <div className="container market">
       <section className="market-hero">
         <h1>앱마켓</h1>
-        <p>AI대학혁신본부와 구성원이 만든 웹앱 {WEBAPPS.length}종. 설치나 로그인 없이 열리고, 입력한 내용은 이 브라우저 안에서만 처리합니다. 바이탈판 {NATIVE_IDS.length}종은 이 화면 안에서, 이전판은 새 탭에서 열립니다.</p>
+        <p>AI대학혁신본부와 구성원이 만든 웹앱 {WEBAPPS.length}종. 설치나 로그인 없이 열리고, 입력한 내용은 이 브라우저 안에서만 처리합니다.{WEBAPPS.length > NATIVE_IDS.length ? ` 이전판 ${WEBAPPS.length - NATIVE_IDS.length}종은 새 탭에서 열립니다.` : ""}</p>
         <SearchBox value={q} onChange={v => set('q', v)} />
       </section>
 
