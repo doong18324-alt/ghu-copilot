@@ -9,4 +9,5 @@ export const NATIVE = {
   'rules-chatbot': lazy(() => import('./rules-chatbot.jsx')),
   'complaint-script': lazy(() => import('./complaint-script.jsx')),
   'easy-explainer': lazy(() => import('./easy-explainer.jsx')),
+  'license-cbt': lazy(() => import('./license-cbt.jsx')),
 }
