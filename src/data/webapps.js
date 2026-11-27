@@ -1,3 +1,4 @@
+import oncareIcon from '../assets/apps/oncare-icon.png'
 // GHU 바이탈 앱마켓에 올라가는 웹앱 목록입니다.
 // 파일은 public/webapps/ 에 있으며, 모두 브라우저 안에서만 작동합니다(서버 전송 없음).
 // 새 앱을 올릴 때: 파일을 public/webapps/ 에 넣고 아래 목록에 한 줄을 추가합니다.
@@ -17,7 +18,7 @@ export const CATEGORIES = ['학습·국가고시', '취업·진로', '학생 지
 // caution: 사용 전 꼭 알려야 할 내용
 export const WEBAPPS = [
   {
-    id: 'vital-oncare', mono: '온케어', tone: 'green', version: 'V1', isNew: true,
+    id: 'vital-oncare', mono: '온케어', icon: oncareIcon, tone: 'green', version: 'V1', isNew: true,
     title: 'GHU 바이탈 온케어: 다학제 지역사회 건강관리',
     summary: '10개 보건계열 학과가 휴대폰 센서와 카메라로 지역 주민을 평가하고, 결과를 하나의 건강지도와 맞춤계획으로 묶어 지속 관리합니다.',
     roles: ['faculty', 'student'], category: '건강·생활',

@@ -53,23 +53,22 @@ function AppCard({ app, detail = true }) {
   )
 }
 
-// 앱스토어 '투데이'처럼 새로 바뀐 앱을 크게 소개합니다.
+// 앱마켓 맨 위에 대표 앱 3개를 크게 소개합니다.
 const FEATURED = [
   ['vital-oncare', '온 학과가 함께하는 지역사회 건강관리', '휴대폰 하나로 평가하고, 10개 학과 결과를 하나의 건강지도와 맞춤계획으로 묶습니다.'],
-  ['privacy-shield', 'AI에 넣기 전에 가리세요', '이름·학번·연락처를 가명으로 바꾸고, AI 답은 원래 이름으로 되돌립니다.'],
-  ['item-analysis', '시험이 끝나면 문항부터', '응답표를 붙여 넣으면 난이도·변별도·신뢰도를 바로 계산합니다.'],
-  ['admission-studio', '홍보 영상 자막까지', '학과를 고르면 카드뉴스, 숏폼 자막, 엔딩 카드, 게시 문구가 함께 나옵니다.'],
+  ['license-cbt', '국가고시, 과목별로 풀고 틀린 것만 다시', '10개 직종 연습 문항을 과목별로 풀고, 오답노트와 시험일까지의 공부 계획으로 관리합니다.'],
+  ['career-clinic', '자소서와 면접을 경험에서부터', '실습·봉사 경험을 STAR로 정리해 의료기관 자기소개서 문장과 예상 면접 질문을 만듭니다.'],
 ]
 
 function Featured() {
   return (
-    <section className="feat-row" aria-label="새로 바뀐 앱">
+    <section className="feat-row" aria-label="대표 앱">
       {FEATURED.map(([id, head, sub]) => {
         const app = appById(id)
         if (!app) return null
         return (
           <article key={id} className={`feat t-${CATEGORY_TONE[app.category]}`}>
-            <span className="feat-kicker">새로 바뀐 앱</span>
+            <span className="feat-kicker">대표 앱</span>
             <h2>{head}</h2>
             <p>{sub}</p>
             <div className="feat-app">
