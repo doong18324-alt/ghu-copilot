@@ -2,22 +2,21 @@ import { useState } from 'react'
 import { Link, useParams, useSearchParams, Navigate } from 'react-router-dom'
 import { Card, Empty, PageHead } from '../components/ui.jsx'
 import { useStored } from '../lib/store.js'
-import { WEBAPPS, MARKET_ROLES, CATEGORIES, appUrl, appById, searchApps, NATIVE_IDS } from '../data/webapps.js'
+import { WEBAPPS, MARKET_ROLES, CATEGORIES, CATEGORY_TONE, appUrl, appById, searchApps, NATIVE_IDS } from '../data/webapps.js'
+import { AppMark } from '../components/AppMark.jsx'
 
 /* GHU 바이탈 앱마켓: 구성원이 만든 웹앱을 모아 찾고 바로 실행합니다. */
 
 const ROLE_TONE = { student: 'green', faculty: 'blue', staff: 'amber' }
-const TONE_BG = { blue: 'var(--blue-soft)', green: 'var(--green-soft)', amber: 'var(--amber-soft)', red: 'var(--red-soft)' }
-
-function AppIcon({ app, size = 56 }) {
-  return <span className="app-icon" style={{ background: TONE_BG[app.tone], width: size, height: size, fontSize: size * 0.5 }} aria-hidden="true">{app.icon}</span>
-}
 
 function RoleBadges({ app }) {
   const all = app.roles.length === 3
   if (all) return <span className="badge">모든 구성원</span>
   return app.roles.map(r => <span key={r} className={`badge ${ROLE_TONE[r]}`}>{MARKET_ROLES[r]}</span>)
 }
+
+const roleText = app => app.roles.length === 3 ? '모든 구성원' : app.roles.map(r => MARKET_ROLES[r]).join('·')
+const isNative = app => NATIVE_IDS.includes(app.id)
 
 // 앱을 새 탭으로 열고, 최근 사용 목록에 남깁니다.
 function useRecent() { return useStored('webapps:recent', []) }
@@ -30,28 +29,38 @@ function OpenButton({ app, primary = true, label = '열기' }) {
   return (
     <a href={appUrl(app)} target="_blank" rel="noopener" className={primary ? 'btn primary app-open' : 'btn app-open'}
       onClick={() => setRecent(r => [app.id, ...r.filter(x => x !== app.id)].slice(0, 6))}
-      aria-label={`${app.title} 새 탭에서 열기`}>{label}</a>
+      aria-label={`${app.title} 새 탭에서 열기`}>{label === '열기' ? '새 탭에서 열기' : label}</a>
   )
 }
 
-function AppCard({ app, detail = true }) {
+// 앱 한 줄: 두 글자 마크, 이름과 설명, 대상·판, 열기
+function AppRow({ app, detail = true }) {
   return (
-    <article className="card app-card">
-      <div className="app-card-head">
-        <AppIcon app={app} />
-        <div className="stack" style={{ gap: 6, minWidth: 0 }}>
-          <h3>{detail ? <Link to={`/market/${app.id}`}>{app.title}</Link> : app.title}</h3>
-          <span className="row" style={{ gap: 6 }}><span className="badge">{app.category}</span><RoleBadges app={app} /></span>
-        </div>
+    <article className="app-row">
+      <AppMark app={app} />
+      <div className="app-row-body">
+        <h3>{detail ? <Link to={`/market/${app.id}`}>{app.title}</Link> : app.title}</h3>
+        <p>{app.summary}</p>
+        <span className="app-row-meta">{roleText(app)} <i aria-hidden="true" /> {isNative(app) ? <b className="ed-new">바이탈판</b> : <span className="ed-old">이전판, 새 탭에서 열림</span>}</span>
+        {!detail && app.caution && <p className="app-caution">{app.caution}</p>}
       </div>
-      <p className="small app-summary">{app.summary}</p>
-      {!detail && app.caution && <p className="app-caution">{app.caution}</p>}
-      <div className="row app-card-foot">
-        <OpenButton app={app} />
-        {detail && <Link to={`/market/${app.id}`} className="small">자세히</Link>}
-      </div>
+      <div className="app-row-act"><OpenButton app={app} /></div>
     </article>
   )
+}
+
+// 분야별로 묶어 보여 줍니다(분야 색이 마크 색과 같습니다).
+function Shelves({ apps, detail = true }) {
+  const cats = CATEGORIES.filter(c => apps.some(a => a.category === c))
+  return cats.map(c => {
+    const list = apps.filter(a => a.category === c)
+    return (
+      <section key={c} className={`shelf t-${CATEGORY_TONE[c]}`}>
+        <h2 className="shelf-h">{c}<span>{list.length}</span></h2>
+        <div className="shelf-list">{list.map(a => <AppRow key={a.id} app={a} detail={detail} />)}</div>
+      </section>
+    )
+  })
 }
 
 function SearchBox({ value, onChange, id = 'market-q', placeholder = '앱 이름이나 할 일로 찾기 (예: 국시, 공지, 민원)' }) {
@@ -86,9 +95,8 @@ export function AppMarket() {
   return (
     <div className="container market">
       <section className="market-hero">
-        <span className="home-eyebrow">GHU 바이탈 앱마켓</span>
-        <h1>필요한 웹앱을 찾아 바로 쓰세요</h1>
-        <p>AI대학혁신본부와 구성원이 AI로 만든 웹앱 {WEBAPPS.length}종입니다. 설치나 로그인 없이 열리고, 입력한 내용은 서버로 보내지 않고 쓰는 사람의 브라우저 안에서만 처리합니다.</p>
+        <h1>앱마켓</h1>
+        <p>AI대학혁신본부와 구성원이 만든 웹앱 {WEBAPPS.length}종. 설치나 로그인 없이 열리고, 입력한 내용은 이 브라우저 안에서만 처리합니다. 바이탈판 {NATIVE_IDS.length}종은 이 화면 안에서, 이전판은 새 탭에서 열립니다.</p>
         <SearchBox value={q} onChange={v => set('q', v)} />
       </section>
 
@@ -103,7 +111,7 @@ export function AppMarket() {
           {(q || role !== 'all' || cat !== 'all') && <button type="button" className="btn" onClick={() => setParams({}, { replace: true })}>조건 지우기</button>}
         </div>
         {shown.length === 0 ? <Empty>조건에 맞는 앱이 없습니다. 다른 낱말로 찾아보세요.</Empty> : (
-          <div className="app-grid">{shown.map(a => <AppCard key={a.id} app={a} />)}</div>
+          <Shelves apps={shown} />
         )}
       </section>
 
@@ -124,10 +132,10 @@ export function AppDetail() {
     <div className="container market">
       <Link to="/market" className="small" style={{ fontWeight: 700, textDecoration: 'none' }}>← 앱마켓</Link>
       <section className="card app-detail">
-        <AppIcon app={app} size={96} />
+        <AppMark app={app} size={96} />
         <div className="stack" style={{ gap: 12, minWidth: 0 }}>
           <h1 className="page-title">{app.title}</h1>
-          <span className="row" style={{ gap: 6 }}><span className="badge">{app.category}</span><RoleBadges app={app} /><span className="badge">{app.version}</span>{NATIVE_IDS.includes(app.id) && <span className="badge green">바이탈 버전</span>}</span>
+          <span className="row" style={{ gap: 6 }}><span className="badge">{app.category}</span><RoleBadges app={app} /><span className="badge">{app.version}</span>{isNative(app) ? <span className="badge green">바이탈판</span> : <span className="badge">이전판 · 새 탭</span>}</span>
           <p style={{ margin: 0, fontSize: 17, lineHeight: 1.65 }}>{app.summary}</p>
           <div className="row"><OpenButton app={app} label="앱 열기" /></div>
         </div>
@@ -148,7 +156,7 @@ export function AppDetail() {
       {related.length > 0 && (
         <section className="stack" style={{ gap: 16 }}>
           <h2 className="home-h">같은 분야의 앱</h2>
-          <div className="app-grid">{related.map(a => <AppCard key={a.id} app={a} />)}</div>
+          <div className="shelf-list">{related.map(a => <AppRow key={a.id} app={a} />)}</div>
         </section>
       )}
     </div>
@@ -184,21 +192,21 @@ export function RoleApps({ role }) {
 
       {found ? (
         found.length === 0 ? <Empty>찾는 앱이 없습니다. <Link to={`/market?q=${encodeURIComponent(q)}`}>앱마켓 전체에서 찾기</Link></Empty>
-          : <div className="app-grid">{found.map(a => <AppCard key={a.id} app={a} detail={false} />)}</div>
+          : <div className="shelf-list">{found.map(a => <AppRow key={a.id} app={a} detail={false} />)}</div>
       ) : (
         <>
           {recentApps.length > 0 && (
             <Card title="최근 사용">
-              <div className="row" style={{ gap: 8 }}>{recentApps.map(a => <OpenButton key={a.id} app={a} primary={false} label={`${a.icon} ${a.title}`} />)}</div>
+              <div className="row" style={{ gap: 8 }}>{recentApps.map(a => <OpenButton key={a.id} app={a} primary={false} label={a.title} />)}</div>
             </Card>
           )}
           <section className="stack" style={{ gap: 14 }}>
             <h2 className="section-h">{CORE_LABEL[role]}</h2>
-            <div className="app-grid">{core.map(a => <AppCard key={a.id} app={a} detail={false} />)}</div>
+            <div className="shelf-list">{core.map(a => <AppRow key={a.id} app={a} detail={false} />)}</div>
           </section>
           <section className="stack" style={{ gap: 14 }}>
             <h2 className="section-h">모든 구성원 공통</h2>
-            <div className="app-grid">{common.map(a => <AppCard key={a.id} app={a} detail={false} />)}</div>
+            <div className="shelf-list">{common.map(a => <AppRow key={a.id} app={a} detail={false} />)}</div>
           </section>
         </>
       )}

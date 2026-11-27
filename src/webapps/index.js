@@ -10,4 +10,5 @@ export const NATIVE = {
   'complaint-script': lazy(() => import('./complaint-script.jsx')),
   'easy-explainer': lazy(() => import('./easy-explainer.jsx')),
   'license-cbt': lazy(() => import('./license-cbt.jsx')),
+  'admission-studio': lazy(() => import('./admission-studio.jsx')),
 }

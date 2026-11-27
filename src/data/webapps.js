@@ -8,13 +8,16 @@ export const MARKET_ROLES = {
   staff: '직원',
 }
 
+// 분야별 색: 앱 표시(두 글자 마크)의 색이 분야를 나타냅니다.
+export const CATEGORY_TONE = { '학습·국가고시': 'study', '취업·진로': 'career', '학생 지도': 'guide', '행정·문서': 'admin', '규정·민원': 'rules', '기획·홍보': 'pr', '건강·생활': 'life' }
+
 export const CATEGORIES = ['학습·국가고시', '취업·진로', '학생 지도', '행정·문서', '규정·민원', '기획·홍보', '건강·생활']
 
 // stored: 입력한 자료를 이 기기 브라우저에 저장하는지 여부
 // caution: 사용 전 꼭 알려야 할 내용
 export const WEBAPPS = [
   {
-    id: 'license-cbt', icon: '📝', tone: 'blue', version: 'V3', stored: true,
+    id: 'license-cbt', mono: '국시', tone: 'blue', version: 'V3', stored: true,
     title: '보건의료 국가고시 CBT 모의고사·오답노트',
     summary: '10개 면허 직종의 과목별 모의고사를 풀고 틀린 문제를 오답노트로 모읍니다.',
     roles: ['student', 'faculty'], category: '학습·국가고시',
@@ -23,7 +26,7 @@ export const WEBAPPS = [
     caution: '내장 문항은 국시원 공개 기출의 출제 개념만 참고해 새로 쓴 연습 문항(AI 초안)이며 기출 원문이 아닙니다. 학과 교수 검토 후 사용하세요.',
   },
   {
-    id: 'easy-explainer', icon: '💡', tone: 'amber', version: 'V2',
+    id: 'easy-explainer', mono: '쉽게', tone: 'amber', version: 'V2',
     title: '어려운 개념 쉽게 풀기·미니 퀴즈',
     summary: '전공 문장이나 기사를 붙여 넣으면 어려운 문장과 용어를 짚어 주고 퀴즈를 냅니다. AI 연결 후에는 눈높이 설명과 비유까지 만듭니다.',
     roles: ['student', 'faculty'], category: '학습·국가고시',
@@ -31,7 +34,7 @@ export const WEBAPPS = [
     features: ['초등·중고등·대학 신입생 눈높이 선택', '보건·경제·IT·인문 분야 선택', '확인 퀴즈 3문제'],
   },
   {
-    id: 'career-clinic', icon: '🩺', tone: 'green', version: 'V1',
+    id: 'career-clinic', mono: '취업', tone: 'green', version: 'V1',
     title: '대학병원·의료기관 취업 자소서·면접 클리닉',
     summary: '임상실습 경험을 STAR 구조 자기소개서로 정리하고 직군별 예상 면접 질문을 준비합니다.',
     roles: ['student'], category: '취업·진로',
@@ -40,7 +43,7 @@ export const WEBAPPS = [
     caution: '실제 환자의 이름·병실·등록번호는 쓰지 말고 익명으로 적으세요.',
   },
   {
-    id: 'rules-chatbot', icon: '📘', tone: 'blue', version: 'V1', stored: true,
+    id: 'rules-chatbot', mono: '학칙', tone: 'blue', version: 'V1', stored: true,
     title: '학칙·대학 규정 Q&A 챗봇',
     summary: '학칙·장학·인사 규정 파일을 올리면 질문에 맞는 조항을 근거로 답합니다.',
     roles: ['student', 'faculty', 'staff'], category: '규정·민원',
@@ -49,7 +52,7 @@ export const WEBAPPS = [
     caution: '올리는 규정이 현재 시행 중인 최신 개정본인지 먼저 확인하세요.',
   },
   {
-    id: 'advising-guide', icon: '🧭', tone: 'green', version: 'V1',
+    id: 'advising-guide', mono: '지도', tone: 'green', version: 'V1',
     title: '지도학생 진로·학업 위기 상담 가이드',
     summary: '면담 전에 학생 상황을 고르면 공감 화법과 교내 지원 프로그램 연계 방안을 정리합니다.',
     roles: ['faculty'], category: '학생 지도',
@@ -58,7 +61,7 @@ export const WEBAPPS = [
     caution: '학생 이름·학번 등 개인정보는 넣지 않고 상황만 고르세요.',
   },
   {
-    id: 'press-notice', icon: '📰', tone: 'blue', version: 'V2',
+    id: 'press-notice', mono: '보도', tone: 'blue', version: 'V2',
     title: '보도자료·공지사항 자동 작성',
     summary: '육하원칙만 입력하면 보도자료, 교내 공지, 알림 문자 초안을 함께 만듭니다.',
     roles: ['staff', 'faculty'], category: '행정·문서',
@@ -66,7 +69,7 @@ export const WEBAPPS = [
     features: ['보도자료·공지문 양식 선택', '담당자 인용 코멘트', '문서 톤 선택'],
   },
   {
-    id: 'voucher-checker', icon: '🧾', tone: 'amber', version: 'V2', stored: true,
+    id: 'voucher-checker', mono: '결의', tone: 'amber', version: 'V2', stored: true,
     title: '산학협력단 결의서 스마트 검증기',
     summary: '사업별 집행 지침을 등록하고 결의서의 금액·일자·필수 증빙을 지침과 대조해 점검합니다.',
     roles: ['staff', 'faculty'], category: '행정·문서',
@@ -75,7 +78,7 @@ export const WEBAPPS = [
     caution: '최종 판단은 산학협력단 담당자가 합니다.',
   },
   {
-    id: 'complaint-script', icon: '☎️', tone: 'red', version: 'V1', stored: true,
+    id: 'complaint-script', mono: '민원', tone: 'red', version: 'V1', stored: true,
     title: '학내 민원·학부모 문의 응대 스크립트',
     summary: '등록금·성적·장학 같은 민감한 문의에 규정 근거와 정중한 응대 문안을 함께 준비합니다.',
     roles: ['staff'], category: '규정·민원',
@@ -84,7 +87,7 @@ export const WEBAPPS = [
     caution: '올리는 규정이 최신 개정본인지 먼저 확인하세요.',
   },
   {
-    id: 'future-strategy', icon: '📊', tone: 'blue', version: 'V8',
+    id: 'future-strategy', mono: '전략', tone: 'blue', version: 'V8',
     title: '미래전략 추천·수익성 분석',
     summary: '대학·지역·주변 대학 자료를 바탕으로 학과·MD·평생교육 개설안을 추천하고 손익분기를 계산합니다.',
     roles: ['staff', 'faculty'], category: '기획·홍보',
@@ -92,15 +95,16 @@ export const WEBAPPS = [
     features: ['공시·CSV 기초자료 불러오기', '학과·MD·평생교육 추천', '재정·BEP 시뮬레이션'],
   },
   {
-    id: 'admission-studio', icon: '🎬', tone: 'amber', version: 'V1',
+    id: 'admission-studio', mono: '입시', tone: 'amber', version: 'V2',
     title: '입시 홍보 카드뉴스·숏폼 대본',
-    summary: '학과 강점을 입력하면 SNS 홍보 문구, 숏폼 대본, 영상·포스터 제작용 프롬프트를 만듭니다.',
+    summary: '학과를 고르고 강점을 적으면 수험생, 학부모, 성인학습자에게 맞춘 카드뉴스, 숏폼 대본, 안내 문자, AI 제작 프롬프트를 만듭니다.',
     roles: ['staff', 'faculty'], category: '기획·홍보',
-    tags: ['입시', '홍보', '카드뉴스', '숏폼', '릴스', 'SNS', '학과 소개', '포스터'],
-    features: ['수험생·학부모 대상 선택', '숏폼 대본', '영상·이미지 AI용 프롬프트'],
+    tags: ['입시', '홍보', '카드뉴스', '숏폼', '릴스', 'SNS', '학과 소개', '포스터', '성인학습자', '만학도', '재직자', '야간'],
+    features: ['광주보건대 학과 목록(성인학습자 학과 7곳 포함)과 공개 정보 자동 채움', '수험생·학부모·성인학습자·통합 독자 선택', '카드뉴스 5장, 숏폼 대본, 안내 문자, 이미지·영상 프롬프트'],
+    caution: '수치는 입력한 값만 씁니다. 장학·수업 방식·모집 인원은 해마다 바뀌므로 게시 전 모집요강으로 확인하세요.',
   },
   {
-    id: 'toast-maker', icon: '🥂', tone: 'amber', version: 'V2',
+    id: 'toast-maker', mono: '축사', tone: 'amber', version: 'V2',
     title: '건배사 생성기',
     summary: '모임 성격과 키워드를 고르면 삼행시, 선창·후창 구호 등 건배사 5개를 추천합니다.',
     roles: ['staff', 'faculty', 'student'], category: '건강·생활',
@@ -108,7 +112,7 @@ export const WEBAPPS = [
     features: ['모임 성격 선택', '키워드 삼행시'],
   },
   {
-    id: 'mind-rest', icon: '🌿', tone: 'green', version: 'V1',
+    id: 'mind-rest', mono: '쉼', tone: 'green', version: 'V1',
     title: '마음 비움터: 감정 털어놓기',
     summary: '지금 마음을 적고 비우면 판단 없는 공감 문장과 마음을 가라앉히는 작은 행동을 안내합니다.',
     roles: ['student', 'faculty', 'staff'], category: '건강·생활',
@@ -117,7 +121,7 @@ export const WEBAPPS = [
     caution: '전문 상담을 대신하지 않습니다. 혼자 감당하기 어려우면 학생상담센터나 자살예방상담전화 109(24시간)에 연락하세요.',
   },
   {
-    id: 'diet-planner', icon: '🥗', tone: 'green', version: 'V3',
+    id: 'diet-planner', mono: '식단', tone: 'green', version: 'V3',
     title: '건강 식단 플래너·장보기 예산',
     summary: '나이·활동량·건강 목표와 주간 식비를 넣으면 예산 안에서 7일 식단과 장보기 목록을 만듭니다.',
     roles: ['student', 'faculty', 'staff'], category: '건강·생활',
@@ -126,7 +130,7 @@ export const WEBAPPS = [
     caution: '질환이 있으면 식단은 담당 의료진과 상의하세요.',
   },
   {
-    id: 'home-massage', icon: '💆', tone: 'blue', version: 'V2',
+    id: 'home-massage', mono: '손길', tone: 'blue', version: 'V2',
     title: '가족 맞춤 안전 홈 안마·지압',
     summary: '통증 부위와 기저질환을 고르면 위험한 부위와 동작을 빼고 안전한 지압·스트레칭을 안내합니다.',
     roles: ['student', 'faculty', 'staff'], category: '건강·생활',
@@ -135,7 +139,7 @@ export const WEBAPPS = [
     caution: '통증이 심하거나 오래가면 의료기관 진료를 먼저 받으세요.',
   },
   {
-    id: 'pet-signal', icon: '🐾', tone: 'amber', version: 'V1',
+    id: 'pet-signal', mono: '반려', tone: 'amber', version: 'V1',
     title: '반려동물 행동 통역사',
     summary: '강아지·고양이의 행동과 증상을 고르면 이유와 대처법, 병원 방문이 필요한 정도를 안내합니다.',
     roles: ['student', 'faculty', 'staff'], category: '건강·생활',
@@ -147,7 +151,7 @@ export const WEBAPPS = [
 
 export const appUrl = a => `./webapps/${a.id}.html`
 // 바이탈 디자인으로 다시 만든 앱(src/webapps/index.js에 등록)은 이 목록에 있습니다.
-export const NATIVE_IDS = ['press-notice', 'toast-maker', 'mind-rest', 'advising-guide', 'rules-chatbot', 'complaint-script', 'easy-explainer', 'license-cbt']
+export const NATIVE_IDS = ['press-notice', 'toast-maker', 'mind-rest', 'advising-guide', 'rules-chatbot', 'complaint-script', 'easy-explainer', 'license-cbt', 'admission-studio']
 export const appById = id => WEBAPPS.find(a => a.id === id)
 
 // 띄어쓰기·대소문자와 관계없이 제목, 설명, 태그, 기능에서 찾습니다.

@@ -2,26 +2,25 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { askAI, AI_MODE } from '../lib/ai.js'
 import { findPII, maskPII } from '../lib/privacy.js'
+import { AppMark } from '../components/AppMark.jsx'
 
 /* 바이탈 웹앱 공통 부품: 앱 머리말, 입력 칸, 선택 칩, 결과 상자, 지후 AI 다듬기 */
 
-const TONE_BG = { blue: 'var(--blue-soft)', green: 'var(--green-soft)', amber: 'var(--amber-soft)', red: 'var(--red-soft)' }
-
 export function AppHeader({ app, children }) {
   return (
-    <section className="card wa-head">
-      <span className="app-icon" style={{ background: TONE_BG[app.tone], width: 64, height: 64, fontSize: 32 }} aria-hidden="true">{app.icon}</span>
-      <div className="stack" style={{ gap: 6, minWidth: 0 }}>
-        <h1 className="page-title" style={{ fontSize: 28 }}>{app.title}</h1>
-        <p className="muted" style={{ margin: 0 }}>{app.summary}</p>
-        {children}
+    <header className="wa-head">
+      <AppMark app={app} size={60} />
+      <div className="wa-head-text">
+        <span className="wa-head-cat">{app.category}</span>
+        <h1>{app.title}</h1>
+        {children && <p>{children}</p>}
       </div>
-    </section>
+    </header>
   )
 }
 
 export function Notice({ tone = 'warn', children }) {
-  return <div className={`check ${tone}`} role="note">{children}</div>
+  return <div className={`check ${tone}`} role="note"><div>{children}</div></div>
 }
 
 export function Field({ id, label, hint, required, children }) {

@@ -235,35 +235,48 @@ export default function LicenseCbt({ app }) {
             </div>
           )}
 
-          <ol className="stack" style={{ paddingLeft: 0, listStyle: 'none', gap: 18 }}>
+          <nav className="exam-nav" aria-label="문항 이동">
+            <div className="exam-bar"><i style={{ width: `${(exam.done ? score : answered) / exam.qs.length * 100}%` }} /></div>
+            <div className="exam-pad">
+              {exam.qs.map((it, n) => {
+                const a = exam.ans[it.id]
+                const cls = exam.done ? (a === undefined ? 'miss' : a === it.a - 1 ? 'ok' : 'bad') : a !== undefined ? 'on' : ''
+                return <a key={it.id} href={`#q-${n + 1}`} className={cls} onClick={e => { e.preventDefault(); document.getElementById(`q-${n + 1}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' }) }} aria-label={`${n + 1}번${cls === 'on' ? ' 답함' : cls === 'ok' ? ' 정답' : cls === 'bad' ? ' 오답' : cls === 'miss' ? ' 답하지 않음' : ''}`}>{n + 1}</a>
+              })}
+            </div>
+          </nav>
+
+          <ol className="exam-list">
             {exam.qs.map((it, n) => {
               const pick = exam.ans[it.id]
               const right = it.a - 1
               return (
-                <li key={it.id} className="stack" style={{ gap: 8 }}>
-                  <p style={{ margin: 0, whiteSpace: 'pre-wrap', lineHeight: 1.7 }}>
-                    <b>{n + 1}.</b> <span className="badge">{it.subjName}</span> {it.src === '학과 업로드' && <span className="badge amber">학과</span>} {it.q}
-                  </p>
-                  <div className="wa-chips" role="radiogroup" aria-label={`${n + 1}번 보기`}>
+                <li key={it.id} id={`q-${n + 1}`} className="exam-q">
+                  <span className="exam-qn">{n + 1}</span>
+                  <div className="exam-qbody">
+                  <p className="exam-stem">{it.q}</p>
+                  <span className="exam-tags"><span>{it.subjName}</span>{it.src === '학과 업로드' && <span>학과 문항</span>}</span>
+                  <div className="exam-opts" role="radiogroup" aria-label={`${n + 1}번 보기`}>
                     {it.view.map((k, i) => {
-                      let cls = 'wa-chip'
+                      let cls = 'exam-opt'
                       if (exam.done && k === right) cls += ' ok'
                       else if (exam.done && k === pick) cls += ' bad'
-                      else if (!exam.done && k === pick) cls += ' on'
+                      else if (k === pick) cls += ' on'
                       return (
                         <button key={k} type="button" role="radio" aria-checked={k === pick} className={cls} disabled={exam.done}
                           onClick={() => setExam(e => ({ ...e, ans: { ...e.ans, [it.id]: k } }))}>
-                          <b>{NUM[i]} {it.o[k]}</b>
+                          <span className="exam-num">{i + 1}</span><span>{it.o[k]}</span>
                         </button>
                       )
                     })}
                   </div>
                   {exam.done && (
                     <p className="small" style={{ margin: 0, lineHeight: 1.7 }}>
-                      <b style={{ color: pick === right ? 'var(--green)' : 'var(--red)' }}>{pick === right ? '정답' : pick === undefined ? '답하지 않음' : '오답'}</b>
-                      {' · '}정답 {NUM[it.view.indexOf(right)]} · {it.e}
+                      <b style={{ color: pick === right ? 'var(--green)' : 'var(--red)' }}>{pick === right ? '맞음' : pick === undefined ? '답하지 않음' : '틀림'}</b>
+                      {'  '}정답 {it.view.indexOf(right) + 1}번. {it.e}
                     </p>
                   )}
+                  </div>
                 </li>
               )
             })}
