@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Card, PageHead, Empty } from '../components/ui.jsx'
 import { useStored, uid, roleFromPath } from '../lib/store.js'
+import { josa } from '../lib/korean.js'
 import shotBody from '../assets/apps/body-aligner.jpg'
 import shotGait from '../assets/apps/gait-analyzer.jpg'
 import shotBalloon from '../assets/apps/balloon-exercise.jpg'
@@ -13,40 +14,97 @@ const today = () => new Date().toISOString().slice(0, 10)
 export const ROLE_LABEL = { staff: '직원', faculty: '교수', student: '학생' }
 export const ROLE_TONE = { staff: 'blue', faculty: 'green', student: 'amber' }
 
-/* ── 프로그램 등록(직원) · 신청(학생) ── */
+/* ── 프로그램 등록(직원) · 신청(학생) · 이력서 연동 ── */
 
 export const PROGRAM_TYPES = ['서포터즈', '자격증 과정', '비교과', '소단위과정', '가상학과', '기타']
 
 export const BENEFIT_TYPES = ['장학금', '비교과 마일리지', '수료증', '활동비', '학점 인정', '응시료 지원', '봉사시간', '취업 연계']
 
-// 참여 혜택을 눈에 띄게 보여 주는 상자. 학생 목록, 내 신청 현황, 직원 관리 화면에서 같이 씁니다.
+// 구분별 색(앱마켓 분야 색과 같은 팔레트)과 이력서에 들어가는 칸
+export const TYPE_INFO = {
+  '서포터즈': { tone: 'pr', section: 'activities', role: '서포터즈 활동' },
+  '자격증 과정': { tone: 'study', section: 'licenses', role: '자격증 과정 수료' },
+  '비교과': { tone: 'career', section: 'activities', role: '비교과 프로그램 참여' },
+  '소단위과정': { tone: 'guide', section: 'training', role: '소단위과정 이수' },
+  '가상학과': { tone: 'rules', section: 'training', role: '가상학과 이수' },
+  '기타': { tone: 'admin', section: 'activities', role: '프로그램 참여' },
+}
+export const RESUME_SECTION = { activities: '활동·경험', licenses: '보유자격증', training: '교육·이수' }
+
+// 진행 단계: 신청 → 선정(참여 중) → 수료
+export const STEPS = ['신청', '선정', '수료']
+
+const cleanTitle = t => (t || '').replace(/\s*\((예시)\)\s*/g, ' ').replace(/\s*(모집|신청)(\s*안내)?\s*$/, '').trim()
+
+// 프로그램 한 건이 이력서에 들어갈 모양. status가 없으면 '수료' 기준 미리보기입니다.
+export function resumeEntry(p, status = '수료') {
+  const info = TYPE_INFO[p.type] || TYPE_INFO['기타']
+  const title = (p.resumeTitle || '').trim() || cleanTitle(p.title) || '[프로그램명]'
+  const done = status === '수료'
+  const from = p.start || '', to = done ? (p.end || '') : '진행 중'
+  // 자격증 과정은 수료하고 자격명을 적어 둔 경우에만 '보유자격증'에, 아니면 '교육·이수'에 넣습니다.
+  if (info.section === 'licenses') {
+    if (done && (p.cert || '').trim()) return { section: 'licenses', name: p.cert.trim(), date: p.end || '', title: p.cert.trim(), detail: `${title} 수료 | ${p.dept || ''}`.replace(/\s\|\s$/, '') }
+    return { section: 'training', title, detail: [done ? '자격증 과정 수료' : '자격증 과정 수강 중', p.dept].filter(Boolean).join(' | '), from, to }
+  }
+  const credit = info.section === 'training' && p.credit ? ` (${p.credit}학점)` : ''
+  const role = done ? info.role : `${info.role} 중`
+  return { section: info.section, title, detail: [role + credit, p.dept].filter(Boolean).join(' | '), from, to }
+}
+
+// 이력서(학생) 저장소에 프로그램 항목을 넣습니다. 같은 프로그램이 있으면 최신 단계로 고칩니다.
+export const RESUME_KEY = 'resume:student'
+export function mergeIntoResume(resume, p, status) {
+  const r = { education: [], licenses: [], activities: [], training: [], skills: [], ...(resume || {}) }
+  const e = resumeEntry(p, status)
+  const source = `program:${p.id}`
+  const strip = list => (list || []).filter(x => x.source !== source)
+  const out = { ...r, licenses: strip(r.licenses), activities: strip(r.activities), training: strip(r.training) }
+  const old = [...r.licenses, ...r.activities, ...r.training].find(x => x.source === source)
+  const item = e.section === 'licenses'
+    ? { id: old?.id || uid(), source, name: e.name, date: e.date || old?.date || '' }
+    : { id: old?.id || uid(), source, title: e.title, detail: e.detail, from: e.from || old?.from || '', to: e.to || old?.to || '' }
+  out[e.section] = [...out[e.section], item]
+  return out
+}
+
+// 참여 혜택 칩
 export function Benefits({ program, compact = false }) {
   const tags = program.benefits || []
   const note = (program.benefitNote || '').trim()
-  if (tags.length === 0 && !note) return compact ? null : <div className="benefit-box empty">참여 혜택이 아직 적혀 있지 않습니다.</div>
+  if (tags.length === 0 && !note) return compact ? null : <div className="pg-benefits empty">참여 혜택이 아직 적혀 있지 않습니다.</div>
   return (
-    <div className={compact ? 'benefit-box compact' : 'benefit-box'}>
-      <span className="benefit-label">참여 혜택</span>
-      <span className="benefit-tags">{tags.map(t => <span key={t} className="benefit-tag">{t}</span>)}</span>
-      {note && !compact && <span className="benefit-note">{note}</span>}
+    <div className={compact ? 'pg-benefits compact' : 'pg-benefits'}>
+      <div className="pg-benefit-tags">{tags.map(t => <span key={t}>{t}</span>)}</div>
+      {note && !compact && <p>{note}</p>}
     </div>
   )
 }
 
 const SEED_PROGRAMS = [
-  { id: 'seed-1', type: '서포터즈', title: 'AI 서포터즈 모집 (예시)', dept: '[주관 부서]', quota: 20, due: '', period: '[운영 기간]', benefits: ['활동비', '수료증', '비교과 마일리지'], benefitNote: '[활동비 금액, 마일리지 점수]', desc: '교내 AI 활용 사례를 찾아 알리는 학생 서포터즈입니다. 직원 화면에서 실제 공고로 바꿔 주세요.', open: true, applicants: [] },
-  { id: 'seed-2', type: '자격증 과정', title: '[자격증 과정명] (예시)', dept: '[주관 부서]', quota: 30, due: '', period: '[운영 기간]', benefits: ['응시료 지원', '수료증'], benefitNote: '[지원 금액과 조건]', desc: '[과정 내용, 수료 기준]', open: true, applicants: [] },
-  { id: 'seed-3', type: '소단위과정', title: '[소단위과정명] (예시)', dept: '[주관 부서]', quota: 0, due: '', period: '[운영 기간]', benefits: ['학점 인정'], benefitNote: '[인정 학점]', desc: '[이수 조건]', open: true, applicants: [] },
+  { id: 'seed-1', type: '서포터즈', title: 'AI 서포터즈 모집 (예시)', resumeTitle: 'GHU AI 서포터즈 [기수]기', dept: '[주관 부서]', quota: 20, due: '', period: '[운영 기간]', start: '', end: '', benefits: ['활동비', '수료증', '비교과 마일리지'], benefitNote: '[활동비 금액, 마일리지 점수]', desc: '교내 AI 활용 사례를 찾아 알리는 학생 서포터즈입니다. 직원 화면에서 실제 공고로 바꿔 주세요.', open: true, applicants: [] },
+  { id: 'seed-2', type: '자격증 과정', title: '[자격증 과정명] (예시)', cert: '[취득 자격명]', dept: '[주관 부서]', quota: 30, due: '', period: '[운영 기간]', start: '', end: '', benefits: ['응시료 지원', '수료증'], benefitNote: '[지원 금액과 조건]', desc: '[과정 내용, 수료 기준]', open: true, applicants: [] },
+  { id: 'seed-3', type: '소단위과정', title: '[소단위과정명] (예시)', credit: 3, dept: '[주관 부서]', quota: 0, due: '', period: '[운영 기간]', start: '', end: '', benefits: ['학점 인정', '수료증'], benefitNote: '[인정 학점, 이수증 발급]', desc: '[이수 조건]', open: true, applicants: [] },
+  { id: 'seed-4', type: '가상학과', title: '[가상학과명] (예시)', credit: 12, dept: '[주관 부서]', quota: 0, due: '', period: '[운영 기간]', start: '', end: '', benefits: ['학점 인정'], benefitNote: '[이수 학점과 이수증]', desc: '[참여 학과, 이수 체계]', open: true, applicants: [] },
+  { id: 'seed-5', type: '비교과', title: '[비교과 프로그램명] (예시)', dept: '[주관 부서]', quota: 40, due: '', period: '[운영 기간]', start: '', end: '', benefits: ['비교과 마일리지'], benefitNote: '[마일리지 점수]', desc: '[운영 방식, 이수 기준]', open: true, applicants: [] },
 ]
 
 export function usePrograms() {
   const [posts, setPosts] = useStored('programs:posts', SEED_PROGRAMS)
-  // 혜택 항목이 생기기 전에 브라우저에 저장된 예시 공고에는 혜택을 채워서 보여 줍니다.
+  // 예전에 저장된 예시 공고에는 새 항목(이력서 표기, 기간 등)을 채우고, 빠진 예시 공고는 더합니다.
   const patched = posts.map(p => {
     const seed = SEED_PROGRAMS.find(x => x.id === p.id)
-    return seed && p.benefits === undefined ? { ...p, benefits: seed.benefits, benefitNote: seed.benefitNote, desc: seed.desc } : p
+    return seed ? { ...seed, ...p, benefits: p.benefits ?? seed.benefits, resumeTitle: p.resumeTitle ?? seed.resumeTitle, cert: p.cert ?? seed.cert, credit: p.credit ?? seed.credit } : p
   })
-  return [patched, setPosts]
+  const onlySeeds = posts.every(p => String(p.id).startsWith('seed'))
+  const missing = onlySeeds ? SEED_PROGRAMS.filter(x => !posts.some(p => p.id === x.id)) : []
+  return [[...patched, ...missing], setPosts]
+}
+
+const daysLeft = due => {
+  if (!due) return null
+  const d = Math.ceil((new Date(due + 'T23:59:59') - new Date()) / 86400000)
+  return d
 }
 
 export function programState(p) {
@@ -54,6 +112,45 @@ export function programState(p) {
   if (p.due && p.due < today()) return ['기한 지남', 'red']
   if (p.quota > 0 && p.applicants.length >= p.quota) return ['정원 마감', 'amber']
   return ['모집 중', 'green']
+}
+
+// 이력서 미리보기 한 줄
+export function ResumeLine({ program, status = '수료' }) {
+  const e = resumeEntry(program, status)
+  const when = e.section === 'licenses' ? e.date : [e.from, e.to].filter(Boolean).join(' ~ ')
+  return (
+    <div className="pg-resume">
+      <span className="pg-resume-h">이력서 「{RESUME_SECTION[e.section]}」에 들어갑니다</span>
+      <b>{e.title}</b>
+      <small>{[e.detail, when || program.period].filter(Boolean).join(' · ')}</small>
+    </div>
+  )
+}
+
+// 프로그램 카드: 공개 모집 화면, 학생 신청 화면, 첫 화면에서 같이 씁니다.
+export function ProgramCard({ program: p, children, preview = true }) {
+  const [state, tone] = programState(p)
+  const info = TYPE_INFO[p.type] || TYPE_INFO['기타']
+  const d = state === '모집 중' ? daysLeft(p.due) : null
+  return (
+    <article className={`pg-card t-${info.tone}`}>
+      <div className="pg-top">
+        <span className="pg-type">{p.type}</span>
+        <span className={`pg-state ${tone}`}>{state}{d !== null && d >= 0 && <b>{d === 0 ? '오늘 마감' : `D-${d}`}</b>}</span>
+      </div>
+      <h3>{p.title}</h3>
+      {p.desc && <p className="pg-desc">{p.desc}</p>}
+      <dl className="pg-facts">
+        <div><dt>주관</dt><dd>{p.dept || '[주관 부서]'}</dd></div>
+        <div><dt>신청 마감</dt><dd>{p.due || '[날짜]'}</dd></div>
+        <div><dt>운영</dt><dd>{p.period || '[기간]'}</dd></div>
+        <div><dt>모집</dt><dd>{p.applicants.length}명 신청{p.quota > 0 ? ` / 정원 ${p.quota}명` : ''}</dd></div>
+      </dl>
+      <Benefits program={p} />
+      {preview && <ResumeLine program={p} />}
+      {children && <div className="pg-foot">{children}</div>}
+    </article>
+  )
 }
 
 export function TypeFilter({ value, onChange, options }) {
@@ -64,9 +161,18 @@ export function TypeFilter({ value, onChange, options }) {
   )
 }
 
+function StepBar({ status }) {
+  const i = STEPS.indexOf(status)
+  return (
+    <ol className="pg-steps" aria-label={`진행 단계: ${status}`}>
+      {STEPS.map((s, n) => <li key={s} className={n <= i ? 'on' : ''}>{s === '선정' ? '선정·참여' : s}</li>)}
+    </ol>
+  )
+}
+
 export function ProgramAdmin() {
   const [posts, setPosts] = usePrograms()
-  const blank = { type: PROGRAM_TYPES[0], title: '', dept: '', quota: '', due: '', period: '', benefits: [], benefitNote: '', desc: '' }
+  const blank = { type: PROGRAM_TYPES[0], title: '', resumeTitle: '', dept: '', quota: '', due: '', period: '', start: '', end: '', cert: '', credit: '', benefits: [], benefitNote: '', desc: '' }
   const [warn, setWarn] = useState('')
   const [form, setForm] = useState(blank)
   const set = k => e => setForm({ ...form, [k]: e.target.value })
@@ -75,22 +181,26 @@ export function ProgramAdmin() {
     if (!form.title.trim()) return
     if (form.benefits.length === 0 && !form.benefitNote.trim()) return setWarn('참여 혜택을 하나 이상 고르거나 적어 주세요. 혜택이 없는 프로그램이면 "혜택 설명"에 "별도 혜택 없음"이라고 적습니다.')
     setWarn('')
-    setPosts([{ ...form, id: uid(), title: form.title.trim(), benefitNote: form.benefitNote.trim(), quota: Number(form.quota) || 0, open: true, applicants: [], created: today() }, ...posts])
+    setPosts([{ ...form, id: uid(), title: form.title.trim(), benefitNote: form.benefitNote.trim(), quota: Number(form.quota) || 0, credit: Number(form.credit) || '', open: true, applicants: [], created: today() }, ...posts])
     setForm(blank)
   }
   const update = (id, fn) => setPosts(posts.map(p => (p.id === id ? fn(p) : p)))
+  const setStatus = (pid, aid, status) => update(pid, x => ({ ...x, applicants: x.applicants.map(y => (y.id === aid ? { ...y, status } : y)) }))
   const toggleBenefit = t => setForm({ ...form, benefits: form.benefits.includes(t) ? form.benefits.filter(x => x !== t) : [...form.benefits, t] })
   const openCount = posts.filter(p => programState(p)[0] === '모집 중').length
   const applied = posts.reduce((n, p) => n + p.applicants.length, 0)
   const selected = posts.reduce((n, p) => n + p.applicants.filter(a => a.status === '선정').length, 0)
+  const done = posts.reduce((n, p) => n + p.applicants.filter(a => a.status === '수료').length, 0)
+  const sec = (TYPE_INFO[form.type] || TYPE_INFO['기타']).section
   return (
     <>
-      <PageHead title="프로그램 등록·관리" desc="서포터즈, 자격증 과정, 비교과 프로그램을 올리면 학생 화면의 '프로그램 신청'에 바로 나타납니다. 신청 현황을 보고 선정까지 처리합니다." />
+      <PageHead title="프로그램 등록·관리" desc="서포터즈, 자격증 과정, 비교과, 소단위과정, 가상학과를 올리면 학생 화면의 '프로그램 신청'에 바로 나타납니다. 선정과 수료를 처리하면 학생 이력서에 그대로 들어갑니다." />
       <Card>
         <div className="stat-row">
           <div className="stat" style={{ background: 'var(--green-soft)' }}><b style={{ color: 'var(--green)' }}>{openCount}</b><span>모집 중</span></div>
           <div className="stat" style={{ background: 'var(--blue-soft)' }}><b style={{ color: 'var(--blue-dark)' }}>{applied}</b><span>전체 신청</span></div>
-          <div className="stat" style={{ background: 'var(--amber-soft)' }}><b style={{ color: 'var(--amber)' }}>{selected}</b><span>선정</span></div>
+          <div className="stat" style={{ background: 'var(--amber-soft)' }}><b style={{ color: 'var(--amber)' }}>{selected}</b><span>선정·참여 중</span></div>
+          <div className="stat" style={{ background: 'var(--soft)' }}><b>{done}</b><span>수료</span></div>
         </div>
       </Card>
       <Card title="새 프로그램 올리기">
@@ -98,8 +208,8 @@ export function ProgramAdmin() {
           <div className="row" style={{ alignItems: 'flex-end' }}>
             <div className="field" style={{ flex: '0 0 170px' }}><label htmlFor="p-type">구분</label>
               <select id="p-type" className="input" value={form.type} onChange={set('type')}>{PROGRAM_TYPES.map(t => <option key={t}>{t}</option>)}</select></div>
-            <div className="field" style={{ flex: '1 1 260px' }}><label htmlFor="p-title">프로그램명</label>
-              <input id="p-title" className="input" required placeholder="예: 2학기 AI 서포터즈 모집" value={form.title} onChange={set('title')} /></div>
+            <div className="field" style={{ flex: '1 1 260px' }}><label htmlFor="p-title">공고 제목</label>
+              <input id="p-title" className="input" required placeholder="예: 2027-1학기 AI 서포터즈 모집" value={form.title} onChange={set('title')} /></div>
           </div>
           <div className="row" style={{ alignItems: 'flex-end' }}>
             <div className="field" style={{ flex: '1 1 180px' }}><label htmlFor="p-dept">주관 부서</label>
@@ -108,11 +218,27 @@ export function ProgramAdmin() {
               <input id="p-quota" type="number" min="0" className="input" placeholder="제한 없음" value={form.quota} onChange={set('quota')} /></div>
             <div className="field" style={{ flex: '0 0 180px' }}><label htmlFor="p-due">신청 마감일</label>
               <input id="p-due" type="date" className="input" value={form.due} onChange={set('due')} /></div>
-            <div className="field" style={{ flex: '1 1 180px' }}><label htmlFor="p-period">운영 기간</label>
+            <div className="field" style={{ flex: '1 1 180px' }}><label htmlFor="p-period">운영 안내</label>
               <input id="p-period" className="input" placeholder="예: 3월~6월, 주 1회" value={form.period} onChange={set('period')} /></div>
           </div>
           <fieldset className="benefit-form">
-            <legend>참여 혜택 <span className="muted small">학생 화면 맨 위에 강조되어 보입니다</span></legend>
+            <legend>이력서 연동 <span className="muted small">선정·수료한 학생의 이력서 「{RESUME_SECTION[form.type === '자격증 과정' && form.cert ? 'licenses' : sec === 'licenses' ? 'training' : sec]}」에 이렇게 들어갑니다</span></legend>
+            <div className="row" style={{ alignItems: 'flex-end' }}>
+              <div className="field" style={{ flex: '1 1 240px' }}><label htmlFor="p-rtitle">이력서 표기명</label>
+                <input id="p-rtitle" className="input" placeholder="비우면 공고 제목에서 '모집'을 뺀 이름" value={form.resumeTitle} onChange={set('resumeTitle')} /></div>
+              <div className="field" style={{ flex: '0 0 140px' }}><label htmlFor="p-start">시작(연.월)</label>
+                <input id="p-start" className="input" placeholder="2027.03" value={form.start} onChange={set('start')} /></div>
+              <div className="field" style={{ flex: '0 0 140px' }}><label htmlFor="p-end">종료(연.월)</label>
+                <input id="p-end" className="input" placeholder="2027.06" value={form.end} onChange={set('end')} /></div>
+              {form.type === '자격증 과정' && <div className="field" style={{ flex: '1 1 200px' }}><label htmlFor="p-cert">취득 자격명</label>
+                <input id="p-cert" className="input" placeholder="예: 노인스포츠지도사 2급" value={form.cert} onChange={set('cert')} /></div>}
+              {(form.type === '소단위과정' || form.type === '가상학과') && <div className="field" style={{ flex: '0 0 120px' }}><label htmlFor="p-credit">인정 학점</label>
+                <input id="p-credit" type="number" min="0" className="input" value={form.credit} onChange={set('credit')} /></div>}
+            </div>
+            <ResumeLine program={{ ...form, applicants: [] }} />
+          </fieldset>
+          <fieldset className="benefit-form">
+            <legend>참여 혜택 <span className="muted small">학생 화면 카드에 강조되어 보입니다</span></legend>
             <div className="row" style={{ gap: 8 }}>
               {BENEFIT_TYPES.map(t => <button key={t} type="button" className={form.benefits.includes(t) ? 'chip on' : 'chip'} aria-pressed={form.benefits.includes(t)} onClick={() => toggleBenefit(t)}>{t}</button>)}
             </div>
@@ -120,38 +246,40 @@ export function ProgramAdmin() {
               <input id="p-benefit" className="input" placeholder="예: 활동비 월 10만 원, 마일리지 30점, 우수 활동자 총장상" value={form.benefitNote} onChange={set('benefitNote')} /></div>
           </fieldset>
           <div className="field"><label htmlFor="p-desc">내용</label>
-            <textarea id="p-desc" className="textarea" style={{ minHeight: 90 }} placeholder="대상, 활동 내용, 선정 기준을 적어 주세요" value={form.desc} onChange={set('desc')} /></div>
+            <textarea id="p-desc" className="textarea" style={{ minHeight: 90 }} placeholder="대상, 활동 내용, 선정·수료 기준을 적어 주세요" value={form.desc} onChange={set('desc')} /></div>
           {warn && <div className="check warn" role="alert">{warn}</div>}
           <div><button className="btn primary">올리기</button></div>
         </form>
       </Card>
-      {posts.length === 0 ? <Empty>올린 프로그램이 없습니다.</Empty> : posts.map(p => {
-        const [state, tone] = programState(p)
-        return (
-          <Card key={p.id} title={p.title} action={<span className="row" style={{ gap: 6 }}><span className="badge blue">{p.type}</span><span className={`badge ${tone}`}>{state}</span></span>}>
-            <p className="muted small">{p.dept || '[주관 부서]'} · 마감 {p.due || '[날짜]'} · 운영 {p.period || '[기간]'} · 신청 {p.applicants.length}명{p.quota > 0 ? ` / 정원 ${p.quota}명` : ''}</p>
-            <Benefits program={p} />
-            {p.desc && <p style={{ margin: 0 }}>{p.desc}</p>}
-            {p.applicants.length === 0 ? <Empty>아직 신청자가 없습니다.</Empty> : (
-              <ul className="list">
-                {p.applicants.map(a => (
-                  <li key={a.id}>
-                    <span>{a.name} <span className="muted small">· {a.at} 신청</span></span>
-                    <span className="row" style={{ gap: 8 }}>
-                      <span className={`badge ${a.status === '선정' ? 'green' : ''}`}>{a.status}</span>
-                      <button className="btn soft" style={{ minHeight: 34, padding: '0 14px' }} onClick={() => update(p.id, x => ({ ...x, applicants: x.applicants.map(y => (y.id === a.id ? { ...y, status: y.status === '선정' ? '신청' : '선정' } : y)) }))}>{a.status === '선정' ? '선정 취소' : '선정'}</button>
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
-            <div className="row">
-              <button className="btn" onClick={() => update(p.id, x => ({ ...x, open: !x.open }))}>{p.open ? '모집 마감' : '모집 재개'}</button>
-              <button className="btn" onClick={() => setPosts(posts.filter(x => x.id !== p.id))}>삭제</button>
-            </div>
-          </Card>
-        )
-      })}
+      {posts.length === 0 ? <Empty>올린 프로그램이 없습니다.</Empty> : (
+        <div className="pg-grid">
+          {posts.map(p => (
+            <ProgramCard key={p.id} program={p}>
+              <div className="stack" style={{ gap: 8, width: '100%' }}>
+                {p.applicants.length === 0 ? <span className="small muted">아직 신청자가 없습니다.</span> : (
+                  <ul className="pg-applicants">
+                    {p.applicants.map(a => (
+                      <li key={a.id}>
+                        <span>{a.name} <span className="muted small">{a.at}</span></span>
+                        <span className="row" style={{ gap: 6 }}>
+                          <span className={`badge ${a.status === '수료' ? 'navy' : a.status === '선정' ? 'green' : ''}`}>{a.status === '선정' ? '참여 중' : a.status}</span>
+                          {a.status === '신청' && <button className="get-btn" onClick={() => setStatus(p.id, a.id, '선정')}>선정</button>}
+                          {a.status === '선정' && <><button className="get-btn" onClick={() => setStatus(p.id, a.id, '수료')}>수료 처리</button><button className="get-btn" onClick={() => setStatus(p.id, a.id, '신청')}>선정 취소</button></>}
+                          {a.status === '수료' && <button className="get-btn" onClick={() => setStatus(p.id, a.id, '선정')}>수료 취소</button>}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <div className="row">
+                  <button className="btn" onClick={() => update(p.id, x => ({ ...x, open: !x.open }))}>{p.open ? '모집 마감' : '모집 재개'}</button>
+                  <button className="btn" onClick={() => setPosts(posts.filter(x => x.id !== p.id))}>삭제</button>
+                </div>
+              </div>
+            </ProgramCard>
+          ))}
+        </div>
+      )}
     </>
   )
 }
@@ -159,12 +287,18 @@ export function ProgramAdmin() {
 export function Programs() {
   const [posts, setPosts] = usePrograms()
   const [name, setName] = useStored('profile:student-name', '')
+  const [resume, setResume] = useStored(RESUME_KEY, null)
   const [type, setType] = useState('전체')
   const [benefit, setBenefit] = useState('')
+  const [msg, setMsg] = useState('')
   const mine = p => p.applicants.find(a => a.id === 'me')
   const shown = posts.filter(p => (type === '전체' || p.type === type) && (!benefit || (p.benefits || []).includes(benefit)))
   const usedBenefits = BENEFIT_TYPES.filter(t => posts.some(p => (p.benefits || []).includes(t)))
   const myList = posts.filter(mine)
+  const inResume = p => {
+    const src = `program:${p.id}`
+    return ['activities', 'licenses', 'training'].some(k => (resume?.[k] || []).some(x => x.source === src))
+  }
   function toggle(p) {
     setPosts(posts.map(x => {
       if (x.id !== p.id) return x
@@ -172,27 +306,49 @@ export function Programs() {
       return { ...x, applicants: [...x.applicants, { id: 'me', name: name.trim() || '[학생 이름]', at: today(), status: '신청' }] }
     }))
   }
+  function toResume(p) {
+    const st = mine(p).status
+    setResume(r => mergeIntoResume(r, p, st))
+    const e = resumeEntry(p, st)
+    setMsg(`‘${e.title}’${josa(e.title, '을/를').slice(e.title.length)} 이력서 「${RESUME_SECTION[e.section]}」에 넣었습니다.`)
+    setTimeout(() => setMsg(''), 4000)
+  }
   return (
     <>
-      <PageHead title="프로그램 신청" desc="직원이 올린 서포터즈, 자격증 과정, 비교과·소단위과정을 한곳에서 보고 신청합니다. 선정 여부도 여기서 확인합니다." />
+      <PageHead title="프로그램 신청" desc="서포터즈, 자격증 과정, 비교과, 소단위과정, 가상학과를 한곳에서 보고 신청합니다. 선정되거나 수료하면 이력서에 바로 넣을 수 있습니다." />
       <Card>
         <div className="stat-row">
           <div className="stat" style={{ background: 'var(--green-soft)' }}><b style={{ color: 'var(--green)' }}>{posts.filter(p => programState(p)[0] === '모집 중').length}</b><span>모집 중</span></div>
           <div className="stat" style={{ background: 'var(--blue-soft)' }}><b style={{ color: 'var(--blue-dark)' }}>{myList.length}</b><span>내 신청</span></div>
-          <div className="stat" style={{ background: 'var(--amber-soft)' }}><b style={{ color: 'var(--amber)' }}>{myList.filter(p => mine(p).status === '선정').length}</b><span>선정</span></div>
+          <div className="stat" style={{ background: 'var(--amber-soft)' }}><b style={{ color: 'var(--amber)' }}>{myList.filter(p => mine(p).status !== '신청').length}</b><span>선정·수료</span></div>
         </div>
         <div className="field" style={{ maxWidth: 320 }}><label htmlFor="s-name">신청자 이름</label>
           <input id="s-name" className="input" placeholder="통합인증 연결 후에는 자동 입력" value={name} onChange={e => setName(e.target.value)} /></div>
       </Card>
-      <Card title="내 신청 현황" action={<Link to="../resume" className="small">이력서에 넣기</Link>}>
+      <Card title="내 신청 현황" action={<Link to="../resume" className="small">이력서 보기</Link>}>
+        {msg && <div className="check ok" role="status">{msg}</div>}
         {myList.length === 0 ? <Empty>신청한 프로그램이 없습니다.</Empty> : (
-          <ul className="list">{myList.map(p => {
+          <ul className="pg-mine">{myList.map(p => {
             const a = mine(p)
-            return <li key={p.id}><span><span className="badge blue" style={{ marginRight: 8 }}>{p.type}</span>{p.title}<br /><span className="muted small">{a.at} 신청</span><Benefits program={p} compact /></span><span className={`badge ${a.status === '선정' ? 'green' : 'amber'}`}>{a.status === '선정' ? '선정' : '심사 대기'}</span></li>
+            const can = a.status !== '신청'
+            return (
+              <li key={p.id} className={`t-${(TYPE_INFO[p.type] || TYPE_INFO['기타']).tone}`}>
+                <div className="pg-mine-main">
+                  <span className="pg-type">{p.type}</span>
+                  <b>{p.title}</b>
+                  <StepBar status={a.status} />
+                </div>
+                <div className="pg-mine-act">
+                  {can
+                    ? <button className={inResume(p) ? 'get-btn' : 'get-btn solid'} onClick={() => toResume(p)}>{inResume(p) ? '이력서 다시 맞추기' : '이력서에 넣기'}</button>
+                    : <span className="small muted">선정되면 이력서에 넣을 수 있습니다</span>}
+                </div>
+              </li>
+            )
           })}</ul>
         )}
       </Card>
-      <Card title="프로그램 목록">
+      <section className="stack" style={{ gap: 14 }}>
         <TypeFilter value={type} onChange={setType} options={['전체', ...PROGRAM_TYPES]} />
         {usedBenefits.length > 0 && (
           <div className="row" style={{ gap: 8 }}>
@@ -201,23 +357,18 @@ export function Programs() {
           </div>
         )}
         {shown.length === 0 ? <Empty>조건에 맞는 프로그램이 없습니다.</Empty> : (
-          <ul className="list">{shown.map(p => {
-            const [state, tone] = programState(p)
+          <div className="pg-grid">{shown.map(p => {
+            const [state] = programState(p)
             const applied = !!mine(p)
             return (
-              <li key={p.id} style={{ alignItems: 'flex-start' }}>
-                <span>
-                  <span className="badge blue" style={{ marginRight: 6 }}>{p.type}</span><span className={`badge ${tone}`} style={{ marginRight: 8 }}>{state}</span><b>{p.title}</b>
-                  <Benefits program={p} />
-                  <span className="muted small">{p.dept || '[주관 부서]'} · 마감 {p.due || '[날짜]'} · 운영 {p.period || '[기간]'} · 신청 {p.applicants.length}명{p.quota > 0 ? ` / 정원 ${p.quota}명` : ''}</span>
-                  {p.desc && <><br /><span className="small">{p.desc}</span></>}
-                </span>
-                <button className={applied ? 'btn' : 'btn primary'} style={{ flex: 'none' }} disabled={!applied && state !== '모집 중'} onClick={() => toggle(p)}>{applied ? '신청 취소' : '신청'}</button>
-              </li>
+              <ProgramCard key={p.id} program={p}>
+                <button className={applied ? 'get-btn' : 'get-btn solid'} disabled={!applied && state !== '모집 중'} onClick={() => toggle(p)}>{applied ? '신청 취소' : '신청하기'}</button>
+                {applied && <span className="small muted">{mine(p).status === '신청' ? '심사 대기' : mine(p).status === '선정' ? '선정, 참여 중' : '수료'}</span>}
+              </ProgramCard>
             )
-          })}</ul>
+          })}</div>
         )}
-      </Card>
+      </section>
     </>
   )
 }

@@ -1,10 +1,10 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import { Card, PageHead, Empty } from '../components/ui.jsx'
 import { useStored, uid } from '../lib/store.js'
-import { usePrograms, useAchievements } from './shared.jsx'
+import { usePrograms, useAchievements, mergeIntoResume, RESUME_KEY } from './shared.jsx'
 
 const COLORS = [['#1D3A8A', '남색'], ['#0B63CE', '파랑'], ['#1F6F5C', '청록'], ['#3A3F4B', '진회색']]
-const BLANK = { name: '', tagline: '', birth: '', phone: '', email: '', address: '', photo: '', color: COLORS[0][0], education: [], licenses: [], activities: [], skills: [] }
+const BLANK = { name: '', tagline: '', birth: '', phone: '', email: '', address: '', photo: '', color: COLORS[0][0], education: [], licenses: [], training: [], activities: [], skills: [] }
 const period = (from, to) => [from, to].filter(Boolean).join(' ~ ')
 
 // 올린 사진을 가운데 기준 정사각형으로 잘라 줄입니다(브라우저 저장 용량을 아끼기 위해).
@@ -88,6 +88,7 @@ function Sheet({ data }) {
         </Row>
         {data.education.length > 0 && <Row title="학력사항" en="Education">{data.education.map(e => <Entry key={e.id} title={e.school || '[학교명]'} detail={e.detail} when={period(e.from, e.to)} />)}</Row>}
         {data.licenses.length > 0 && <Row title="보유자격증" en="License">{data.licenses.map(l => <Entry key={l.id} title={l.name || '[자격증명]'} when={l.date} />)}</Row>}
+        {data.training.length > 0 && <Row title="교육·이수" en="Training">{data.training.map(t => <Entry key={t.id} title={t.title || '[과정명]'} detail={t.detail} when={period(t.from, t.to)} />)}</Row>}
         {data.activities.length > 0 && <Row title="활동·경험" en="Experience">{data.activities.map(a => <Entry key={a.id} title={a.title || '[활동명]'} detail={a.detail} when={period(a.from, a.to)} />)}</Row>}
         {data.skills.length > 0 && (
           <Row title="기술사항" en="Skills">
@@ -124,7 +125,7 @@ function ListEditor({ title, hint, items, onChange, fields, blank, addLabel, ext
 }
 
 export function Resume() {
-  const [saved, setData] = useStored('resume:student', BLANK)
+  const [saved, setData] = useStored(RESUME_KEY, BLANK)
   const data = { ...BLANK, ...saved }
   const [programs] = usePrograms()
   const [achievements] = useAchievements()
@@ -141,19 +142,21 @@ export function Resume() {
     try { put({ photo: await readPhoto(file) }); say('사진을 넣었습니다.') } catch (err) { say(err.message) }
   }
 
-  // 바이탈에서 신청·선정된 프로그램과 내가 올린 AI 활용 실적을 활동란으로 가져옵니다.
+  // 바이탈에서 선정(참여 중)·수료한 프로그램과 내가 올린 AI 활용 실적을 가져옵니다.
+  // 프로그램 구분에 따라 활동·경험, 보유자격증, 교육·이수 칸으로 나뉘어 들어갑니다.
   function importActivities() {
-    const have = new Set(data.activities.map(a => a.source).filter(Boolean))
-    const fromPrograms = programs
-      .filter(p => p.applicants.some(a => a.id === 'me' && a.status === '선정'))
-      .map(p => ({ source: `program:${p.id}`, title: p.title, detail: [p.type, p.dept].filter(Boolean).join(' | '), from: '', to: '' }))
+    const mineDone = programs.map(p => [p, p.applicants.find(a => a.id === 'me')]).filter(([, a]) => a && a.status !== '신청')
+    let next = { ...data }
+    mineDone.forEach(([p, a]) => { next = mergeIntoResume(next, p, a.status) })
+    const have = new Set(next.activities.map(a => a.source).filter(Boolean))
     const fromAchievements = achievements
-      .filter(a => a.owner === 'student')
-      .map(a => ({ source: `ach:${a.id}`, title: a.title, detail: `AI 활용 실적 | ${a.type}`, from: a.date || '', to: '' }))
-    const fresh = [...fromPrograms, ...fromAchievements].filter(x => !have.has(x.source)).map(x => ({ id: uid(), ...x }))
-    if (fresh.length === 0) return say('새로 가져올 활동이 없습니다. 선정된 프로그램이나 올린 AI 활용 실적이 있으면 여기에 들어옵니다.')
-    put({ activities: [...data.activities, ...fresh] })
-    say(`${fresh.length}건을 활동·경험에 넣었습니다. 기간은 직접 입력해 주세요.`)
+      .filter(a => a.owner === 'student' && !have.has(`ach:${a.id}`))
+      .map(a => ({ id: uid(), source: `ach:${a.id}`, title: a.title, detail: `AI 활용 실적 | ${a.type}`, from: a.date || '', to: '' }))
+    next.activities = [...next.activities, ...fromAchievements]
+    const n = mineDone.length + fromAchievements.length
+    if (n === 0) return say('가져올 기록이 없습니다. 선정·수료된 프로그램이나 올린 AI 활용 실적이 있으면 여기에 들어옵니다.')
+    put(next)
+    say(`프로그램 ${mineDone.length}건, AI 활용 실적 ${fromAchievements.length}건을 이력서에 맞췄습니다. 기간은 확인해 주세요.`)
   }
 
   async function saveWord() {
@@ -198,9 +201,11 @@ export function Resume() {
             fields={[['school', '학교'], ['detail', '전공·계열'], ['from', '입학', 'text', '0 1 110px'], ['to', '졸업(예정)', 'text', '0 1 110px']]} />
           <ListEditor title="보유자격증" hint="자격증은 공유되지 않고 이력서에만 들어갑니다." items={data.licenses} onChange={v => put({ licenses: v })} addLabel="자격증 추가" blank={{ name: '', date: '' }}
             fields={[['name', '자격증·면허'], ['date', '취득일', 'text', '0 1 130px']]} />
+          <ListEditor title="교육·이수" hint="소단위과정, 가상학과, 자격증 과정, 연수처럼 이수한 교육을 적습니다." items={data.training} onChange={v => put({ training: v })} addLabel="과정 추가" blank={{ title: '', detail: '', from: '', to: '' }}
+            fields={[['title', '과정명'], ['detail', '이수 내용·학점'], ['from', '시작', 'text', '0 1 110px'], ['to', '종료', 'text', '0 1 110px']]} />
           <ListEditor title="활동·경험" hint="서포터즈, 대외활동, 봉사, 실습, 아르바이트를 적습니다." items={data.activities} onChange={v => put({ activities: v })} addLabel="활동 추가" blank={{ title: '', detail: '', from: '', to: '' }}
             fields={[['title', '활동명'], ['detail', '역할·내용'], ['from', '시작', 'text', '0 1 110px'], ['to', '종료', 'text', '0 1 110px']]}
-            extra={<div><button type="button" className="btn" onClick={importActivities}>바이탈 활동 불러오기</button> <span className="small muted">선정된 프로그램과 내가 올린 AI 활용 실적</span></div>} />
+            extra={<div><button type="button" className="btn" onClick={importActivities}>바이탈 기록 불러오기</button> <span className="small muted">선정·수료한 프로그램(구분에 따라 자격증·교육·활동 칸으로)과 AI 활용 실적</span></div>} />
           <ListEditor title="기술사항" items={data.skills} onChange={v => put({ skills: v })} addLabel="기술 추가" blank={{ name: '', level: 3 }}
             fields={[['name', '기술·도구'], ['level', '숙련도', 'level', '0 1 120px']]} />
         </div>

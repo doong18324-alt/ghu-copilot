@@ -5,7 +5,7 @@ import jihu from '../assets/jihu.webp'
 import { Card, Empty } from '../components/ui.jsx'
 import { MANUALS, manualUrl } from '../data/library.js'
 import { ABOUT_PAGES, GREETING_PRESIDENT as GP, GREETING_DIRECTOR as GD, VISION, STRATEGY, ORGANIZATION, CURRICULUM, SAFETY, LOCATION } from '../data/about.js'
-import { useAchievements, Cover, ContactButton, usePrograms, programState, Benefits, PROGRAM_TYPES, ROLE_LABEL, ROLE_TONE, TypeFilter, maskName } from './shared.jsx'
+import { useAchievements, Cover, ContactButton, usePrograms, programState, ProgramCard, PROGRAM_TYPES, ROLE_LABEL, ROLE_TONE, TypeFilter, maskName } from './shared.jsx'
 
 /* 로그인 없이 누구나 보는 영역: 본부 소개, 성과 소식, 프로그램 모집 */
 
@@ -306,7 +306,7 @@ const HOME_ROLES = [
 export function Home() {
   const [news] = useAchievements()
   const [programs] = usePrograms()
-  const open = programs.filter(p => programState(p)[0] !== '마감').slice(0, 3)
+  const open = programs.filter(p => programState(p)[0] === '모집 중').slice(0, 3)
   return (
     <div className="container home">
       <section className="home-hero card">
@@ -356,20 +356,8 @@ export function Home() {
       <section className="stack" style={{ gap: 16 }}>
         <div className="home-head"><h2 className="home-h">모집 중인 프로그램</h2><Link to="/recruit">전체 보기</Link></div>
         {open.length === 0 ? <Empty>지금 모집 중인 프로그램이 없습니다.</Empty> : (
-          <div className="news-grid">
-            {open.map(p => {
-              const [state, tone] = programState(p)
-              return (
-                <Link key={p.id} to="/recruit" className="card news-card">
-                  <div className="news-card-body">
-                    <span className="row" style={{ gap: 6 }}><span className="badge blue">{p.type}</span><span className={`badge ${tone}`}>{state}</span></span>
-                    <h3>{p.title}</h3>
-                    <Benefits program={p} />
-                    <p className="muted small" style={{ marginTop: 'auto' }}>{p.dept || '[주관 부서]'} · 마감 {p.due || '[날짜]'}</p>
-                  </div>
-                </Link>
-              )
-            })}
+          <div className="pg-grid">
+            {open.map(p => <ProgramCard key={p.id} program={p} preview={false}><Link to="/recruit" className="get-btn">자세히</Link></ProgramCard>)}
           </div>
         )}
       </section>
@@ -493,29 +481,21 @@ export function Recruit() {
   return (
     <div className="container">
       <div className="stack" style={{ gap: 6 }}>
-        <span className="muted small">GHU 바이탈 프로그램 모집</span>
         <h1 className="page-title">지금 참여할 수 있는 프로그램</h1>
-        <p className="muted">서포터즈, 자격증 과정, 비교과·소단위과정의 참여 혜택과 모집 현황입니다.</p>
+        <p className="muted" style={{ maxWidth: 760 }}>서포터즈, 자격증 과정, 비교과, 소단위과정, 가상학과의 참여 혜택과 모집 현황입니다. 선정되거나 수료한 프로그램은 GHU 바이탈 「이력서 만들기」에 바로 들어갑니다. 카드 아래에서 이력서에 어떻게 적히는지 미리 볼 수 있습니다.</p>
       </div>
       <TypeFilter value={type} onChange={setType} options={['전체', ...PROGRAM_TYPES]} />
       {shown.length === 0 ? <Empty>해당 구분의 프로그램이 없습니다.</Empty> : (
-        <div className="news-grid">
-          {shown.map(p => {
-            const [state, tone] = programState(p)
-            return (
-              <article key={p.id} className="card news-card">
-                <span className="row" style={{ gap: 6 }}><span className="badge blue">{p.type}</span><span className={`badge ${tone}`}>{state}</span></span>
-                <h3>{p.title}</h3>
-                <Benefits program={p} />
-                <p className="muted small">{p.dept || '[주관 부서]'} · 마감 {p.due || '[날짜]'} · 운영 {p.period || '[기간]'} · 신청 {p.applicants.length}명{p.quota > 0 ? ` / 정원 ${p.quota}명` : ''}</p>
-                {p.desc && <p className="small">{p.desc}</p>}
-              </article>
-            )
-          })}
+        <div className="pg-grid">
+          {shown.map(p => (
+            <ProgramCard key={p.id} program={p}>
+              <Link to="/student/programs" className="get-btn solid">신청하기</Link>
+            </ProgramCard>
+          ))}
         </div>
       )}
       <Card>
-        <p className="muted" style={{ margin: 0 }}>신청은 학생 화면의 &lsquo;프로그램 신청&rsquo;에서 합니다.</p>
+        <p className="muted" style={{ margin: 0 }}>신청은 학생 화면의 &lsquo;프로그램 신청&rsquo;에서 합니다. 선정·수료 기록은 같은 화면에서 이력서로 옮길 수 있습니다.</p>
         <div><Link to="/student/programs" className="btn primary" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }}>신청하러 가기</Link></div>
       </Card>
     </div>

@@ -80,6 +80,7 @@ export async function buildResumeDocx(data, photoPng) {
     ['기본사항', 'Personal Information', basics],
     ['학력사항', 'Education', data.education.flatMap(e => entry(e.school, e.detail, period(e.from, e.to)))],
     ['보유자격증', 'License', data.licenses.flatMap(l => entry(l.name, '', l.date))],
+    ['교육·이수', 'Training', (data.training || []).flatMap(t => entry(t.title, t.detail, period(t.from, t.to)))],
     ['활동·경험', 'Experience', data.activities.flatMap(a => entry(a.title, a.detail, period(a.from, a.to)))],
     ['기술사항', 'Skills', data.skills.map(s => new Paragraph({
       tabStops: [{ type: TabStopType.RIGHT, position: RIGHT - 900, leader: LeaderType.DOT }],
