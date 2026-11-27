@@ -9,6 +9,7 @@ import { AdminHome, Models, Users, Connection } from './pages/admin.jsx'
 import { PublicLayout, Root, Home, About, Showcase, Article, Recruit } from './pages/public.jsx'
 import { Resume } from './pages/resume.jsx'
 import { AppMarket, AppDetail, RoleApps } from './pages/market.jsx'
+import { GuidePublic, FaqPage, PromptLibrary, ManualLibrary } from './pages/library.jsx'
 
 export default function App() {
   return (
@@ -25,6 +26,9 @@ export default function App() {
         <Route path="/recruit" element={<Recruit />} />
         <Route path="/market" element={<AppMarket />} />
         <Route path="/market/:id" element={<AppDetail />} />
+        <Route path="/guide" element={<GuidePublic />} />
+        <Route path="/guide/:tab" element={<GuidePublic />} />
+        <Route path="/faq" element={<FaqPage />} />
       </Route>
 
       <Route path="/staff" element={<Layout />}>
@@ -41,6 +45,8 @@ export default function App() {
         <Route path="analysis" element={<TaskPage task="analysis" title="문서·데이터 분석" desc="보고서를 요약하거나 엑셀 자료를 집계·정리합니다. 파일 분석은 실제 연결 후 사용할 수 있습니다." placeholder="예: 첨부한 만족도 조사 결과를 학과별로 요약해 줘" />} />
         <Route path="research" element={<TaskPage task="research" title="심층 리서치" desc="정책, 타 대학 사례, 통계를 조사하고 출처와 함께 정리합니다." placeholder="예: 전문대학 생성형 AI 도입 사례를 조사해 줘" />} />
         <Route path="webapps" element={<RoleApps role="staff" />} />
+        <Route path="prompts" element={<PromptLibrary role="staff" />} />
+        <Route path="manuals" element={<ManualLibrary role="staff" />} />
         <Route path="files" element={<FilesPage />} />
       </Route>
 
@@ -57,6 +63,8 @@ export default function App() {
         <Route path="training" element={<Training />} />
         <Route path="achievements" element={<Achievements />} />
         <Route path="webapps" element={<RoleApps role="faculty" />} />
+        <Route path="prompts" element={<PromptLibrary role="faculty" />} />
+        <Route path="manuals" element={<ManualLibrary role="faculty" />} />
         <Route path="files" element={<FilesPage />} />
       </Route>
 
@@ -73,6 +81,8 @@ export default function App() {
         <Route path="resume" element={<Resume />} />
         <Route path="achievements" element={<Achievements />} />
         <Route path="webapps" element={<RoleApps role="student" />} />
+        <Route path="prompts" element={<PromptLibrary role="student" />} />
+        <Route path="manuals" element={<ManualLibrary role="student" />} />
         <Route path="files" element={<FilesPage />} />
       </Route>
 

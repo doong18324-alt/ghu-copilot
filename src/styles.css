@@ -493,3 +493,31 @@ mark { background: #FFE98A; padding: 0 3px; border-radius: 4px; }
   .app-detail { flex-direction: column; padding: 24px; }
   .app-grid { grid-template-columns: 1fr; }
 }
+
+/* ── 프롬프트·매뉴얼·FAQ·안전 기준 ── */
+.prompt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 18px; }
+.prompt-card { gap: 10px; padding: 20px; }
+.prompt-card h3 { font-size: 17px; font-weight: 800; letter-spacing: -.02em; line-height: 1.4; margin: 0; }
+.prompt-text { margin: 0; white-space: pre-wrap; word-break: keep-all; background: var(--soft); border-radius: 12px; padding: 14px 16px; font-family: inherit; font-size: 13.5px; line-height: 1.7; max-height: 340px; overflow: auto; }
+.prompt-check { margin: 0; font-size: 12.5px; line-height: 1.55; border-radius: 10px; padding: 8px 12px; }
+.prompt-check.amber { background: var(--amber-soft); color: var(--amber); }
+.prompt-check.red { background: var(--red-soft); color: var(--red); }
+.faq { display: flex; flex-direction: column; gap: 10px; }
+.faq-item { padding: 0; gap: 0; }
+.faq-item summary { list-style: none; cursor: pointer; display: flex; gap: 12px; align-items: flex-start; padding: 16px 20px; font-weight: 700; line-height: 1.5; }
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item[open] summary { color: var(--blue-dark); }
+.faq-a { display: flex; gap: 12px; padding: 0 20px 18px; }
+.faq-a p { margin: 0; line-height: 1.75; font-size: 15px; }
+.faq-q { flex: none; width: 26px; height: 26px; border-radius: 8px; background: var(--blue-soft); color: var(--blue-dark); font-weight: 900; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; }
+.faq-q.a { background: var(--green-soft); color: var(--green); }
+.grade-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+.grade-card { border-radius: var(--radius); padding: 18px; display: flex; flex-direction: column; gap: 10px; background: #fff; box-shadow: var(--shadow); border-top: 6px solid; }
+.grade-card.green { border-color: #2E9E4F; } .grade-card.blue { border-color: var(--blue); } .grade-card.amber { border-color: #E08A00; } .grade-card.red { border-color: var(--red); background: var(--red-soft); }
+.xai-box { background: var(--soft); border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
+.xai-box.on { background: var(--blue-soft); }
+.xai-box small { color: var(--muted) !important; }
+.check-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.check-list label { display: flex; gap: 12px; align-items: flex-start; background: var(--soft); border-radius: 12px; padding: 12px 14px; cursor: pointer; font-size: 14px; line-height: 1.6; color: var(--ink); }
+.check-list input { margin-top: 4px; width: 18px; height: 18px; flex: none; }
+@media (max-width: 700px) { .prompt-grid { grid-template-columns: 1fr; } }

@@ -36,6 +36,7 @@ export default function Layout() {
           <Link to="/news">성과 소식</Link>
           <Link to="/recruit">프로그램 모집</Link>
           <Link to="/market">앱마켓</Link>
+          <Link to="/faq">자주 묻는 질문</Link>
         </div>
 
         <div className="usage">

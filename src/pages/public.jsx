@@ -3,6 +3,7 @@ import { Link, NavLink, Outlet, useParams, Navigate } from 'react-router-dom'
 import { SITE } from '../config.js'
 import jihu from '../assets/jihu.webp'
 import { Card, Empty } from '../components/ui.jsx'
+import { MANUALS, manualUrl } from '../data/library.js'
 import { ABOUT_PAGES, GREETING_PRESIDENT as GP, GREETING_DIRECTOR as GD, VISION, STRATEGY, ORGANIZATION, CURRICULUM, SAFETY, LOCATION } from '../data/about.js'
 import { useAchievements, Cover, ContactButton, usePrograms, programState, Benefits, PROGRAM_TYPES, ROLE_LABEL, ROLE_TONE, TypeFilter, maskName } from './shared.jsx'
 
@@ -21,6 +22,8 @@ export function PublicLayout() {
           <NavLink to="/news">성과 소식</NavLink>
           <NavLink to="/recruit">프로그램 모집</NavLink>
           <NavLink to="/market">앱마켓</NavLink>
+          <NavLink to="/guide">AI 활용 자료</NavLink>
+          <NavLink to="/faq">FAQ</NavLink>
         </nav>
         <Link to="/start" className="btn primary" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }}>시작하기</Link>
       </header>
@@ -108,46 +111,138 @@ function Organization() {
 }
 
 function Curriculum() {
+  const [dept, setDept] = useState(0)
+  const C = CURRICULUM
+  const d = C.xai[dept]
+  const doc = id => MANUALS.find(m => m.id === id)
   return (
     <>
-      <p className="prose-p">{CURRICULUM.desc}</p>
-      <div className="grid">
-        {CURRICULUM.stages.map(([stage, title, items, goal]) => (
-          <div key={stage} className="tile"><small>{stage}</small><b>{title}</b>
-            <ul className="dot-list">{items.map(i => <li key={i}>{i}</li>)}</ul>
-            <span className="badge blue" style={{ alignSelf: 'flex-start' }}>{goal}</span>
+      <div className="tile big"><small>GHU AI 교육체계</small><b>{C.lead}</b><span>{C.desc}</span></div>
+      <div className="row" style={{ gap: 8 }}><span className="small" style={{ fontWeight: 700 }}>모든 단계의 공통 원칙</span>{C.base.map(t => <span key={t} className="badge blue">{t}</span>)}</div>
+      <Section title="3단계 AI 교육 로드맵">
+        <div className="grid">
+          {C.stages.map(([stage, area, question, goals, course, extra, outputs]) => (
+            <div key={stage} className="tile"><small>{stage}</small><b>{area}</b><span>“{question}”</span>
+              <ul className="dot-list">{goals.map(g => <li key={g}>{g}</li>)}</ul>
+              <span className="small"><b style={{ fontSize: 13 }}>정규 교과</b> {course}</span>
+              <span className="small"><b style={{ fontSize: 13 }}>비교과</b> {extra.join(', ')}</span>
+              <span className="small"><b style={{ fontSize: 13 }}>산출물</b> {outputs.join(', ')}</span>
+            </div>
+          ))}
+        </div>
+        <div className="row"><Link to="/guide/manuals" className="small">1단계 학습 자료(자기주도학습·프롬프트 가이드북) 보기</Link></div>
+      </Section>
+      <Section title="학년별 이수 경로">
+        <ol className="num-list">{C.path.map(([y, t, how, goal]) => <li key={y}><b>{y}: {t}</b> {how}. {goal}.</li>)}</ol>
+      </Section>
+      <Section title="이수 성과 관리와 혜택">
+        <div className="grid">{C.benefits.map(([h, t]) => <div key={h} className="tile"><b>{h}</b><span>{t}</span></div>)}</div>
+      </Section>
+      <Section title="X × AI 전공융합">
+        <p className="prose-p"><b>{C.xaiLead}</b> {C.xaiDesc}</p>
+        <TypeFilter value={d[0]} onChange={v => setDept(C.xai.findIndex(x => x[0] === v))} options={C.xai.map(x => x[0])} />
+        <div className="tile">
+          <small>핵심 융합 테마</small><b>{d[1]}</b>
+          <div className="grid-2" style={{ gap: 12 }}>
+            <div className="xai-box"><small>기존 수업</small><span>{d[2]}</span></div>
+            <div className="xai-box on"><small>AI 융합 수업</small><span>{d[3]}</span></div>
           </div>
-        ))}
-      </div>
-      <Section title="X+AI 전공융합">
-        <div className="grid">{CURRICULUM.xai.map(([h, t]) => <div key={h} className="tile"><b>{h}</b><span>{t}</span></div>)}</div>
+          <span><b style={{ fontSize: 14 }}>수업 내 실습 예시</b> {d[4]}</span>
+          <span><b style={{ fontSize: 14 }}>전공 지식으로 검증할 점</b> {d[5]}</span>
+          <a className="btn app-open" style={{ alignSelf: 'flex-start' }} href={manualUrl(doc(d[6]))} target="_blank" rel="noopener">학과 가이드 PDF</a>
+        </div>
+      </Section>
+      <Section title="교수자 수업설계 지원">
+        <p className="prose-p">전공 수업에 AI를 도입하려는 교수자는 아래 양식을 내려받아 작성하고, 1:1 수업설계 컨설팅 신청서를 AI융합교육혁신원에 제출합니다.</p>
+        <ul className="list">{C.support.map(doc).map(m => (
+          <li key={m.id}><span>{m.title}</span><span className="row" style={{ gap: 6, flex: 'none' }}>
+            <a className="btn app-open" href={manualUrl(m)} target="_blank" rel="noopener">PDF</a>
+            {m.docx && <a className="btn app-open" href={manualUrl(m, 'docx')} download>워드 양식</a>}
+          </span></li>
+        ))}</ul>
       </Section>
     </>
   )
 }
 
+const SAFETY_TABS = ['4대 원칙', '입력 금지 4등급표', '보건의료 AI 윤리', '역할별 체크리스트']
+
 function Safety() {
+  const [tab, setTab] = useState(SAFETY_TABS[0])
+  const [who, setWho] = useState(0)
+  const [checked, setChecked] = useState({})
+  const S = SAFETY
+  const list = S.checklists[who]
+  const done = list[2].filter((_, i) => checked[`${who}-${i}`]).length
   return (
     <>
-      <p className="prose-p">{SAFETY.lead}</p>
-      <Section title="GHU 책임 있는 AI 원칙">
-        <div className="grid">{SAFETY.principles.map(([h, t], i) => <div key={h} className="tile"><small>0{i + 1}</small><b>{h}</b><span>{t}</span></div>)}</div>
-      </Section>
-      <Section title="어떤 정보를 어디에 넣을 수 있나요">
-        <div className="table-wrap">
-          <table>
-            <thead><tr><th>등급</th><th>예시</th><th>공개 AI 도구</th><th>대학 승인 도구</th></tr></thead>
-            <tbody>{SAFETY.grades.map(g => <tr key={g[0]}><td><b>{g[0]}</b></td><td>{g[1]}</td><td><span className={`badge ${g[2] === '가능' ? 'green' : 'red'}`}>{g[2]}</span></td><td><span className={`badge ${g[3].startsWith('가능') ? 'green' : g[3].startsWith('절대') ? 'red' : 'amber'}`}>{g[3]}</span></td></tr>)}</tbody>
-          </table>
-        </div>
-        {SAFETY.gradeNotes.map(t => <div key={t} className="check warn">{t}</div>)}
-      </Section>
-      <Section title="보건의료 AI 윤리">
-        <div className="grid">{SAFETY.healthcare.map(([h, t]) => <div key={h} className="tile"><b>{h}</b><span>{t}</span></div>)}</div>
-      </Section>
-      <Section title="실습실 게시 지침">
-        <ol className="num-list">{SAFETY.labRules.map(t => <li key={t}>{t}</li>)}</ol>
-      </Section>
+      <p className="prose-p"><b>{S.lead}</b></p>
+      <TypeFilter value={tab} onChange={setTab} options={SAFETY_TABS} />
+
+      {tab === SAFETY_TABS[0] && (
+        <>
+          <p className="prose-p">{S.intro}</p>
+          <div className="grid">{S.principles.map(([h, quote, dos, donts], i) => (
+            <div key={h} className="tile"><small>0{i + 1}</small><b>{h}</b><span>“{quote}”</span>
+              <ul className="dot-list">{dos.map(t => <li key={t}>{t}</li>)}</ul>
+              {donts.map(t => <div key={t} className="check warn" style={{ fontSize: 13 }}>금지: {t}</div>)}
+            </div>
+          ))}</div>
+        </>
+      )}
+
+      {tab === SAFETY_TABS[1] && (
+        <>
+          <p className="prose-p">{S.gradeLead}</p>
+          <div className="grade-grid">{S.grades.map(([g, tone, kind, ex, allow, act]) => (
+            <div key={g} className={`grade-card ${tone}`}>
+              <div className="row" style={{ justifyContent: 'space-between' }}><b>{g} · {kind}</b><span className={`badge ${tone === 'blue' ? 'blue' : tone}`}>{allow}</span></div>
+              <ul className="dot-list">{ex.map(t => <li key={t}>{t}</li>)}</ul>
+              <span className="small"><b style={{ fontSize: 13 }}>필수 조치</b> {act.join(' · ')}</span>
+            </div>
+          ))}</div>
+          <Section title="이렇게 하세요">
+            <div className="table-wrap"><table>
+              <thead><tr><th>상황</th><th>잘못된 예</th><th>올바른 예</th></tr></thead>
+              <tbody>{S.cases.map(c => <tr key={c[0]}><td><b>{c[0]}</b></td><td>{c[1]}</td><td>{c[2]}</td></tr>)}</tbody>
+            </table></div>
+          </Section>
+          <Section title="AI 사용 전 모델 학습 차단(Opt-out) 설정">
+            <div className="grid">{S.optout.map(([tool, steps]) => <div key={tool} className="tile"><b>{tool}</b><ol className="num-list">{steps.map(t => <li key={t}>{t}</li>)}</ol></div>)}</div>
+            <div className="check warn">{S.optoutNote}</div>
+          </Section>
+        </>
+      )}
+
+      {tab === SAFETY_TABS[2] && (
+        <>
+          <p className="prose-p"><b>“{S.healthLead}”</b></p>
+          <div className="grid">{S.health.map(([h, sum, items], i) => (
+            <div key={h} className="tile"><small>제{i + 1}원칙</small><b>{h}</b><span>{sum}</span><ul className="dot-list">{items.map(t => <li key={t}>{t}</li>)}</ul></div>
+          ))}</div>
+          <Section title="실습·수업 상황별 Q&A">
+            {S.healthQA.map(([q, a]) => <details key={q} className="card faq-item"><summary><span className="faq-q">Q</span><span>{q}</span></summary><div className="faq-a"><span className="faq-q a">A</span><p>{a}</p></div></details>)}
+          </Section>
+          <Section title="실습실 게시 지침">
+            <ol className="num-list">{S.labRules.map(t => <li key={t}>{t}</li>)}</ol>
+          </Section>
+        </>
+      )}
+
+      {tab === SAFETY_TABS[3] && (
+        <>
+          <TypeFilter value={list[0]} onChange={v => setWho(S.checklists.findIndex(c => c[0] === v))} options={S.checklists.map(c => c[0])} />
+          <div className="tile">
+            <div className="row" style={{ justifyContent: 'space-between' }}><b>{list[0]}용 6대 체크리스트</b><span className={`badge ${done === 6 ? 'green' : 'amber'}`}>{done} / 6 확인</span></div>
+            <span>{list[1]}</span>
+            <ul className="check-list">{list[2].map(([area, item], i) => {
+              const k = `${who}-${i}`
+              return <li key={k}><label><input type="checkbox" checked={!!checked[k]} onChange={e => setChecked({ ...checked, [k]: e.target.checked })} /><span><b>{area}</b> {item}</span></label></li>
+            })}</ul>
+            <a className="btn app-open" style={{ alignSelf: 'flex-start' }} href="./manuals/m55.pdf" target="_blank" rel="noopener">체크리스트 PDF</a>
+          </div>
+        </>
+      )}
     </>
   )
 }
