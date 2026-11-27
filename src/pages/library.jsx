@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { Link, NavLink, useParams, Navigate } from 'react-router-dom'
 import { Card, Empty, PageHead } from '../components/ui.jsx'
-import { PROMPTS, PROMPT_AUDIENCE, FAQ, FAQ_CATS, MANUALS, MANUAL_GROUPS, manualUrl } from '../data/library.js'
+import { PROMPTS, PROMPT_AUDIENCE, fillPrompt, FAQ, FAQ_CATS, MANUALS, MANUAL_GROUPS, manualUrl } from '../data/library.js'
 import { LOCATION } from '../data/about.js'
+import { appById, NATIVE_IDS } from '../data/webapps.js'
 
 /* AI 활용 자료: 프롬프트 라이브러리, 매뉴얼 자료실, 자주 묻는 질문 */
 
@@ -41,14 +42,19 @@ async function copyText(text) {
 
 function PromptCard({ p }) {
   const [open, setOpen] = useState(false)
+  const [vals, setVals] = useState({})
   const [msg, setMsg] = useState('')
+  const text = fillPrompt(p, vals)
+  const empty = p.fields.filter(f => !(vals[f.key] || '').trim()).length
+  const app = p.app && appById(p.app)
   async function onCopy() {
-    const ok = await copyText(p.prompt.trim())
-    setMsg(ok ? '복사했습니다. [대괄호] 부분을 바꿔 쓰세요.' : '복사하지 못했습니다. 프롬프트를 펼쳐 직접 선택해 복사하세요.')
-    if (ok) setOpen(true)
+    const ok = await copyText(text)
+    setMsg(ok ? (empty ? `복사했습니다. 비운 칸 ${empty}곳은 [ ]로 남아 있습니다.` : '복사했습니다. AI 창에 붙여 넣으세요.') : '복사하지 못했습니다. 아래 완성본을 직접 선택해 복사하세요.')
+    if (!ok) setOpen(true)
   }
+  function example() { setVals(Object.fromEntries(p.fields.filter(f => !String(f.ex).startsWith('(')).map(f => [f.key, f.ex]))) }
   return (
-    <article className="card prompt-card">
+    <article className={open ? 'card prompt-card open' : 'card prompt-card'}>
       <div className="row" style={{ gap: 6 }}>
         <span className="badge navy">{p.id}</span>
         <span className="badge blue">{PROMPT_AUDIENCE[p.part]}</span>
@@ -56,12 +62,30 @@ function PromptCard({ p }) {
       </div>
       <h3>{p.title}</h3>
       <p className="small muted" style={{ margin: 0 }}>{p.desc}</p>
-      <p className="small" style={{ margin: 0 }}><b>추천 도구</b> {p.tools}</p>
-      {open && <pre className="prompt-text" tabIndex={0}>{p.prompt.trim()}</pre>}
-      <p className={`prompt-check ${p.level}`}>{p.level === 'red' ? '절대 금지 · ' : '확인 · '}{p.check}</p>
+      <p className="small" style={{ margin: 0 }}><b>쓸 수 있는 도구</b> {p.tools}</p>
+      {app && <p className="small" style={{ margin: 0 }}><b>바이탈 앱</b> {NATIVE_IDS.includes(app.id) ? <Link to={`/run/${app.id}`}>{app.title}</Link> : <a href={`./webapps/${app.id}.html`} target="_blank" rel="noopener">{app.title} ↗</a>}에서 화면으로 바로 할 수 있습니다.</p>}
+      {open && (
+        <div className="prompt-fill">
+          {p.fields.map(f => (
+            <label key={f.key} className="field">
+              <span className="field-label">{f.label}</span>
+              {f.multi
+                ? <textarea className="input" rows={3} value={vals[f.key] || ''} placeholder={f.ex} onChange={e => setVals({ ...vals, [f.key]: e.target.value })} />
+                : <input className="input" value={vals[f.key] || ''} placeholder={f.ex} onChange={e => setVals({ ...vals, [f.key]: e.target.value })} />}
+            </label>
+          ))}
+          <div className="row" style={{ gap: 6 }}>
+            <button type="button" className="btn" onClick={example}>예시 넣기</button>
+            <button type="button" className="btn" onClick={() => setVals({})}>칸 비우기</button>
+          </div>
+          <span className="small muted">완성본 미리보기</span>
+          <pre className="prompt-text" tabIndex={0}>{text}</pre>
+        </div>
+      )}
+      <p className={`prompt-check ${p.level}`}>{p.level === 'red' ? '개인정보 주의 · ' : '결과 확인법 · '}{p.check}</p>
       <div className="row">
-        <button type="button" className="btn primary app-open" onClick={onCopy}>복사하기</button>
-        <button type="button" className="btn app-open" aria-expanded={open} onClick={() => setOpen(!open)}>{open ? '접기' : '프롬프트 보기'}</button>
+        <button type="button" className="btn primary app-open" onClick={onCopy}>{open ? '완성본 복사' : '복사하기'}</button>
+        <button type="button" className="btn app-open" aria-expanded={open} onClick={() => setOpen(!open)}>{open ? '접기' : '칸 채워 쓰기'}</button>
         {msg && <span className="small muted" role="status">{msg}</span>}
       </div>
     </article>
@@ -69,14 +93,14 @@ function PromptCard({ p }) {
 }
 
 export function PromptLibrary({ role }) {
-  const [aud, setAud] = useState(role || 'all')
+  const [aud, setAud] = useState(role && PROMPT_AUDIENCE[role] ? role : 'all')
   const [tag, setTag] = useState('')
   const [q, setQ] = useState('')
   const tags = [...new Set(PROMPTS.flatMap(p => p.tags))]
-  const shown = PROMPTS.filter(p => (aud === 'all' || p.part === aud) && (!tag || p.tags.includes(tag)) && has([p.title, p.desc, p.prompt, ...p.tags].join(' '), q))
+  const shown = PROMPTS.filter(p => (aud === 'all' || p.part === aud || (p.part === 'basic' && aud !== 'health')) && (!tag || p.tags.includes(tag)) && has([p.title, p.desc, p.template, ...p.tags].join(' '), q))
   return (
     <>
-      <PageHead title="프롬프트 라이브러리" desc="본부가 검증한 표준 프롬프트 24종입니다. 복사한 뒤 [대괄호] 빈칸을 내 상황에 맞게 바꿔 Gemini, ChatGPT 등에 붙여 넣으세요. 결과는 반드시 사람이 확인합니다." />
+      <PageHead title="프롬프트 라이브러리" desc={`업무별 표준 프롬프트 ${PROMPTS.length}종입니다. 모두 역할, 상황, 넣을 자료, 작업 순서, 출력 형식, 지킬 것, 마지막 점검의 같은 틀로 되어 있습니다. 「칸 채워 쓰기」로 빈칸을 채우면 완성본을 복사할 수 있고, 결과는 카드 아래 확인법대로 사람이 확인합니다.`} />
       <Card>
         <Search id="prompt-q" value={q} onChange={setQ} placeholder="하고 싶은 일로 찾기 (예: 국시, 루브릭, 회의록, 엑셀)" />
         <Chips label="대상 선택" value={aud} onChange={setAud} options={[['all', '전체'], ...Object.entries(PROMPT_AUDIENCE)]} />
