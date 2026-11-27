@@ -20,11 +20,12 @@ export const WEBAPPS = [
     roles: ['student', 'faculty'], category: '학습·국가고시',
     tags: ['국시', '국가고시', 'CBT', '모의고사', '오답노트', '간호', '물리치료', '방사선', '임상병리', '치위생', '기출'],
     features: ['직종·과목·난이도·문항 수를 골라 출제', '학과에서 만든 기출·모의고사 파일 업로드', '틀린 문제 자동 오답노트'],
+    caution: '내장 문항은 출제기준을 참고해 만든 연습 문항이며 국시원 기출 원문이 아닙니다. 정답과 해설은 교재로 확인하세요.',
   },
   {
     id: 'easy-explainer', icon: '💡', tone: 'amber', version: 'V2',
     title: '어려운 개념 쉽게 풀기·미니 퀴즈',
-    summary: '전공 문장이나 기사를 붙여 넣으면 눈높이에 맞춘 비유 설명과 확인 퀴즈 3문제를 만듭니다.',
+    summary: '전공 문장이나 기사를 붙여 넣으면 어려운 문장과 용어를 짚어 주고 퀴즈를 냅니다. AI 연결 후에는 눈높이 설명과 비유까지 만듭니다.',
     roles: ['student', 'faculty'], category: '학습·국가고시',
     tags: ['개념', '비유', '설명', '퀴즈', '복습', '전공 용어', '수업 자료'],
     features: ['초등·중고등·대학 신입생 눈높이 선택', '보건·경제·IT·인문 분야 선택', '확인 퀴즈 3문제'],
@@ -146,7 +147,7 @@ export const WEBAPPS = [
 
 export const appUrl = a => `./webapps/${a.id}.html`
 // 바이탈 디자인으로 다시 만든 앱(src/webapps/index.js에 등록)은 이 목록에 있습니다.
-export const NATIVE_IDS = ['press-notice', 'toast-maker', 'mind-rest']
+export const NATIVE_IDS = ['press-notice', 'toast-maker', 'mind-rest', 'advising-guide', 'rules-chatbot', 'complaint-script', 'easy-explainer']
 export const appById = id => WEBAPPS.find(a => a.id === id)
 
 // 띄어쓰기·대소문자와 관계없이 제목, 설명, 태그, 기능에서 찾습니다.

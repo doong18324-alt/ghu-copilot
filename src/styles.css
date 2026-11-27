@@ -547,3 +547,15 @@ textarea.wa-paper { resize: vertical; }
 .wa-breath-circle span { font-size: 14px; }
 @media (max-width: 700px) { .wa-head { flex-direction: column; padding: 20px; } }
 @media (prefers-reduced-motion: reduce) { .wa-breath-circle { transition: none; } }
+.wa-drop { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 20px; border: 2px dashed var(--line-strong); border-radius: 16px; cursor: pointer; text-align: center; }
+.wa-drop:hover { border-color: var(--blue); background: var(--blue-soft); }
+.wa-drop input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.wa-drop:focus-within { box-shadow: var(--ring); }
+.wa-q { display: flex; gap: 10px; align-items: center; }
+.wa-answer { margin: 0; line-height: 1.8; background: var(--blue-soft); border-radius: 14px; padding: 14px 16px; }
+.wa-article { background: var(--soft); border-radius: 12px; padding: 12px 16px; }
+.wa-article summary { cursor: pointer; font-weight: 700; }
+.wa-article p { white-space: pre-wrap; line-height: 1.75; font-size: 14px; }
+.wa-article mark { background: #FFF2A8; padding: 0 2px; border-radius: 3px; }
+.wa-chip.ok { background: var(--green); color: #fff; }
+.wa-chip.bad { background: var(--red); color: #fff; }

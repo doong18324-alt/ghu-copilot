@@ -5,4 +5,8 @@ export const NATIVE = {
   'press-notice': lazy(() => import('./press-notice.jsx')),
   'toast-maker': lazy(() => import('./toast-maker.jsx')),
   'mind-rest': lazy(() => import('./mind-rest.jsx')),
+  'advising-guide': lazy(() => import('./advising-guide.jsx')),
+  'rules-chatbot': lazy(() => import('./rules-chatbot.jsx')),
+  'complaint-script': lazy(() => import('./complaint-script.jsx')),
+  'easy-explainer': lazy(() => import('./easy-explainer.jsx')),
 }
