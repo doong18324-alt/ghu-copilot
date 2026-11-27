@@ -10,7 +10,7 @@ export default function VitalOnCare() {
           <h2 style={{ margin: 0, fontSize: 20 }}>GHU 바이탈 온케어</h2>
           <p className="muted small" style={{ margin: '2px 0 0' }}>10개 보건계열 학과가 휴대폰으로 지역 주민을 평가하고 하나의 건강지도와 맞춤계획으로 관리합니다.</p>
         </div>
-        <a href={ONCARE_URL} target="_blank" rel="noreferrer" className="btn soft small" style={{ textDecoration: 'none' }}>새 창으로 열기</a>
+        <a href={ONCARE_URL} target="_blank" rel="noreferrer" className="btn soft" style={{ minHeight: 38, padding: "0 16px", fontSize: 14 }}>새 창으로 열기</a>
       </div>
       <iframe
         title="GHU 바이탈 온케어"

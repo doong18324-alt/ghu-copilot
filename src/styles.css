@@ -166,6 +166,7 @@ select.input, select.select {
 .btn.soft { background: var(--blue-soft); border-color: transparent; color: var(--blue); font-weight: 600; }
 .btn.soft:hover { background: #DCEBFD; color: var(--blue-dark); }
 .btn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+a.btn { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; white-space: nowrap; }
 .chip {
   min-height: 36px; padding: 0 16px; border-radius: 980px; border: none; background: var(--fill); cursor: pointer; font-size: 14px;
   transition: background .15s var(--ease);
