@@ -71,6 +71,19 @@ export default function FutureStrategy({ app }) {
   const [kind, setKind] = useState('dept')
   const [fin, setFin] = useState({ quota: '80', fill: '90', tuition: '600', costRate: '55', fixed: '15000' })
   const [shown, setShown] = useState(false)
+  const [extra, setExtra] = useState('')
+  const [fileMsg, setFileMsg] = useState('')
+
+  function onFile(e) {
+    const f = e.target.files?.[0]; if (!f) return
+    const rd = new FileReader()
+    rd.onload = () => { const t = String(rd.result).replace(/^\uFEFF/, ''); setTable(t); setFileMsg(`${f.name}을(를) 불러왔습니다. 엑셀 파일은 'CSV UTF-8'로 저장해 올려 주세요.`) }
+    rd.readAsText(f, 'utf-8'); e.target.value = ''
+  }
+  function template() {
+    const blob = new Blob(['\uFEFF' + COLS.join(',') + '\n'], { type: 'text/csv;charset=utf-8' })
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = '학과현황_양식.csv'; document.body.appendChild(a); a.click(); a.remove()
+  }
 
   const rows = useMemo(() => parseTable(table), [table])
   const diag = rows.map(r => {
@@ -91,7 +104,10 @@ export default function FutureStrategy({ app }) {
     const cost = rev * r + FX
     const unit = T * (1 - r)
     const bep = unit > 0 ? FX / unit : Infinity
-    return { people, rev, cost, net: rev - cost, bep, bepPct: Q ? (bep / Q) * 100 : 0 }
+    const calc = ff => { const p = Q * ff, rv = p * T, c = rv * r + FX; return { fill: ff, people: p, rev: rv, cost: c, net: rv - c } }
+    const scen = [['보수', Math.max(0, f - 0.1)], ['기본', f], ['낙관', 1]].map(([k, ff]) => ({ k, ...calc(ff) }))
+    const sens = [0.6, 0.7, 0.8, 0.9, 1].map(calc)
+    return { people, rev, cost, net: rev - cost, bep, bepPct: Q ? (bep / Q) * 100 : 0, scen, sens }
   }, [fin])
   const FIN_LABEL = { dept: ['재학 정원(입학정원×수업연한, 명)', '충원율(%)', '1인당 연 등록금(만원)', '변동 운영비율(%)', '연 고정비(만원, 전임교원 인건비 등)'], md: ['과정 이수 정원(명)', '이수율(%)', '1인당 재정지원 단가(만원)', '직접비 집행률(%)', '연 고정비(만원, 운영 인력 등)'], edu: ['연간 수강 정원(기수×인원)', '모집률(%)', '1인당 수강료(만원)', '변동비율(%, 강사료·교재)', '연 고정비(만원, 시설·홍보 등)'] }[kind]
 
@@ -103,12 +119,14 @@ export default function FutureStrategy({ app }) {
     `  기준: 경쟁률 ${th.comp} 미만, 신입생 충원율 ${th.fresh}% 미만, 재학생 충원율 ${th.enrolled}% 미만, 취업률 ${th.job}% 미만`,
     '',
     `2. 고른 여건: ${cond.map(label).join(', ') || '없음'}`,
+    ...(extra.trim() ? [`   직접 입력한 여건: ${extra.trim()}`] : []),
     '',
     ...[['dept', '학과'], ['md', '마이크로디그리'], ['edu', '평생교육']].flatMap(([k, t]) => [`3-${t}. 검토 후보(맞는 여건 수 순)`, ...ranked[k].slice(0, 3).map(c => `· ${c.name}: 맞는 여건 ${c.hit.length}개(${c.hit.map(label).join(', ') || '없음'}). ${c.why}. 확인할 점: ${c.check}${c.warn.length ? `, ${c.warn.map(label).join(', ')}` : ''}`), '']),
     `4. 수익성 계산(${{ dept: '학과', md: '마이크로디그리', edu: '평생교육' }[kind]}, 입력값 기준)`,
     `· 수입 ${man(F.rev)} = ${Math.round(F.people)}명 × ${fin.tuition}만원`,
     `· 지출 ${man(F.cost)} = 수입 × ${fin.costRate}% + 고정비 ${man(n(fin.fixed))}`,
     `· 순수익 ${man(F.net)}, 손익분기 인원 ${Number.isFinite(F.bep) ? `${Math.ceil(F.bep)}명(정원의 ${F.bepPct.toFixed(0)}%)` : '계산 불가(변동비율 100% 이상)'}`,
+    `· 시나리오: ${F.scen.map(x => `${x.k}(충원 ${Math.round(x.fill * 100)}%) 순수익 ${man(x.net)}`).join(' / ')}`,
     '',
     '※ 이 자료는 검토용입니다. 학과 신설·정원 조정은 기획처·교무처의 공식 타당성 검토와 관계 법령 확인을 거칩니다.',
   ].join('\n')
@@ -125,7 +143,11 @@ export default function FutureStrategy({ app }) {
         <Field id="fs-t" label={`학과 현황표 (열: ${COLS.join(', ')})`} hint="엑셀에서 복사한 표(탭 구분)나 CSV">
           <TextArea id="fs-t" rows={6} value={table} onChange={setTable} placeholder={COLS.join('\t')} />
         </Field>
-        <div className="row"><button type="button" className="btn" onClick={() => setTable(SAMPLE_TABLE)}>가상 예시 표 넣기</button><span className="small muted">예시는 실제 학과가 아닌 가상 수치입니다.</span></div>
+        <div className="row"><button type="button" className="btn" onClick={() => setTable(SAMPLE_TABLE)}>가상 예시 표 넣기</button>
+          <label className="btn app-open" style={{ cursor: 'pointer' }}>CSV 파일 불러오기<input type="file" accept=".csv,.tsv,.txt" onChange={onFile} style={{ display: 'none' }} /></label>
+          <button type="button" className="btn app-open" onClick={template}>빈 양식 내려받기</button>
+          <span className="small muted">예시는 실제 학과가 아닌 가상 수치입니다.</span></div>
+        {fileMsg && <p className="small muted" style={{ margin: 0 }}>{fileMsg}</p>}
         <div className="grid">
           <Field id="fs-c" label="경쟁률 기준(미만이면 확인)"><TextInput id="fs-c" value={th.comp} onChange={v => setTh({ ...th, comp: v })} /></Field>
           <Field id="fs-f" label="신입생 충원율 기준(%)"><TextInput id="fs-f" value={th.fresh} onChange={v => setTh({ ...th, fresh: v })} /></Field>
@@ -145,6 +167,9 @@ export default function FutureStrategy({ app }) {
       <section className="card">
         <div className="card-head"><h2>2. 우리 대학 여건</h2><span className="muted small">해당하는 것만 고르기</span></div>
         {Object.entries(COND).map(([k, [t, opts]]) => <ChipGroup key={k} label={t} multi options={opts} value={cond} onChange={setCond} />)}
+        <Field id="fs-x" label="목록에 없는 여건 직접 입력 (선택)" hint="예: 지자체 통합돌봄 시범사업 참여, 인근 대학 ○○과 폐과 예정. 후보 순위에는 반영되지 않고 검토 자료와 지후 AI 분석에 들어갑니다.">
+          <TextArea id="fs-x" rows={2} value={extra} onChange={setExtra} />
+        </Field>
       </section>
 
       <section className="card">
@@ -171,7 +196,15 @@ export default function FutureStrategy({ app }) {
           <div className="tile"><b>순수익</b><span className={F.net >= 0 ? '' : 'bad'}>{man(F.net)}</span></div>
           <div className="tile"><b>손익분기 인원</b><span>{Number.isFinite(F.bep) ? `${Math.ceil(F.bep)}명 (정원의 ${F.bepPct.toFixed(0)}%)` : '계산 불가'}</span></div>
         </div>
-        <p className="small muted" style={{ margin: 0 }}>공식: 수입 = 정원 × 충원율 × 단가 / 지출 = 수입 × 변동비율 + 고정비 / 손익분기 인원 = 고정비 ÷ (단가 × (1 − 변동비율))</p>
+        <div className="table-wrap"><table className="table">
+          <thead><tr><th>시나리오</th><th>충원율</th><th>인원</th><th>연 수입</th><th>연 지출</th><th>순수익</th></tr></thead>
+          <tbody>{F.scen.map(x => <tr key={x.k}><td><b>{x.k}</b></td><td>{Math.round(x.fill * 100)}%</td><td>{Math.round(x.people)}명</td><td>{man(x.rev)}</td><td>{man(x.cost)}</td><td className={x.net >= 0 ? '' : 'bad'}>{man(x.net)}</td></tr>)}</tbody>
+        </table></div>
+        <div className="table-wrap"><table className="table">
+          <thead><tr><th>충원율별 순수익</th>{F.sens.map(x => <th key={x.fill}>{Math.round(x.fill * 100)}%</th>)}</tr></thead>
+          <tbody><tr><td>순수익</td>{F.sens.map(x => <td key={x.fill} className={x.net >= 0 ? '' : 'bad'}>{man(x.net)}</td>)}</tr></tbody>
+        </table></div>
+        <p className="small muted" style={{ margin: 0 }}>보수 시나리오는 입력 충원율에서 10%p 낮춘 값, 낙관 시나리오는 충원율 100%로 계산합니다. 공식: 수입 = 정원 × 충원율 × 단가 / 지출 = 수입 × 변동비율 + 고정비 / 손익분기 인원 = 고정비 ÷ (단가 × (1 − 변동비율))</p>
         <div className="row"><button type="button" className="btn primary" onClick={() => setShown(true)}>검토 자료 만들기</button></div>
       </section>
 

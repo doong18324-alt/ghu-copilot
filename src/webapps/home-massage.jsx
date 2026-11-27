@@ -112,7 +112,7 @@ function Timer() {
   return (
     <section className="card">
       <div className="card-head"><h2>안마 타이머</h2><span className="badge" role="status" aria-live="polite">{left ? `${left}초 남음` : '준비'}</span></div>
-      <div className="row">{[30, 60].map(n => <button key={n} type="button" className="btn app-open" onClick={() => start(n)}>{n}초</button>)}<button type="button" className="btn app-open" onClick={() => { clearInterval(t.current); setLeft(0) }}>멈춤</button></div>
+      <div className="row">{[5, 10, 30, 60].map(n => <button key={n} type="button" className="btn app-open" onClick={() => start(n)}>{n < 30 ? `지압 ${n}초` : `${n}초`}</button>)}<button type="button" className="btn app-open" onClick={() => { clearInterval(t.current); setLeft(0) }}>멈춤</button></div>
     </section>
   )
 }

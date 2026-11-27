@@ -1,6 +1,10 @@
 import { useMemo, useState } from 'react'
 import { AppHeader, Field, TextArea, ChipGroup, AiRefine, Notice } from './kit.jsx'
-import { SAMPLES, TERMS } from './explainer-data.js'
+import { SAMPLES, TERMS as T1 } from './explainer-data.js'
+import { TERMS2 } from './explainer-terms2.js'
+
+const LV = { elementary: 0, secondary: 1, college: 2 }
+const TERMS = { ...T1, ...Object.fromEntries(Object.entries(TERMS2).map(([k, v]) => [k, { elementary: v[0], secondary: v[1], college: v[2] }])) }
 
 /* 어려운 개념 쉽게 풀기·미니 퀴즈
    기존 앱(V2)은 분야마다 정해진 비유 문장 하나를 어떤 글에나 똑같이 붙였습니다.
@@ -15,18 +19,45 @@ function splitSentences(t) {
 
 function shuffle(a) { const r = [...a]; for (let i = r.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [r[i], r[j]] = [r[j], r[i]] } return r }
 
+// 글에서 핵심어 후보 찾기: 두 번 이상 나오거나 전문 용어처럼 보이는 낱말
+function keywords(text) {
+  const words = (text.match(/[가-힣A-Za-z]{2,}/g) || []).map(w => w.replace(/(으로|에서|에게|까지|부터|이라|이다|이며|하고|하는|하여|되어|된다|한다|이고|에는|으로써|의|은|는|이|가|을|를|에|와|과|도|로|만)$/, ''))
+  const stop = new Set(['그리고', '하지만', '이러한', '때문', '경우', '대한', '통해', '위해', '있다', '없다', '것이', '수가', '이로', '인해', '또한', '따라'])
+  const cnt = {}
+  words.filter(w => w.length >= 2 && !stop.has(w)).forEach(w => { cnt[w] = (cnt[w] || 0) + 1 })
+  return Object.entries(cnt).filter(([w, n]) => n >= 2 || w.length >= 4).sort((a, b) => b[1] * b[0].length - a[1] * a[0].length).map(([w]) => w).slice(0, 12)
+}
+
+// 한 줄 핵심: 핵심어를 가장 많이 담은 문장
+function keySentence(sents, keys) {
+  let best = sents[0] || '', score = -1
+  sents.forEach(s => { const n = keys.filter(k => s.includes(k)).length; if (n > score) { score = n; best = s } })
+  return best
+}
+
 function analyze(text, level) {
   const sents = splitSentences(text)
   const long = sents.filter(s => s.length > 80)
   const found = Object.keys(TERMS).filter(t => text.includes(t))
   const others = Object.keys(TERMS).filter(t => !found.includes(t))
+  const keys = keywords(text)
   const quiz = shuffle(found).slice(0, 3).map(t => {
-    const wrong = shuffle(others).slice(0, 3)
-    const opts = shuffle([t, ...wrong])
-    return { def: TERMS[t][level], opts, answer: opts.indexOf(t) }
+    const opts = shuffle([t, ...shuffle(others).slice(0, 3)])
+    return { kind: 'term', q: '다음 설명에 맞는 용어는?', def: TERMS[t][level], opts, answer: opts.indexOf(t) }
   })
+  // 사전 용어가 3개보다 적으면 원문 문장의 빈칸 채우기 문제로 채웁니다.
+  const used = new Set()
+  for (const k of keys) {
+    if (quiz.length >= 3) break
+    const s = sents.find(x => x.includes(k) && !used.has(x))
+    const pool = keys.filter(x => x !== k && !s?.includes(x))
+    if (!s || pool.length < 3) continue
+    used.add(s)
+    const opts = shuffle([k, ...shuffle(pool).slice(0, 3)])
+    quiz.push({ kind: 'cloze', q: '빈칸에 들어갈 말은?', def: s.replace(k, '(　　　)'), opts, answer: opts.indexOf(k) })
+  }
   const avg = sents.length ? Math.round(sents.reduce((n, s) => n + s.length, 0) / sents.length) : 0
-  return { sents, long, found, quiz, avg }
+  return { sents, long, found, quiz, avg, keys, key: keySentence(sents, keys) }
 }
 
 export default function EasyExplainer({ app }) {
@@ -43,7 +74,7 @@ export default function EasyExplainer({ app }) {
   return (
     <>
       <AppHeader app={app}>
-        <span className="small muted">전공 문장이나 기사를 붙여 넣으면 어려운 문장과 용어를 짚어 주고, 용어 퀴즈를 냅니다.</span>
+        <span className="small muted">전공 문장이나 기사를 붙여 넣으면 한 줄 핵심과 핵심어를 뽑고, 어려운 문장과 용어를 짚고, 이해 확인 퀴즈 3문제를 냅니다.</span>
       </AppHeader>
       <section className="card">
         <ChipGroup label="누구 눈높이로" options={LEVELS} value={level} onChange={setLevel} />
@@ -59,6 +90,13 @@ export default function EasyExplainer({ app }) {
 
       {res && (
         <>
+          <section className="card">
+            <div className="card-head"><h2>한 줄 핵심</h2><span className="muted small">핵심어가 가장 많이 담긴 문장</span></div>
+            <p style={{ margin: 0, fontWeight: 600 }}>{res.key}</p>
+            {res.keys.length > 0 && <div className="wa-chips">{res.keys.map(k => <span key={k} className="badge">{k}</span>)}</div>}
+            <p className="muted small" style={{ margin: 0 }}>원문 문장을 그대로 고른 것입니다. 쉬운 말로 다시 쓴 요약과 일상 비유는 아래 지후 AI가 만듭니다.</p>
+          </section>
+
           <section className="card">
             <div className="card-head"><h2>문장 난이도</h2><span className="muted small">{res.sents.length}문장 · 평균 {res.avg}자</span></div>
             {res.long.length === 0 ? <div className="check ok">80자를 넘는 긴 문장이 없습니다.</div> : (
@@ -78,11 +116,12 @@ export default function EasyExplainer({ app }) {
 
           {res.quiz.length > 0 && (
             <section className="card">
-              <div className="card-head"><h2>용어 퀴즈</h2>{checked && <span className={`badge ${score === res.quiz.length ? 'green' : 'amber'}`}>{score} / {res.quiz.length}</span>}</div>
+              <div className="card-head"><h2>이해 확인 퀴즈</h2>{checked && <span className={`badge ${score === res.quiz.length ? 'green' : 'amber'}`}>{score} / {res.quiz.length}</span>}</div>
               {res.quiz.map((q, i) => (
                 <div key={i} className="stack" style={{ gap: 8 }}>
-                  <b>{i + 1}. 다음 설명에 맞는 용어는?</b>
+                  <b>{i + 1}. {q.q}</b>
                   <p className="muted" style={{ margin: 0 }}>“{q.def}”</p>
+                  {checked && <p className="small" style={{ margin: 0 }}>{pick[i] === q.answer ? '정답입니다.' : `정답: ${q.opts[q.answer]}`}{q.kind === 'cloze' ? ' (원문 문장에서 낸 문제)' : ''}</p>}
                   <div className="wa-chips">{q.opts.map((o, j) => {
                     const cls = checked ? (j === q.answer ? 'wa-chip ok' : pick[i] === j ? 'wa-chip bad' : 'wa-chip') : pick[i] === j ? 'wa-chip on' : 'wa-chip'
                     return <button key={o} type="button" className={cls} aria-pressed={pick[i] === j} disabled={checked} onClick={() => setPick({ ...pick, [i]: j })}><b>{o}</b></button>

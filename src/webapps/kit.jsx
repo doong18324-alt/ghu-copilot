@@ -89,6 +89,23 @@ function download(text, name) {
 }
 
 // 결과 문서: 제목, 본문(편집 가능), 글자 수, 복사·내려받기
+/* 인쇄·PDF 저장: 새 창에 결과 문서를 깔끔한 서식으로 열고 인쇄 창을 띄웁니다(인쇄 창에서 'PDF로 저장' 선택). */
+export function printDoc(title, text) {
+  const esc = t => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  const w = window.open('', '_blank')
+  if (!w) { alert('팝업이 막혀 인쇄 창을 열지 못했습니다. 브라우저에서 이 사이트의 팝업을 허용해 주세요.'); return }
+  const today = new Date().toLocaleDateString('ko-KR')
+  w.document.write(`<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>${esc(title)}</title><style>
+    @page{size:A4;margin:18mm 16mm}body{font-family:'Pretendard','Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;color:#111;line-height:1.7;font-size:11pt;margin:0}
+    header{border-bottom:2px solid #111;padding-bottom:6px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:baseline}
+    h1{font-size:16pt;margin:0}small{color:#666}pre{white-space:pre-wrap;word-break:keep-all;font-family:inherit;margin:0}
+    footer{margin-top:18px;border-top:1px solid #ccc;padding-top:6px;font-size:8.5pt;color:#777}</style></head>
+    <body><header><h1>${esc(title)}</h1><small>${today}</small></header><pre>${esc(text)}</pre>
+    <footer>GHU 바이탈에서 만든 초안입니다. 사실관계와 규정은 담당자가 확인한 뒤 사용하세요.</footer>
+    <script>window.onload=()=>{window.focus();window.print()}<\/script></body></html>`)
+  w.document.close()
+}
+
 export function ResultDoc({ title, text, onChange, fileName = '초안.txt', extra }) {
   const len = text.length
   const noSpace = text.replace(/\s/g, '').length
@@ -101,6 +118,7 @@ export function ResultDoc({ title, text, onChange, fileName = '초안.txt', extr
       <div className="row">
         <CopyButton text={text} label="전체 복사" primary />
         <button type="button" className="btn app-open" onClick={() => download(text, fileName)}>텍스트 파일로 저장</button>
+        <button type="button" className="btn app-open" onClick={() => printDoc(title, text)}>인쇄 / PDF 저장</button>
         {extra}
       </div>
     </section>

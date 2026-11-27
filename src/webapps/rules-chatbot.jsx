@@ -41,7 +41,7 @@ export default function RulesChatbot({ app }) {
       <RegLibrary regs={regs} setRegs={setRegs} />
 
       <section className="card">
-        <div className="card-head"><h2>규정에 물어보기</h2></div>
+        <div className="card-head"><h2>규정에 물어보기</h2>{log.length > 0 && <button type="button" className="btn ghost small" onClick={() => setLog([])}>질문 내역 비우기 ({log.length})</button>}</div>
         {arts.length === 0 && <Notice>먼저 규정 파일을 올리거나 예시 규정을 넣어 주세요.</Notice>}
         <form className="row" onSubmit={e => { e.preventDefault(); ask() }}>
           <label htmlFor="rc-q" className="sr-only">질문</label>

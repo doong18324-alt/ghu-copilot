@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { AppHeader, Field, TextInput, TextArea, ChipGroup, ResultDoc, AiRefine, Notice } from './kit.jsx'
+import { AppHeader, Field, TextInput, TextArea, ChipGroup, ResultDoc, AiRefine, Notice, CopyButton } from './kit.jsx'
 import { josa, particle, purpose, stripEventVerb, todayDots } from '../lib/korean.js'
 
 /* 보도자료·공지사항·알림 문자·SNS 게시글 초안
@@ -229,7 +229,7 @@ function PressNotice({ app, switcher }) {
       {made && (
         <>
           <section className="card">
-            <div className="card-head"><h2>2. 보도자료 제목 고르기</h2><span className="small muted">사실형 · 의미형 · 인용형 · 숫자형</span></div>
+            <div className="card-head"><h2>2. 보도자료 제목 고르기</h2><span className="row" style={{ gap: 8 }}><span className="small muted">사실형 · 의미형 · 인용형 · 숫자형</span><CopyButton text={made.headlines[pick]} label="고른 제목만 복사" /></span></div>
             <div className="wa-chips">{made.headlines.map((h, i) => <button key={h + i} type="button" className={pick === i ? 'wa-chip on' : 'wa-chip'} aria-pressed={pick === i} onClick={() => choose(i)}><b>{h}</b></button>)}</div>
           </section>
           <ResultDoc title="보도자료" text={edit.press} onChange={t => setEdit(e => ({ ...e, press: t }))} fileName="보도자료_초안.txt" />

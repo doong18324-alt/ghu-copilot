@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { AppHeader, Notice, AiRefine } from './kit.jsx'
 import { useStored } from '../lib/store.js'
 import { JOBS, jobById, KUKSIWON_URL } from './cbt-data.js'
@@ -11,6 +11,7 @@ import { JOBS, jobById, KUKSIWON_URL } from './cbt-data.js'
 const CSV_HEAD = '직종,과목,난이도,문제지문,사례,보기1,보기2,보기3,보기4,보기5,정답번호,해설,함정포인트'
 const COUNTS = [5, 10, 20, 30, 50]
 const NUM = ['①', '②', '③', '④', '⑤']
+const fmt = ms => { const t = Math.max(0, Math.round(ms / 1000)); return `${Math.floor(t / 60)}분 ${String(t % 60).padStart(2, '0')}초` }
 
 function shuffle(a) { const r = [...a]; for (let i = r.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [r[i], r[j]] = [r[j], r[i]] } return r }
 
@@ -104,6 +105,11 @@ export default function LicenseCbt({ app }) {
   const [dates, setDates] = useStored('webapps:cbt-date', {})
   const [perDay, setPerDay] = useStored('webapps:cbt-perday', 20)
   const [msg, setMsg] = useState('')
+  const [mode, setMode] = useStored('webapps:cbt-mode', 'exam')
+  const [fresh, setFresh] = useStored('webapps:cbt-fresh', true)
+  const [seen, setSeen] = useStored('webapps:cbt-seen', {})
+  const [now, setNow] = useState(Date.now())
+  useEffect(() => { if (!exam || exam.done) return; const t = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(t) }, [exam])
 
   const job = jobById(jobId) || JOBS[0]
 
@@ -124,30 +130,36 @@ export default function LicenseCbt({ app }) {
 
   function changeJob(id) { setJobId(id); setSubj('all'); setExam(null) }
 
-  function start(list, title) {
+  function start(list0, title) {
+    // 새 문항 우선: 이전에 출제된 문항을 뒤로 보냅니다(오답 다시 풀기는 제외).
+    const seenSet = new Set(seen[job.id] || [])
+    const list = list0 === avail && fresh ? [...shuffle(list0.filter(p => !seenSet.has(p.id))), ...shuffle(list0.filter(p => seenSet.has(p.id)))] : list0
     // 전 과목이면 과목별로 고르게 뽑습니다.
     let pick
     if (subj === 'all' && list === avail) {
       const groups = subjects.map(([id]) => shuffle(list.filter(p => p.subj === id))).filter(g => g.length)
       pick = []
-      for (let r = 0; pick.length < n; r++) for (const g of groups) if (g[r] && pick.length < n) pick.push(g[r])
+      const ordered2 = fresh ? subjects.map(([id]) => list.filter(p => p.subj === id)).filter(g => g.length) : groups
+      for (let r = 0; pick.length < n; r++) for (const g of ordered2) if (g[r] && pick.length < n) pick.push(g[r])
       pick = shuffle(pick)
-    } else pick = shuffle(list).slice(0, list === avail ? n : list.length)
-    setExam({ title, qs: pick.map(it => prepare(it, mix)), ans: {}, done: false })
+    } else pick = (list0 === avail && fresh ? list : shuffle(list)).slice(0, list0 === avail ? n : list.length)
+    setExam({ title, qs: pick.map(it => prepare(it, mix)), ans: {}, flag: {}, done: false, mode, t0: Date.now() })
+    if (list0 === avail) setSeen(prev => ({ ...prev, [job.id]: [...new Set([...(prev[job.id] || []), ...pick.map(p => p.id)])] }))
     setMsg('')
     setTimeout(() => document.getElementById('cbt-exam')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50)
   }
 
   function submit() {
-    const wrongNow = exam.qs.filter(it => exam.ans[it.id] !== it.a - 1)
-    setExam(e => ({ ...e, done: true }))
+    // 틀린 문항과 '헷갈림'으로 표시한 문항을 오답노트에 넣습니다.
+    const wrongNow = exam.qs.filter(it => exam.ans[it.id] !== it.a - 1 || exam.flag?.[it.id])
+    setExam(e => ({ ...e, done: true, t1: Date.now() }))
     setStats(prev => {
       const js = { ...(prev[job.id] || {}) }
       for (const it of exam.qs) { const x = js[it.subj] || { n: 0, c: 0 }; js[it.subj] = { n: x.n + 1, c: x.c + (exam.ans[it.id] === it.a - 1 ? 1 : 0) } }
       return { ...prev, [job.id]: js }
     })
     setWrong(prev => {
-      const keep = prev.filter(w => !exam.qs.some(it => it.id === w.id && exam.ans[it.id] === it.a - 1))
+      const keep = prev.filter(w => !exam.qs.some(it => it.id === w.id && exam.ans[it.id] === it.a - 1 && !exam.flag?.[it.id]))
       const add = wrongNow.filter(it => !keep.some(w => w.id === it.id)).map(({ view, ...rest }) => ({ ...rest, at: new Date().toISOString().slice(0, 10) }))
       return [...keep, ...add]
     })
@@ -217,7 +229,15 @@ export default function LicenseCbt({ app }) {
         </div>
         <div className="row" style={{ gap: 18 }}>
           <label className="row small" style={{ gap: 6 }}><input type="checkbox" checked={mix} onChange={e => setMix(e.target.checked)} /> 보기 순서 섞기</label>
+          <label className="row small" style={{ gap: 6 }}><input type="checkbox" checked={fresh} onChange={e => setFresh(e.target.checked)} /> 안 푼 문항 먼저 ({Math.max(0, avail.length - avail.filter(p => (seen[job.id] || []).includes(p.id)).length)}문항 남음)</label>
           <label className="row small" style={{ gap: 6 }}><input type="checkbox" checked={useUpload} onChange={e => setUseUpload(e.target.checked)} /> 학과 업로드 문항 포함 ({custom.filter(c => c.job === job.id).length}문항)</label>
+        </div>
+        <div className="row" style={{ gap: 8 }} role="radiogroup" aria-label="응시 방식">
+          <span className="small muted">응시 방식</span>
+          {[['exam', '실전 모드', '다 푼 뒤 한꺼번에 채점'], ['study', '학습 모드', '한 문제씩 바로 정답·해설']].map(([k, a, b]) => (
+            <button key={k} type="button" role="radio" aria-checked={mode === k} className={`chip${mode === k ? ' on' : ''}`} onClick={() => setMode(k)}><b>{a}</b> <span className="muted small">{b}</span></button>
+          ))}
+          {(seen[job.id] || []).length > 0 && <button type="button" className="btn ghost small" onClick={() => setSeen(prev => ({ ...prev, [job.id]: [] }))}>출제 이력 지우기</button>}
         </div>
         {count > avail.length && avail.length > 0 && <Notice tone="warn">선택한 범위에 {avail.length}문항이 있어 {avail.length}문항으로 출제합니다. 다른 과목 문항이나 같은 문항을 반복해 채우지 않습니다.</Notice>}
         <div className="row">
@@ -230,7 +250,7 @@ export default function LicenseCbt({ app }) {
         <section className="card stack" id="cbt-exam">
           <div className="card-head">
             <h2>{job.name} · {exam.title}</h2>
-            <span className="muted small">{exam.done ? `${score} / ${exam.qs.length}점 (${Math.round(score / exam.qs.length * 100)}%)` : `${answered} / ${exam.qs.length} 답함`}</span>
+            <span className="muted small">{exam.mode === 'study' ? '학습 모드 · ' : '실전 모드 · '}{exam.done ? `${score} / ${exam.qs.length}점 (${Math.round(score / exam.qs.length * 100)}%) · 소요 ${fmt((exam.t1 || now) - exam.t0)}` : `${answered} / ${exam.qs.length} 답함 · 경과 ${fmt(now - exam.t0)}`}{Object.values(exam.flag || {}).filter(Boolean).length ? ` · 헷갈림 ${Object.values(exam.flag).filter(Boolean).length}` : ''}</span>
           </div>
 
           {exam.done && (
@@ -239,7 +259,7 @@ export default function LicenseCbt({ app }) {
               <div className="row" style={{ gap: 8, marginTop: 6 }}>
                 {bySubj.map(([name, ok, all]) => <span key={name} className={`badge ${ok / all >= 0.6 ? 'green' : 'red'}`}>{name} {ok}/{all}</span>)}
               </div>
-              <p className="small" style={{ margin: '8px 0 0' }}>국가시험 합격 기준(과목별 40% 이상, 전체 60% 이상)을 참고해 60% 미만 과목은 붉게 표시했습니다. 틀린 {exam.qs.length - score}문항은 오답노트에 넣었습니다.</p>
+              <p className="small" style={{ margin: '8px 0 0' }}>국가시험 합격 기준(과목별 40% 이상, 전체 60% 이상)을 참고해 60% 미만 과목은 붉게 표시했습니다. 틀린 {exam.qs.length - score}문항{Object.values(exam.flag || {}).filter(Boolean).length ? '과 헷갈림으로 표시한 문항' : ''}은 오답노트에 넣었습니다.</p>
             </div>
           )}
 
@@ -249,7 +269,7 @@ export default function LicenseCbt({ app }) {
               {exam.qs.map((it, n) => {
                 const a = exam.ans[it.id]
                 const cls = exam.done ? (a === undefined ? 'miss' : a === it.a - 1 ? 'ok' : 'bad') : a !== undefined ? 'on' : ''
-                return <a key={it.id} href={`#q-${n + 1}`} className={cls} onClick={e => { e.preventDefault(); document.getElementById(`q-${n + 1}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' }) }} aria-label={`${n + 1}번${cls === 'on' ? ' 답함' : cls === 'ok' ? ' 정답' : cls === 'bad' ? ' 오답' : cls === 'miss' ? ' 답하지 않음' : ''}`}>{n + 1}</a>
+                return <a key={it.id} href={`#q-${n + 1}`} className={cls} style={exam.flag?.[it.id] ? { outline: '2px solid var(--amber, #d98c00)', outlineOffset: 1 } : undefined} onClick={e => { e.preventDefault(); document.getElementById(`q-${n + 1}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' }) }} aria-label={`${n + 1}번${cls === 'on' ? ' 답함' : cls === 'ok' ? ' 정답' : cls === 'bad' ? ' 오답' : cls === 'miss' ? ' 답하지 않음' : ''}`}>{n + 1}</a>
               })}
             </div>
           </nav>
@@ -258,27 +278,29 @@ export default function LicenseCbt({ app }) {
             {exam.qs.map((it, n) => {
               const pick = exam.ans[it.id]
               const right = it.a - 1
+              const reveal = exam.done || (exam.mode === 'study' && pick !== undefined)
               return (
                 <li key={it.id} id={`q-${n + 1}`} className="exam-q">
                   <span className="exam-qn">{n + 1}</span>
                   <div className="exam-qbody">
                   <p className="exam-stem">{it.q}</p>
-                  <span className="exam-tags"><span>{it.subjName}</span>{it.src === '학과 업로드' && <span>학과 문항</span>}</span>
+                  <span className="exam-tags"><span>{it.subjName}</span>{it.src === '학과 업로드' && <span>학과 문항</span>}
+                    {!exam.done && <button type="button" className="btn ghost small" aria-pressed={!!exam.flag?.[it.id]} onClick={() => setExam(e => ({ ...e, flag: { ...e.flag, [it.id]: !e.flag?.[it.id] } }))}>{exam.flag?.[it.id] ? '★ 헷갈림 표시됨' : '☆ 헷갈림 표시'}</button>}</span>
                   <div className="exam-opts" role="radiogroup" aria-label={`${n + 1}번 보기`}>
                     {it.view.map((k, i) => {
                       let cls = 'exam-opt'
-                      if (exam.done && k === right) cls += ' ok'
-                      else if (exam.done && k === pick) cls += ' bad'
+                      if (reveal && k === right) cls += ' ok'
+                      else if (reveal && k === pick) cls += ' bad'
                       else if (k === pick) cls += ' on'
                       return (
-                        <button key={k} type="button" role="radio" aria-checked={k === pick} className={cls} disabled={exam.done}
+                        <button key={k} type="button" role="radio" aria-checked={k === pick} className={cls} disabled={reveal}
                           onClick={() => setExam(e => ({ ...e, ans: { ...e.ans, [it.id]: k } }))}>
                           <span className="exam-num">{i + 1}</span><span>{it.o[k]}</span>
                         </button>
                       )
                     })}
                   </div>
-                  {exam.done && (
+                  {reveal && (
                     <p className="small" style={{ margin: 0, lineHeight: 1.7 }}>
                       <b style={{ color: pick === right ? 'var(--green)' : 'var(--red)' }}>{pick === right ? '맞음' : pick === undefined ? '답하지 않음' : '틀림'}</b>
                       {'  '}정답 {it.view.indexOf(right) + 1}번. {it.e}
@@ -292,7 +314,7 @@ export default function LicenseCbt({ app }) {
 
           <div className="row">
             {!exam.done && <button type="button" className="btn primary" onClick={submit}>채점하기{answered < exam.qs.length ? ` (${exam.qs.length - answered}문항 남음)` : ''}</button>}
-            {exam.done && <button type="button" className="btn primary" onClick={() => setExam(e => ({ ...e, qs: e.qs.map(q => prepare(q, mix)), ans: {}, done: false }))}>같은 문항 다시 풀기</button>}
+            {exam.done && <button type="button" className="btn primary" onClick={() => setExam(e => ({ ...e, qs: e.qs.map(q => prepare(q, mix)), ans: {}, flag: {}, done: false, t0: Date.now(), t1: undefined }))}>같은 문항 다시 풀기</button>}
           </div>
 
           <div className="stack" style={{ gap: 8 }}>
