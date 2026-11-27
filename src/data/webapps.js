@@ -17,6 +17,15 @@ export const CATEGORIES = ['학습·국가고시', '취업·진로', '학생 지
 // caution: 사용 전 꼭 알려야 할 내용
 export const WEBAPPS = [
   {
+    id: 'privacy-shield', mono: '가림', tone: 'red', version: 'V1', isNew: true,
+    title: '개인정보 가명처리기: AI에 넣기 전에 가리기',
+    summary: '이름·학번·연락처·계좌·등록번호를 찾아 "학생A", "[전화1]"로 바꾸고, AI 결과를 붙여 넣으면 원래 값으로 되돌립니다.',
+    roles: ['student', 'faculty', 'staff'], category: '행정·문서',
+    tags: ['개인정보', '가명처리', '비식별', '마스킹', '보안', 'AI 안전', '학번', '전화번호', '이름 가리기'],
+    features: ['주민번호·전화·이메일·학번·계좌·등록번호·주소 자동 찾기', '직접 넣은 이름·기관도 가리기', 'AI 결과 원래 이름으로 되돌리기', '대응표는 저장하지 않음'],
+    caution: '자동 찾기는 정해진 모양만 잡습니다. 결과를 한 번 읽어 남은 정보가 없는지 확인하세요.',
+  },
+  {
     id: 'license-cbt', mono: '국시', tone: 'blue', version: 'V3', stored: true,
     title: '보건의료 국가고시 CBT 모의고사·오답노트',
     summary: '10개 면허 직종의 과목별 모의고사를 풀고 틀린 문제를 오답노트로 모읍니다.',
@@ -151,7 +160,7 @@ export const WEBAPPS = [
 
 export const appUrl = a => `./webapps/${a.id}.html`
 // 바이탈 디자인으로 다시 만든 앱(src/webapps/index.js에 등록)은 이 목록에 있습니다.
-export const NATIVE_IDS = ['press-notice', 'toast-maker', 'mind-rest', 'advising-guide', 'rules-chatbot', 'complaint-script', 'easy-explainer', 'license-cbt', 'admission-studio', 'career-clinic', 'home-massage', 'diet-planner', 'pet-signal', 'voucher-checker', 'future-strategy']
+export const NATIVE_IDS = ['press-notice', 'toast-maker', 'mind-rest', 'advising-guide', 'rules-chatbot', 'complaint-script', 'easy-explainer', 'license-cbt', 'admission-studio', 'career-clinic', 'home-massage', 'diet-planner', 'pet-signal', 'voucher-checker', 'future-strategy', 'privacy-shield']
 export const appById = id => WEBAPPS.find(a => a.id === id)
 
 // 띄어쓰기·대소문자와 관계없이 제목, 설명, 태그, 기능에서 찾습니다.
